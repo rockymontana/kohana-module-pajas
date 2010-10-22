@@ -1,8 +1,19 @@
-URL: http://github.com/lillem4n/kohana-module-pajas
+ABOUT
+=====
 
 The pajas module is a collection of tools and extensions to Kohana.
 
 It is compatible with version 3.0.x
+
+INSTALLATION INSTRUCTIONS
+=========================
+Copy the "pajas" folder to your modules directory in your kohana
+install. Then add pajas to your activated modules in
+application/bootstrap.php.
+
+
+DEEP INFO
+=========
 
 Pajas can be broken down in parts, wich can be used standalone:
 PDO (PHP PDO database layer) files:
