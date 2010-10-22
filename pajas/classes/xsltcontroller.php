@@ -24,7 +24,7 @@ abstract class Xsltcontroller
 	/**
 	 * Where to look for the XSLT stylesheets
 	 */
-	var $xslt_path = '/xsl/';
+	var $xslt_path = 'xsl/';
 
 	/**
 	 * The filename of the XSLT stylesheet, excluding .xsl
