@@ -27,10 +27,10 @@ class Controller_Admin_Login extends Admincontroller {
 			$this->redirect('/admin');
 		}
 
-		if (isset($_SESSION['modules']['frontend']['error']))
+		if (isset($_SESSION['modules']['pajas']['error']))
 		{
-			xml::to_XML(array('error' => $_SESSION['modules']['frontend']['error']), $this->xml_content);
-			unset($_SESSION['modules']['frontend']['error']);
+			xml::to_XML(array('error' => $_SESSION['modules']['pajas']['error']), $this->xml_content);
+			unset($_SESSION['modules']['pajas']['error']);
 		}
 	}
 
@@ -62,7 +62,7 @@ class Controller_Admin_Login extends Admincontroller {
 	    		$this->redirect('/admin');
 				}
 			}
-			$_SESSION['modules']['frontend']['error'] = 'Wrong username or password';
+			$_SESSION['modules']['pajas']['error'] = 'Wrong username or password';
 		}
 		$this->redirect();
 	}

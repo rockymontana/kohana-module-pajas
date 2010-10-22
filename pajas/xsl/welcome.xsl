@@ -22,8 +22,8 @@
 						<xsl:value-of select="root/content/h1" />
 					</h1>
 
-					<p>If you want to make changes to the layout of this page, edit <code>modules/frontend/xsl/welcome.xsl</code>.</p>
-					<p>If you want to change the data, edit the controller <code>modules/frontend/classes/controller/welcome.php</code>.</p>
+					<p>If you want to make changes to the layout of this page, edit <code>modules/pajas/xsl/welcome.xsl</code>.</p>
+					<p>If you want to change the data, edit the controller <code>modules/pajas/classes/controller/welcome.php</code>.</p>
 				</div>
 				<footer>
 					<p>Generated in <xsl:value-of select="round(root/meta/benchmark/current/time * 1000)" /> ms using

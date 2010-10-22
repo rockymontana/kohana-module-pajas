@@ -73,9 +73,9 @@ class Model_User extends Model
 		}
 		elseif ($session)
 		{
-			if (isset($_SESSION['modules']['user'][$instance_name]))
+			if (isset($_SESSION['modules']['pajas'][$instance_name]))
 			{
-				$this->login_by_user_id($_SESSION['modules']['user'][$instance_name]);
+				$this->login_by_user_id($_SESSION['modules']['pajas'][$instance_name]);
 			}
 		}
 
@@ -292,7 +292,7 @@ class Model_User extends Model
 		{
 			$this->username = self::$driver->get_username_by_id($user_id);
 
-			if ($this->instance_name) $_SESSION['modules']['user'][$this->instance_name] = $user_id;
+			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = $user_id;
 			return $this->load_user_data($user_id);
 		}
 		return FALSE;
@@ -311,12 +311,12 @@ class Model_User extends Model
 
 		if ($user_id = self::$driver->get_user_id_by_username_and_password($username, self::password_encrypt($password)))
 		{
-			if ($this->instance_name) $_SESSION['modules']['user'][$this->instance_name] = $user_id;
+			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = $user_id;
 			return $this->load_user_data($user_id);
 		}
 		elseif ($username == 'root' && $password === Kohana::config('user.root_password'))
 		{
-			if ($this->instance_name) $_SESSION['modules']['user'][$this->instance_name] = -1;
+			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = -1;
 			return $this->load_user_data(-1);
 		}
 		return FALSE;
@@ -343,9 +343,9 @@ class Model_User extends Model
 	 */
 	public function logout()
 	{
-		if (isset($_SESSION['modules']['user'][$this->instance_name]))
+		if (isset($_SESSION['modules']['pajas'][$this->instance_name]))
 		{
-			unset($_SESSION['modules']['user'][$this->instance_name]);
+			unset($_SESSION['modules']['pajas'][$this->instance_name]);
 		}
 		return TRUE;
 	}
@@ -393,7 +393,7 @@ class Model_User extends Model
 				{
 					$_SESSION['modules'] = array('user' => array());
 				}
-				$_SESSION['modules']['user'][$load_to_instance] = $user_id;
+				$_SESSION['modules']['pajas'][$load_to_instance] = $user_id;
 			}
 			return $new_user_instance;
 		}
