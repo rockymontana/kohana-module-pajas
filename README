@@ -11,6 +11,10 @@ Copy the "pajas" folder to your modules directory in your kohana
 install. Then add pajas to your activated modules in
 application/bootstrap.php.
 
+To see the example controller on a clean install, rename or remove
+application/classes/controller/welcome.php.
+
+
 DOCUMENATION
 ============
 http://kohanawiki.lillem4n.se/modules#pajas
