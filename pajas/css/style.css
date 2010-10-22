@@ -1,0 +1,68 @@
+*
+{
+	font-family:    verdana;
+}
+
+a,
+img
+{
+	border:         none;
+}
+
+body
+{
+	background:     #f1f8db url(../img/body_bg.png) repeat-x;
+	margin:         0;
+	padding:        0;
+}
+
+code
+{
+	font-size:      0.8em;
+	padding:        1px;
+	background:     #eee;
+	border:         solid 1px #ccc;
+}
+
+footer
+{
+	position:       absolute;
+	bottom:         0;
+	background:     #00262f;
+	height:         100px;
+	width:          76%;
+	padding:        0 12% 0 12%;
+	color:          #405c63;
+	font-family:    helvetica;
+	font-size:      0.8em;
+	text-transform: uppercase;
+	text-align:     center;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6
+{
+	font-family:    arial;
+}
+
+.main_container
+{
+	width:          76%;
+	margin:         150px 10% 100px 10%;
+	background:     #f1f8db url(../img/center_bg.png) repeat-x;
+	min-height:     376px;
+	border-radius:  8px;
+	padding:        10px 2% 0 2%;
+}
+
+#kohana_logo
+{
+	display: block;
+	position: absolute;
+	top: 70px;
+	left: 10%;
+}

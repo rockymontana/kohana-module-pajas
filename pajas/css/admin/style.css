@@ -1,0 +1,132 @@
+*
+{
+	font-family:                 Helvetica, Arial, sans-serif;
+	font-size:                   100%;
+	margin:                      0;
+	padding:                     0;
+}
+
+a,
+img
+{
+	border:                      none;
+	color:                       #00758f;
+}
+
+body
+{
+	background:                  #f1f8db url(../../img/admin/body_bg.png) repeat-y;
+	margin:                      0;
+	padding:                     0 0 0 260px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6
+{
+	font-family:                 arial;
+}
+
+h1
+{
+	font-size:                   200%;
+	margin:                      0 0 25px 0;
+}
+
+h2
+{
+	font-size:                   150%;
+	margin:                      25px 0 10px 0;
+}
+
+table
+{
+	border-collapse:             collapse;
+}
+
+th,
+td
+{
+	border:                      1px solid #000;
+	padding:                     2px;
+}
+
+input.error
+{
+	background:                  #fcc;
+}
+
+td.button
+{
+	text-align:                  right;
+}
+
+body div.error
+{
+	border:                      solid 1px #f00;
+	background:                  #fcc;
+	color:                       #400;
+}
+
+body div.message
+{
+	border:                      solid 1px #0f0;
+	background:                  #cfc;
+	color:                       #040;
+}
+
+body nav
+{
+	position:                    absolute;
+	top:                         10px;
+	left:                        10px;
+}
+
+body nav p
+{
+	background:                  #f1f8db;
+	width:                       150px;
+	padding:                     10px 10px 5px 10px;
+	text-align:                  center;
+	border-top-left-radius:      8px;
+	border-top-right-radius:     8px;
+	text-transform:              uppercase;
+}
+
+body nav div
+{
+	background:                  #00262f;
+	margin-bottom:               20px;
+	padding:                     5px 10px 10px 10px;
+}
+
+body nav div a
+{
+	display:                     block;
+	padding:                     2px 0 2px 0;
+}
+
+body nav div a:hover,
+body nav div a.active
+{
+	background:                  #f1f8db;
+}
+
+body nav div.biglinks a
+{
+	font-size:                   120%;
+	font-weight:                 bold;
+}
+
+body nav div.biglinks
+{
+	width:                       150px;
+	background:                  #00262f;
+	margin-bottom:               20px;
+	padding:                     10px 10px 10px 10px;
+	border-top-left-radius:      8px;
+	border-top-right-radius:     8px;
+}
