@@ -10,7 +10,7 @@
 				<link type="text/css" href="css/style.css" rel="stylesheet" media="all" />
 
 				<!-- Example of how to obtain XML data in an attribute -->
-				<base href="http://{root/meta/domain}/" />
+				<base href="http://{root/meta/domain}{root/meta/base}" />
 
 				<title>Kohana front end module</title>
 			</head>
