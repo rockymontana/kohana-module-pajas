@@ -11,24 +11,6 @@ Copy the "pajas" folder to your modules directory in your kohana
 install. Then add pajas to your activated modules in
 application/bootstrap.php.
 
-
-DEEP INFO
-=========
-
-Pajas can be broken down in parts, wich can be used standalone:
-PDO (PHP PDO database layer) files:
-classes/kohana/model.php
-classes/kohana/pdo.php
-classes/model.php
-config/pdo.php
-
-
-XML (Array (and other data) to XML) files:
-classes/xml.php
-
-
-XSLT (Using XSLT templates instead of kohana views) files:
-classes/xsltcontroller.php
-
-Extend "xsltcontroller" instaed of "controller" in your controllers
-to use this.
+DOCUMENATION
+============
+http://kohanawiki.lillem4n.se/modules#pajas
