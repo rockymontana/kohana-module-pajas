@@ -4,7 +4,20 @@ The pajas module is a collection of tools and extensions to Kohana.
 
 It is compatible with version 3.0.x
 
-Parts of the pajas project is also stand alone projects:
-PDO  - http://github.com/lillem4n/kohana-module-pdo
-XML  - http://github.com/lillem4n/kohana-module-xml
-XSLT - http://github.com/lillem4n/kohana-module-xslt
+Pajas can be broken down in parts, wich can be used standalone:
+PDO (PHP PDO database layer) files:
+classes/kohana/model.php
+classes/kohana/pdo.php
+classes/model.php
+config/pdo.php
+
+
+XML (Array (and other data) to XML) files:
+classes/xml.php
+
+
+XSLT (Using XSLT templates instead of kohana views) files:
+classes/xsltcontroller.php
+
+Extend "xsltcontroller" instaed of "controller" in your controllers
+to use this.
