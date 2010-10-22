@@ -1,0 +1,10 @@
+URL: http://github.com/lillem4n/kohana-module-pajas
+
+The pajas module is a collection of tools and extensions to Kohana.
+
+It is compatible with version 3.0.x
+
+Parts of the pajas project is also stand alone projects:
+PDO  - http://github.com/lillem4n/kohana-module-pdo
+XML  - http://github.com/lillem4n/kohana-module-xml
+XSLT - http://github.com/lillem4n/kohana-module-xslt
