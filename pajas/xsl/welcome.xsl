@@ -12,7 +12,7 @@
 				<!-- Example of how to obtain XML data in an attribute -->
 				<base href="http://{root/meta/domain}{root/meta/base}" />
 
-				<title>Kohana front end module</title>
+				<title>Pajas</title>
 			</head>
 			<body>
 				<div class="main_container">

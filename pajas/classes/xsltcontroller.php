@@ -24,7 +24,7 @@ abstract class Xsltcontroller
 	/**
 	 * Where to look for the XSLT stylesheets
 	 */
-	var $xslt_path = 'xsl/';
+	var $xslt_path;
 
 	/**
 	 * The filename of the XSLT stylesheet, excluding .xsl
@@ -38,6 +38,9 @@ abstract class Xsltcontroller
 	 */
 	public function __construct()
 	{
+		// Set XSLT path
+		$this->xslt_path = Kohana::$base_url.'xsl/';
+
 		// Create the XML DOM
 		$this->dom = new DomDocument('1.0', 'UTF-8');
 		$this->dom->formatOutput = TRUE;
@@ -138,7 +141,6 @@ abstract class Xsltcontroller
 			}
 			else
 			{
-			die('not set :( ');
 				Request::instance()->redirect(Kohana::$base_url);
 			}
 		}

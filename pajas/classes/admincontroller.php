@@ -26,7 +26,7 @@ abstract class Admincontroller extends Xsltcontroller
 			$user = User::instance();
 			if ((!$user->logged_in() || !$user->get_user_data('role') == 'admin') && request::instance()->controller != 'login')
 			{
-				$this->redirect('/admin/login');
+				$this->redirect('admin/login');
 			}
 			elseif ($user->logged_in())
 			{

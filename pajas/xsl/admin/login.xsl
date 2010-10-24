@@ -8,10 +8,9 @@
 		<html>
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-				<link type="text/css" href="/css/admin/style.css" rel="stylesheet" media="all" />
+				<link type="text/css" href="../css/admin/style.css" rel="stylesheet" media="all" />
 
-				<!-- Example of how to obtain XML data in an attribute -->
-				<base href="http://{root/meta/domain}/admin/" />
+				<base href="http://{root/meta/domain}{/root/meta/base}admin/" />
 
 				<title>Login</title>
 			</head>
