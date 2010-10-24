@@ -14,7 +14,7 @@
     <html>
       <head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-				<link type="text/css" href="../css/admin/style.css" rel="stylesheet" media="all" />
+				<link type="text/css" href="css/admin/style.css" rel="stylesheet" media="all" />
 
 				<base href="http://{root/meta/domain}{/root/meta/base}admin/" />
 
