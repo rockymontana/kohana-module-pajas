@@ -314,7 +314,7 @@ class Model_User extends Model
 			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = $user_id;
 			return $this->load_user_data($user_id);
 		}
-		elseif ($username == 'root' && $password === Kohana::config('user.root_password'))
+		elseif (strtolower($username) == 'root' && $password === Kohana::config('user.root_password'))
 		{
 			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = -1;
 			return $this->load_user_data(-1);
@@ -479,7 +479,7 @@ class Model_User extends Model
 	public static function username_available($username)
 	{
 		if (self::$driver == NULL) self::set_driver();
-		if (count(self::$driver->get_users(array('username' => $username))))
+		if (count(self::$driver->get_users(array('username' => $username))) || strtolower($username) == 'root')
 		{
 			return FALSE;
 		}
