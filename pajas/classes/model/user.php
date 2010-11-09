@@ -391,7 +391,7 @@ class Model_User extends Model
 			{
 				if (!isset($_SESSION['modules']))
 				{
-					$_SESSION['modules'] = array('user' => array());
+					$_SESSION['modules'] = array('pajas' => array());
 				}
 				$_SESSION['modules']['pajas'][$load_to_instance] = $user_id;
 			}
