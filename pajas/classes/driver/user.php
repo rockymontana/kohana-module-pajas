@@ -46,7 +46,7 @@ abstract class Driver_User extends Model
 	 * Get user data
 	 *
 	 * @param int $user_id
-	 * @return array - example: array('firstname' => 'John', 'lastname' => 'Smith')
+	 * @return array - ex array('firstname' => 'John', 'lastname' => 'Smith', 'email' => array('one@larvit.se','two@larvit.se))
 	 */
 	abstract public function get_user_data($user_id);
 
@@ -108,7 +108,7 @@ abstract class Driver_User extends Model
 	 *
 	 * @param str $username
 	 * @param str $password - Should already be encrypted!
-	 * @param arr $user_data
+	 * @param arr $user_data - ex array('firstname' => 'John', 'lastname' => 'Smith', 'email' => array('one@larvit.se','two@larvit.se))
 	 * @return int - The new user id
 	 */
 	abstract public function new_user($username, $password, $user_data = array());
@@ -133,7 +133,7 @@ abstract class Driver_User extends Model
 	 * Set data
 	 *
 	 * @param int $user_id
-	 * @param arr $data                - Field name as key, field data as value
+	 * @param arr $data                - ex array('firstname' => 'John', 'lastname' => 'Smith', 'email' => array('one@larvit.se','two@larvit.se))
 	 * @param bol $clear_previous_data - If TRUE, the previous data in the present
 	 *                                   fields will be cleared
 	 * @return boolean

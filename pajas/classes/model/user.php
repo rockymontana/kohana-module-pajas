@@ -367,7 +367,7 @@ class Model_User extends Model
 	 *
 	 * @param str $username
 	 * @param str $password         - plain text
-	 * @param arr $user_data        - ex array('firstname' => 'John', 'lastname' => 'Smith')
+	 * @param arr $user_data        - ex array('firstname' => 'John', 'lastname' => 'Smith', 'email' => array('one@larvit.se','two@larvit.se))
 	 * @param str $load_to_instance - If set, this makes this method return a new instance of the object with
 	 *                              the new user logged in. If TRUE is passed, instance name "default" will
 	 *                              be used.
@@ -440,7 +440,7 @@ class Model_User extends Model
 	/**
 	 * Set user data
 	 *
-	 * @param arr $user_data - Field as key, data as value.
+	 * @param arr $user_data - Field as key, data as value (multiple values as array).
 	 *                         Username and password can also be set here
 	 * @return boolean
 	 */
@@ -453,6 +453,7 @@ class Model_User extends Model
 				if ($user_data['username'] != $this->get_username() && self::username_available($user_data['username']))
 				{
 					self::$driver->set_username($this->get_user_id(), $user_data['username']);
+					$this->username = $user_data['username'];
 				}
 				unset($user_data['username']);
 			}
@@ -463,7 +464,11 @@ class Model_User extends Model
 				unset($user_data['password']);
 			}
 
-			self::$driver->set_data($this->get_user_id(), $user_data);
+			self::$driver->set_data($this->get_user_id(), $user_data, TRUE);
+
+			// Clear local cache
+			$this->user_data = NULL;
+			$this->load_user_data($this->get_user_id());
 
 			return TRUE;
 		}

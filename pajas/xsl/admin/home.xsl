@@ -3,20 +3,23 @@
 
   <xsl:include href="tpl.default.xsl" />
 
-	<xsl:template name="title">
-		<title>Admin - Home</title>
-	</xsl:template>
-
   <xsl:template match="/">
-    <xsl:call-template name="template" />
+    <xsl:call-template name="template">
+    	<xsl:with-param name="title" select="'Admin - Home'" />
+    	<xsl:with-param name="h1" select="'Administration system'" />
+    </xsl:call-template>
   </xsl:template>
-
 
 	<xsl:key name="nav_categories" match="/root/content/menuoptions/menuoption" use="@category" />
 
-  <xsl:template match="content">
-		<h1>Administration system</h1>
+	<xsl:template name="tabs">
+		<!--ul class="tabs">
+			<li><a href="#" class="selected">fields</a></li>
+			<li><a href="#">korv</a></li>
+		</ul-->
+	</xsl:template>
 
+  <xsl:template match="content">
 		<xsl:for-each select="/root/content/menuoptions/menuoption">
 			<xsl:sort select="@category" />
 			<xsl:if test="generate-id() = generate-id(key('nav_categories',@category))">
@@ -28,7 +31,6 @@
 				</xsl:call-template>
 			</xsl:if>
 		</xsl:for-each>
-
   </xsl:template>
 
   <xsl:template name="menuoptions_descriptions">

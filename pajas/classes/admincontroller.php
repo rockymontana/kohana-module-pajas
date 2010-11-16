@@ -145,7 +145,7 @@ abstract class Admincontroller extends Xsltcontroller
 		foreach ($formdata as $field => $data)
 		{
 			$formatted_formdata[] = array(
-				'@name' => $field,
+				'@id'      => $field,
 				'$content' => $data,
 			);
 		}

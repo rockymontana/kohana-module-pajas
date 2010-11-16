@@ -5,73 +5,124 @@
   <!--xsl:include href="inc.elements.xsl" /-->
   <xsl:include href="inc.common.xsl" />
 
-	<xsl:output method="html" encoding="utf-8" />
+	<xsl:output
+		method="html"
+		encoding="utf-8"
+		indent="no"
+	/>
 
 	<xsl:key name="nav_categories" match="/root/content/menuoptions/menuoption" use="@category" />
 
   <!-- TEMPLATE -->
   <xsl:template name="template">
+  	<xsl:param name="title" />
+  	<xsl:param name="h1" />
+
     <html>
       <head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 				<link type="text/css" href="{/root/meta/base}css/admin/style.css" rel="stylesheet" media="all" />
-
+				<link href='http://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css' />
 				<base href="http://{root/meta/domain}{/root/meta/base}admin/" />
-
-				<xsl:call-template name="title" />
+				<title><xsl:value-of select="$title" /></title>
+				<!--[if lt IE 7]>
+					<style media="screen" type="text/css">
+						.contentwrap2
+						{
+							width: 100%;
+						}
+					</style>
+				<![endif]-->
       </head>
       <body>
-      	<xsl:for-each select="/root/content/errors/error">
-      		<div class="error"><xsl:value-of select="." /></div>
-      	</xsl:for-each>
-      	<xsl:for-each select="/root/content/messages/message">
-      		<div class="message"><xsl:value-of select="." /></div>
-      	</xsl:for-each>
-        <xsl:apply-templates select="/root/content" />
-      	<nav>
 
-					<xsl:for-each select="/root/content/menuoptions/menuoption">
-						<xsl:sort select="@category" />
-						<xsl:if test="generate-id() = generate-id(key('nav_categories',@category))">
-							<xsl:if test="@category != ''">
-								<p><xsl:value-of select="@category" /></p>
-							</xsl:if>
-							<xsl:call-template name="menuoptions">
-								<xsl:with-param name="cat_name" select="@category" />
-							</xsl:call-template>
-						</xsl:if>
-					</xsl:for-each>
-					<xsl:if test="/root/meta/user_data">
-						<a href="logout">Logout</a>
-					</xsl:if>
-      	</nav>
+				<xsl:call-template name="header" />
+
+				<div class="colsoutercontainer">
+					<div class="colscontainer">
+
+						<div class="contentwrap">
+							<div class="contentwrap2">
+
+								<h1><xsl:value-of select="$h1" /></h1>
+								<xsl:call-template name="tabs" />
+								<div class="content">
+									<!-- Content start -->
+
+									<xsl:for-each select="/root/content/errors/error">
+										<div class="error"><xsl:value-of select="." /></div>
+									</xsl:for-each>
+									<xsl:for-each select="/root/content/messages/message">
+										<div class="message"><xsl:value-of select="." /></div>
+									</xsl:for-each>
+
+        					<xsl:apply-templates select="/root/content" />
+
+									<!-- Content end -->
+								</div>
+
+							</div>
+						</div>
+
+				    <div class="menu">
+							<!-- Menu start -->
+
+							<xsl:for-each select="/root/content/menuoptions/menuoption">
+								<xsl:sort select="@category" />
+								<xsl:if test="generate-id() = generate-id(key('nav_categories',@category))">
+									<div>
+										<p>
+											<xsl:if test="@category != ''">
+												<xsl:value-of select="@category" />
+											</xsl:if>
+											<xsl:if test="@category = ''">
+												System
+											</xsl:if>
+										</p>
+										<ul>
+											<xsl:call-template name="menuoptions">
+												<xsl:with-param name="cat_name" select="@category" />
+											</xsl:call-template>
+										</ul>
+									</div>
+								</xsl:if>
+							</xsl:for-each>
+
+							<!-- Menu end -->
+						</div>
+
+					</div>
+				</div>
+
+				<!--div id="footer">
+					Fot
+				</div-->
       </body>
     </html>
   </xsl:template>
 
   <xsl:template name="menuoptions">
   	<xsl:param name="cat_name" />
-  	<div>
-  		<xsl:if test="$cat_name = ''">
-  			<xsl:attribute name="class">biglinks</xsl:attribute>
-  		</xsl:if>
-			<xsl:for-each select="/root/content/menuoptions/menuoption">
-				<xsl:sort select="position" />
-				<xsl:if test="@category = $cat_name">
+
+		<xsl:for-each select="/root/content/menuoptions/menuoption">
+			<xsl:sort select="position" />
+			<xsl:if test="@category = $cat_name">
+				<li>
 					<a href="{href}">
 						<xsl:if test="/root/meta/admin_page = name">
-							<xsl:attribute name="class">active</xsl:attribute>
+							<xsl:attribute name="class">selected</xsl:attribute>
 						</xsl:if>
 						<xsl:if test="not(/root/meta/admin_page)">
 							<xsl:if test="concat('admin/',href) = /root/meta/path or (href = '' and /root/meta/path = 'admin')">
-								<xsl:attribute name="class">active</xsl:attribute>
+								<xsl:attribute name="class">selected</xsl:attribute>
 							</xsl:if>
 						</xsl:if>
 						<xsl:value-of select="name" />
 					</a>
-				</xsl:if>
-			</xsl:for-each>
-		</div>
+				</li>
+			</xsl:if>
+		</xsl:for-each>
+
   </xsl:template>
 
 </xsl:stylesheet>

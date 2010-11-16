@@ -76,7 +76,7 @@ class Driver_User_Mysql extends Driver_User
 
 		foreach ($this->pdo->query($sql) as $row)
 		{
-			$user_data[$row['field_name']] = $row['data'];
+			$user_data[$row['field_name']][] = $row['data'];
 		}
 
 		ksort($user_data);
@@ -217,7 +217,15 @@ class Driver_User_Mysql extends Driver_User
 			{
 				if ($field_id = User::get_data_field_id($field_name))
 				{
-					$sql .= '('.$user_id.','.$field_id.','.$this->pdo->quote($field_data).'),';
+					if (!is_array($field_data))
+					{
+						$field_data = array($field_data);
+					}
+
+					foreach ($field_data as $field_data_piece)
+					{
+						$sql .= '('.$user_id.','.$field_id.','.$this->pdo->quote($field_data_piece).'),';
+					}
 				}
 			}
 			$this->pdo->exec(substr($sql, 0, strlen($sql) - 1));
@@ -238,12 +246,13 @@ class Driver_User_Mysql extends Driver_User
 		return $this->pdo->query('DELETE FROM user_users WHERE id = '.$this->pdo->quote($user_id));
 	}
 
-	public function set_data($user_id, $data, $clear_previous_data = TRUE)
+	public function set_data($user_id, $user_data, $clear_previous_data = TRUE)
 	{
+
 		if ($clear_previous_data)
 		{
 			$fields = array();
-			foreach ($data as $field => $content)
+			foreach ($user_data as $field => $content)
 			{
 				$fields[] = $this->pdo->quote($field);
 			}
@@ -256,19 +265,28 @@ class Driver_User_Mysql extends Driver_User
 					user_data_fields.name IN ('.implode(',', $fields).') AND
 					user_users_data.user_id = '.$this->pdo->quote($user_id));
 		}
+
 		$sql = 'INSERT INTO user_users_data (user_id, field_id, data) VALUES';
-		foreach ($data as $field => $content)
+		foreach ($user_data as $field => $content)
 		{
-			$sql .= '
-				(
-					'.$this->pdo->quote($user_id).',
+			if (!is_array($content))
+			{
+				$content = array($content);
+			}
+
+			foreach ($content as $content_piece)
+			{
+				$sql .= '
 					(
-						SELECT user_data_fields.id
-						FROM   user_data_fields
-						WHERE  user_data_fields.name = '.$this->pdo->quote($field).'
-					),
-					'.$this->pdo->quote($content).'
-				),';
+						'.$this->pdo->quote($user_id).',
+						(
+							SELECT user_data_fields.id
+							FROM   user_data_fields
+							WHERE  user_data_fields.name = '.$this->pdo->quote($field).'
+						),
+						'.$this->pdo->quote($content_piece).'
+					),';
+			}
 		}
 		$sql = substr($sql, 0, strlen($sql) - 1);
 

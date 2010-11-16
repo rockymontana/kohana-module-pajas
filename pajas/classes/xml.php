@@ -16,7 +16,7 @@ class Xml
 	 * As DOMDocument:
 	 * <?php
 	 * $doc = xml::to_XML(array('root'=>array('fnupp'=>'dah')));
-	 * $doc->formatOutput = true;
+	 * $doc->formatOutput = TRUE;
 	 *
 	 * echo $doc->saveXML();
 	 * ?>
@@ -98,7 +98,7 @@ class Xml
 	 *	</users>
 	 * ===============================================================
 	 * How the $attributes works
-	 * xml::to_XML(array('user'=>array('id'=>2,'name'=>'nisse'),null,null,array('id'));
+	 * xml::to_XML(array('user'=>array('id'=>2,'name'=>'nisse'),NULL,NULL,array('id'));
 	 *
 	 * will output:
 	 *	<user id="2">
@@ -111,7 +111,7 @@ class Xml
 	 * array('user'=>array('@id'=>2,'name'=>'nisse')
 	 * ===============================================================
 	 * How $text_values works
-	 * xml::to_XML(array('user'=>array('id'=>2,'name'=>'nisse'),null,null,array('id'),array('name'));
+	 * xml::to_XML(array('user'=>array('id'=>2,'name'=>'nisse'),NULL,NULL,array('id'),array('name'));
 	 *
 	 * will output:
 	 *	<user id="2">nisse</user>
@@ -128,7 +128,7 @@ class Xml
 	 *		'strangeness' => 5,
 	 * )
 	 *
-	 * xml::to_XML($data, 'root', null, array(), array(), array(), array('strangeness' => '$str = $name . ' is at level ' . $value; return $str;'));
+	 * xml::to_XML($data, 'root', NULL, array(), array(), array(), array('strangeness' => '$str = $name . ' is at level ' . $value; return $str;'));
 	 *
 	 * will return:
 	 *	<root>
@@ -140,7 +140,7 @@ class Xml
 	 * The code snippet will work exactly as a function, hence the "return" in the example.
 	 *
 	 * To just use an existing function, this is the way to go:
-	 * xml::to_XML($data, 'root', null, array(), array(), array('strangeness' => 'return substr($blubb,0,2);'));
+	 * xml::to_XML($data, 'root', NULL, array(), array(), array('strangeness' => 'return substr($blubb,0,2);'));
 	 * (Will change "bla" to "bl" in the "blubb"-element)
 	 * ===============================================================
 	 * Rule for making several identical elements
@@ -179,7 +179,7 @@ class Xml
 	 * @param arr $alter_code - keys that should have their values altered by the code given as array value
 	 * @return obj - DOMElement
 	 */
-	public static function to_XML($data, $container = null, $group = null, $attributes = array(), $text_values = array(), $xml_fragments = array(), $alter_code = array())
+	public static function to_XML($data, $container = NULL, $group = NULL, $attributes = array(), $text_values = array(), $xml_fragments = array(), $alter_code = array())
 	{
 
 		if (is_string($attributes))
@@ -202,10 +202,10 @@ class Xml
 		elseif (!is_array($data))
 		{
 			// Neither string or array. Humbug!
-			return false;
+			return FALSE;
 		}
 
-		if ($container === null)
+		if ($container === NULL)
 		{
 			$DOM_document = new DOMDocument();
 		}
@@ -223,7 +223,7 @@ class Xml
 		{
 
 			// Fix the key to a tag
-			$tag                = null;
+			$tag                = NULL;
 			$element_attributes = array();
 			foreach (explode(' ',$key) as $part)
 			{
@@ -240,8 +240,8 @@ class Xml
 				else
 				{
 					// This should be an attribute
-					$attribute_name  = null;
-					$attribute_value = null;
+					$attribute_name  = NULL;
+					$attribute_value = NULL;
 					list($attribute_name, $attribute_value) = explode('=', $part);
 					if (($attribute_name) && ($attribute_value))
 					{
@@ -253,7 +253,7 @@ class Xml
 				}
 			}
 
-			if ($container === null && !isset($alt_container))
+			if ($container === NULL && !isset($alt_container))
 			{
 				// If we have no container, the tag must be the root element
 				if ($tag == '')
@@ -274,7 +274,7 @@ class Xml
 				}
 				else
 				{
-					$DOM_element = xml::to_XML($value, $DOM_element, null, $attributes, $text_values, $xml_fragments, $alter_code);
+					$DOM_element = xml::to_XML($value, $DOM_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 				}
 			}
 			else
@@ -391,7 +391,7 @@ class Xml
 						}
 						else
 						{
-							$DOM_element = xml::to_XML($value, $DOM_element, null, $attributes, $text_values, $xml_fragments, $alter_code);
+							$DOM_element = xml::to_XML($value, $DOM_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 
 						if (isset($group_element))
@@ -442,15 +442,15 @@ class Xml
 						// This is children-stuff :)
 						if (isset($group_element))
 						{
-							$group_element = xml::to_XML($value, $group_element, null, $attributes, $text_values, $xml_fragments, $alter_code);
+							$group_element = xml::to_XML($value, $group_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 						elseif (isset($alt_container))
 						{
-							$alt_container = xml::to_XML($value, $alt_container, null, $attributes, $text_values, $xml_fragments, $alter_code);
+							$alt_container = xml::to_XML($value, $alt_container, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 						else
 						{
-							$container = xml::to_XML($value, $container, null, $attributes, $text_values, $xml_fragments, $alter_code);
+							$container = xml::to_XML($value, $container, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 					}
 				}
@@ -488,20 +488,20 @@ class Xml
 		// Load a static XML file into a DOM Node
 
 		$xml_inc                     = new DOMDocument;
-		$xml_inc->resolveExternals   = true;
-		$xml_inc->substituteEntities = true;
-		$xml_inc->preserveWhiteSpace = false;
-		$xml_inc->formatOutput       = true;
+		$xml_inc->resolveExternals   = TRUE;
+		$xml_inc->substituteEntities = TRUE;
+		$xml_inc->preserveWhiteSpace = FALSE;
+		$xml_inc->formatOutput       = TRUE;
 
-		$xml_inc->load(Kohana::find_file('xml', $xml_file, true, 'xml'));
+		$xml_inc->load(Kohana::find_file('xml', $xml_file, TRUE, 'xml'));
 
 		foreach ($xml_inc->documentElement->childNodes as $xml_child)
 		{
-			$xml_child = $DOM_node->ownerDocument->importNode($xml_child, true);
+			$xml_child = $DOM_node->ownerDocument->importNode($xml_child, TRUE);
 			$DOM_node->appendChild($xml_child);
 		}
 
-		return true;
+		return TRUE;
 	}
 
 }
