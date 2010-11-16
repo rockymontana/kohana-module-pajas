@@ -9,22 +9,42 @@
 
 	<xsl:template name="tabs">
 		<ul class="tabs">
-			<li>
-				<a href="users/add_user">
-					<xsl:if test="/root/meta/action = 'add_user'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>Add user</xsl:text>
-				</a>
-			</li>
-			<li>
-				<a href="fields/add_field">
-					<xsl:if test="/root/meta/action = 'add_field'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>Add field</xsl:text>
-				</a>
-			</li>
+		  <xsl:if test="/root/meta/controller = 'users'">
+				<li>
+					<a href="users">
+						<xsl:if test="/root/meta/action = 'index'">
+							<xsl:attribute name="class">selected</xsl:attribute>
+						</xsl:if>
+						<xsl:text>List users</xsl:text>
+					</a>
+				</li>
+				<li>
+					<a href="users/add_user">
+						<xsl:if test="/root/meta/action = 'add_user'">
+							<xsl:attribute name="class">selected</xsl:attribute>
+						</xsl:if>
+						<xsl:text>Add user</xsl:text>
+					</a>
+				</li>
+			</xsl:if>
+		  <xsl:if test="/root/meta/controller = 'fields'">
+				<li>
+					<a href="fields">
+						<xsl:if test="/root/meta/action = 'index'">
+							<xsl:attribute name="class">selected</xsl:attribute>
+						</xsl:if>
+						<xsl:text>List fields</xsl:text>
+					</a>
+				</li>
+				<li>
+					<a href="fields/add_field">
+						<xsl:if test="/root/meta/action = 'add_field'">
+							<xsl:attribute name="class">selected</xsl:attribute>
+						</xsl:if>
+						<xsl:text>Add field</xsl:text>
+					</a>
+				</li>
+			</xsl:if>
 		</ul>
 	</xsl:template>
 
