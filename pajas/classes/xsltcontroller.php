@@ -100,7 +100,12 @@ abstract class Xsltcontroller
 			else
 			{
 				// Else make a search for it
-				$xslt->load(Kohana::find_file(substr($this->xslt_path, 1, strlen($this->xslt_path) - 2), $this->xslt_stylesheet, 'xsl'));
+
+				$xslt->load(Kohana::find_file(
+					rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path), '/'),
+					$this->xslt_stylesheet,
+					'xsl'
+				));
 			}
 
 			$proc = new xsltprocessor();
