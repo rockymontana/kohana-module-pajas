@@ -94,10 +94,12 @@ abstract class Xsltcontroller
 			$xslt = new DOMDocument;
 			if (file_exists(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl'))
 			{
+				// If the stylesheet exists in the specified path, load it directly
 				$xslt->load(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl');
 			}
 			else
 			{
+				// Else make a search for it
 				$xslt->load(Kohana::find_file(substr($this->xslt_path, 1, strlen($this->xslt_path) - 2), $this->xslt_stylesheet, 'xsl'));
 			}
 
