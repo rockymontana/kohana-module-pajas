@@ -92,7 +92,14 @@ abstract class Xsltcontroller
 		{
 
 			$xslt = new DOMDocument;
-			$xslt->load(Kohana::find_file(substr($this->xslt_path, 1, strlen($this->xslt_path) - 2), $this->xslt_stylesheet, 'xsl'));
+			if (file_exists(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl'))
+			{
+				$xslt->load(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl');
+			}
+			else
+			{
+				$xslt->load(Kohana::find_file(substr($this->xslt_path, 1, strlen($this->xslt_path) - 2), $this->xslt_stylesheet, 'xsl'));
+			}
 
 			$proc = new xsltprocessor();
 			$proc->importStyleSheet($xslt);
