@@ -295,7 +295,7 @@ class Xml
 				}
 				else
 				{
-					$DOM_element = xml::to_XML($value, $DOM_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
+					$DOM_element = self::to_XML($value, $DOM_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 				}
 			}
 			else
@@ -412,7 +412,7 @@ class Xml
 						}
 						else
 						{
-							$DOM_element = xml::to_XML($value, $DOM_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
+							$DOM_element = self::to_XML($value, $DOM_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 
 						if (isset($group_element))
@@ -463,15 +463,15 @@ class Xml
 						// This is children-stuff :)
 						if (isset($group_element))
 						{
-							$group_element = xml::to_XML($value, $group_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
+							$group_element = self::to_XML($value, $group_element, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 						elseif (isset($alt_container))
 						{
-							$alt_container = xml::to_XML($value, $alt_container, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
+							$alt_container = self::to_XML($value, $alt_container, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 						else
 						{
-							$container = xml::to_XML($value, $container, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
+							$container = self::to_XML($value, $container, NULL, $attributes, $text_values, $xml_fragments, $alter_code);
 						}
 					}
 				}
