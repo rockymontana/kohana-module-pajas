@@ -6,9 +6,8 @@
  */
 class Xml
 {
-
 	/**
-	 * Creates a DOMNode or DOMDocument of your array or SQL
+	 * Creates a DOMNode or DOMDocument of your array, object or SQL
 	 *
 	 * Examples:
 	 * ===============================================================
@@ -31,6 +30,25 @@ class Xml
 	 *
 	 * echo $doc->saveXML();
 	 * ?>
+	 * ===============================================================
+	 * If you pass an object it will be converted to an array first and
+	 * then treated just like in the examples above.
+	 * Example of Obejct to Array conversion:
+	 *
+	 * $obj = new stdClass;
+	 * $obj->foo = new stdClass;
+	 * $obj->foo->baz = 'baz';
+	 * $obj->bar = 'bar';
+	 *
+	 * Array
+	 * (
+	 *     [foo] => Array
+	 *     (
+	 *         [baz] => baz
+	 *     )
+	 *     [bar] => bar
+	 * )
+	 *
 	 *
 	 * ===============================================================
 	 * An SQL-statement, will be grouped like this:
@@ -181,7 +199,6 @@ class Xml
 	 */
 	public static function to_XML($data, $container = NULL, $group = NULL, $attributes = array(), $text_values = array(), $xml_fragments = array(), $alter_code = array())
 	{
-
 		if (is_string($attributes))
 		{
 			$attributes = array($attributes);
@@ -199,9 +216,13 @@ class Xml
 			$pdo    = Kohana_pdo::instance();
 			$data   = $pdo->query($data)->fetchAll(PDO::FETCH_ASSOC);
 		}
-		elseif (!is_array($data))
+		elseif (is_object($data))
 		{
-			// Neither string or array. Humbug!
+			$data = self::object_to_array($data);
+		}
+		elseif ( ! is_array($data))
+		{
+			// Neither string or object or array. Humbug!
 			return FALSE;
 		}
 
@@ -504,4 +525,22 @@ class Xml
 		return TRUE;
 	}
 
+	/**
+	* Convert an object to an array
+	*
+	* @param object $object The object to convert
+	* @return array
+	*/
+	public static function object_to_array($object)
+	{
+		if( ! is_object($object) && ! is_array($object))
+		{
+			return $object;
+		}
+		if (is_object($object))
+		{
+			$object = get_object_vars($object);
+		}
+		return array_map(array(__CLASS__, __FUNCTION__), $object);
+	}
 }
