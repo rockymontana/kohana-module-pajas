@@ -2,7 +2,7 @@
 /**
  * Xml helper class.
  *
- * @author		 Lilleman (hurbel@yahoo.com) and Jakob (jakob@vinnovera.se)
+ * @author Lilleman (hurbel@yahoo.com) and Jakob (jakob@vinnovera.se) and Olof Larsson (http://oloflarsson.se)
  */
 class Xml
 {
