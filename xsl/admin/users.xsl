@@ -105,16 +105,16 @@
 							<xsl:attribute name="class">odd</xsl:attribute>
 						</xsl:if>
 						<td><xsl:value-of select="@id" /></td>
+						<td><xsl:value-of select="." /></td>
 						<td>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>fields/edit_field/</xsl:text>
-									<xsl:value-of select="@id" />
-								</xsl:attribute>
-								<xsl:value-of select="." />
-							</a>
-						</td>
-						<td>[<a>
+							[<a>
+							<xsl:attribute name="href">
+								<xsl:text>fields/edit_field/</xsl:text>
+								<xsl:value-of select="@id" />
+							</xsl:attribute>
+							<xsl:text>Edit</xsl:text>
+							</a>]
+							[<a>
 							<xsl:attribute name="href">
 								<xsl:text>fields/rm_field/</xsl:text>
 								<xsl:value-of select="@id" />
@@ -201,16 +201,16 @@
 							<xsl:attribute name="class">odd</xsl:attribute>
 						</xsl:if>
 						<td><xsl:value-of select="user_id" /></td>
+						<td><xsl:value-of select="username" /></td>
 						<td>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>users/edit_user/</xsl:text>
-									<xsl:value-of select="user_id" />
-								</xsl:attribute>
-								<xsl:value-of select="username" />
-							</a>
-						</td>
-						<td>[<a>
+							[<a>
+							<xsl:attribute name="href">
+								<xsl:text>users/edit_user/</xsl:text>
+								<xsl:value-of select="user_id" />
+							</xsl:attribute>
+							<xsl:text>Edit</xsl:text>
+							</a>]
+							[<a>
 							<xsl:attribute name="href">
 								<xsl:text>users/rm_user/</xsl:text>
 								<xsl:value-of select="user_id" />
