@@ -7,7 +7,7 @@ It is compatible with version 3.0.x
 
 INSTALLATION INSTRUCTIONS
 =========================
-* Create a folder namd "pajas" in your modules directory in your kohana v3 install
+* Create a folder named "pajas" in your modules directory in your kohana v3 install
 * Copy all pajas files to that folder
 * Add pajas to your activated modules in application/bootstrap.php
 
