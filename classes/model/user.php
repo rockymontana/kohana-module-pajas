@@ -87,7 +87,7 @@ class Model_User extends Model
 	 *
 	 * @return boolean
 	 */
-	static function set_driver()
+	public static function set_driver()
 	{
 		$driver_name = 'Driver_User_'.ucfirst(Kohana::config('user.driver'));
 		return (self::$driver = new $driver_name);

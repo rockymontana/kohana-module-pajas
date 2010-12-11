@@ -101,6 +101,15 @@ abstract class Xsltcontroller
 			{
 				// Else make a search for it
 
+				// We need to load all theme modules
+				foreach (scandir(MODPATH) as $modulePath)
+				{
+					if (substr($modulePath, 0, 5) == 'theme')
+					{
+						Kohana::modules(array($modulePath => MODPATH.$modulePath) + Kohana::modules());
+					}
+				}
+
 				$xslt->load(Kohana::find_file(
 					rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path), '/'),
 					$this->xslt_stylesheet,

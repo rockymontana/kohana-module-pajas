@@ -40,4 +40,12 @@ return array(
 		'position'    => 2,
   ),
 
+  'pages' => array(
+    'name'        => 'Pages',
+    '@category'   => 'CMS',
+    'description' => 'Handle static pages',
+		'href'        => 'pages',
+		'position'    => 1,
+  ),
+
 );

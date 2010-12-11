@@ -52,3 +52,16 @@ Route::set('xsl', 'xsl/<path>.xsl',
 		'controller' => 'media',
 		'action'     => 'xsl',
 	));
+
+// Set dynamic routes from the pages model
+$uris = array();
+foreach (Page::get_pages() as $page) $uris[] = $page['uri'];
+
+if (count($uris))
+{
+	Route::set('static', '<page>', array('page' => implode('|', $uris)))
+			->defaults(array(
+				'controller' => 'staticpage',
+				'action'     => 'index',
+			));
+}

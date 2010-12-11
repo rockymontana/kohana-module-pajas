@@ -27,12 +27,16 @@ h2
 	clear:              both;
 }
 
-input
+input, textarea
 {
 	margin:             0 0 2px 0;
-	height:             20px;
 	border:             1px solid #d4d4d4;
 	color:              #4c4b4b;
+}
+
+input
+{
+	height:             20px;
 }
 
 	input.button
@@ -245,6 +249,14 @@ div#loginbox
 					line-height:        20px;
 					overflow:           auto;
 				}
+
+					.contentwrap2 .content form textarea
+					{
+						clear:              both;
+						float:              left;
+						width:              350px;
+						margin-bottom:      1em;
+					}
 
 	.contentwrap2 a:hover
 	{
