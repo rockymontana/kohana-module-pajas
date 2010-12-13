@@ -164,6 +164,7 @@ class Controller_Admin_Users extends Admincontroller {
 			$post->filter(TRUE, 'trim');
 			$post->filter('username', 'strtolower');
 			$post->rule('username', 'not_empty');
+			$post->label('password', 'Password');
 
 			if (isset($_POST['do_add_field']))
 			{
