@@ -206,7 +206,7 @@ class Driver_User_Mysql extends Driver_User
 
 	public function new_user($username, $password, $user_data = array())
 	{
-		$this->pdo->exec('INSERT INTO user_users (username, password) VALUES('.$this->pdo->quote($username).','.$this->pdo->quote(User::password_encrypt($password)).')');
+		$this->pdo->exec('INSERT INTO user_users (username, password) VALUES('.$this->pdo->quote($username).','.$this->pdo->quote($password).')');
 
 		$user_id = $this->pdo->lastInsertId();
 

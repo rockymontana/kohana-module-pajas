@@ -46,7 +46,7 @@ abstract class Driver_User extends Model
 	 * Get user data
 	 *
 	 * @param int $user_id
-	 * @return array - ex array('firstname' => 'John', 'lastname' => 'Smith', 'email' => array('one@larvit.se','two@larvit.se))
+	 * @return array - ex array('firstname' => array('John'), 'lastname' => array('Smith'), 'email' => array('one@larvit.se','two@larvit.se))
 	 */
 	abstract public function get_user_data($user_id);
 

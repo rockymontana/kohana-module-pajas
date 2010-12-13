@@ -166,9 +166,9 @@ class Model_User extends Model
 	 *
 	 * @param str $field - if only a single data field is wanted
 	 * @return
-	 *         array - example: array('firstname' => 'John', 'lastname' => 'Smith')
+	 *         array - example: array('firstname' => array('John'), 'lastname' => array('Smith'), 'email' => array('one@larvit.se', 'tow@larvit.se'))
 	 *         or
-	 *         string
+	 *         array - example: array('one@larvit.se', 'tow@larvit.se')
 	 */
 	public function get_user_data($field = false)
 	{
@@ -259,14 +259,12 @@ class Model_User extends Model
 	 */
 	private function load_user_data($user_id)
 	{
-		if (self::$driver == NULL) self::set_driver();
-
 		if ($user_id == -1)
 		{
 			$this->username   = 'root';
 			$this->user_id    = -1;
 			$this->user_data  = array(
-				'role' => 'admin'
+				'role' => array('admin')
 			);
 		}
 		elseif (($this->username) || $this->username = self::$driver->get_username_by_id($user_id))
@@ -286,8 +284,6 @@ class Model_User extends Model
 	 */
 	public function login_by_user_id($user_id)
 	{
-		if (self::$driver == NULL) self::set_driver();
-
 		if (self::$driver->get_username_by_id($user_id) || $user_id == -1)
 		{
 			$this->username = self::$driver->get_username_by_id($user_id);
@@ -307,8 +303,6 @@ class Model_User extends Model
 	 */
 	public function login_by_username_and_password($username, $password)
 	{
-		if (self::$driver == NULL) self::set_driver();
-
 		if ($user_id = self::$driver->get_user_id_by_username_and_password($username, self::password_encrypt($password)))
 		{
 			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = $user_id;
