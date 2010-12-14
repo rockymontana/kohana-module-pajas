@@ -16,10 +16,18 @@ abstract class Xsltcontroller
 	var $auto_render = TRUE;
 
 	/**
-	 * This forces PHP to transform the XSLT server side
-	 * so the client always recieves just HTML
+	 * Decides where the transformation of XSLT->HTML
+	 * should be done
+	 * ATTENTION! This setting is configurable in xslt.php
+	 *
+	 * options:
+	 * 'auto' = Normally sends XML+XSLT, but sometimes HTML,
+	 *          depending on the HTTP_USER_AGENT
+	 * TRUE   = Always send HTML
+	 * FALSE  = Always send XML+XSLT
+	 *
 	 */
-	var $force_transform = FALSE;
+	var $transform;
 
 	/**
 	 * Where to look for the XSLT stylesheets
@@ -38,6 +46,9 @@ abstract class Xsltcontroller
 	 */
 	public function __construct()
 	{
+		// Set transformation
+		$this->transform = Kohana::config('xslt.transform');
+
 		// Set XSLT path
 		$this->xslt_path = Kohana::$base_url.'xsl/';
 
@@ -80,17 +91,14 @@ abstract class Xsltcontroller
 	{
 		$this->dom->insertBefore($this->dom->createProcessingInstruction('xml-stylesheet', 'type="text/xsl" href="' . $this->xslt_path . $this->xslt_stylesheet . '.xsl"'), $this->xml);
 
-		if (
-			$this->force_transform == TRUE ||
-			strpos($_SERVER['HTTP_USER_AGENT'], 'Firefox/2.0') ||
-			strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot') ||
-			strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 4.0') ||
-			strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.0') ||
-			strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0') || /* This is to give opera the HTML version... and also I dont trust IE6 ;) */
-			strpos($_SERVER['HTTP_USER_AGENT'], 'acebookexternalhit') /* Facebook resolving, facebook is incompetent and cannot handle XSLT */
-			)
+		$user_agent_trigger = FALSE;
+		foreach (Kohana::config('xslt.user_agents') as $user_agent)
 		{
+			if (strpos($_SERVER['HTTP_USER_AGENT'], $user_agent)) $user_agent_trigger = TRUE;
+		}
 
+		if ($this->transform === TRUE || ($this->transform == 'auto' && $user_agent_trigger == TRUE))
+		{
 			$xslt = new DOMDocument;
 			if (file_exists(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl'))
 			{
