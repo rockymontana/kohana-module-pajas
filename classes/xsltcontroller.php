@@ -47,7 +47,16 @@ abstract class Xsltcontroller
 	public function __construct()
 	{
 		// Set transformation
-		$this->transform = Kohana::config('xslt.transform');
+		if (isset($_GET['transform']))
+		{
+			if     ($_GET['transform'] == 'TRUE')  $this->transform = TRUE;
+			elseif ($_GET['transform'] == 'FALSE') $this->transform = FALSE;
+			else                                   $this->transform = 'auto';
+		}
+		else
+		{
+			$this->transform = Kohana::config('xslt.transform');
+		}
 
 		// Set XSLT path
 		$this->xslt_path = Kohana::$base_url.'xsl/';
