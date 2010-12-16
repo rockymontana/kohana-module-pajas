@@ -137,8 +137,7 @@ abstract class Xsltcontroller
 			$proc = new xsltprocessor();
 			$proc->importStyleSheet($xslt);
 
-			$html = $proc->transformToDoc($this->dom);
-			echo $html->saveXML();
+			echo $proc->transformToXML($this->dom);
 		}
 		else
 		{
