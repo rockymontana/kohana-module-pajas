@@ -257,40 +257,48 @@ class Driver_User_Mysql extends Driver_User
 				$fields[] = $this->pdo->quote($field);
 			}
 
-			$this->pdo->query('
-				DELETE user_users_data.*
-				FROM user_users_data
-					JOIN user_data_fields ON user_data_fields.id = user_users_data.field_id
-				WHERE
-					user_data_fields.name IN ('.implode(',', $fields).') AND
-					user_users_data.user_id = '.$this->pdo->quote($user_id));
+			if (count($fields))
+			{
+				$this->pdo->query('
+					DELETE user_users_data.*
+					FROM user_users_data
+						JOIN user_data_fields ON user_data_fields.id = user_users_data.field_id
+					WHERE
+						user_data_fields.name IN ('.implode(',', $fields).') AND
+						user_users_data.user_id = '.$this->pdo->quote($user_id));
+			}
 		}
 
-		$sql = 'INSERT INTO user_users_data (user_id, field_id, data) VALUES';
-		foreach ($user_data as $field => $content)
+		if (count($user_data))
 		{
-			if (!is_array($content))
+			$sql = 'INSERT INTO user_users_data (user_id, field_id, data) VALUES';
+			foreach ($user_data as $field => $content)
 			{
-				$content = array($content);
-			}
+				if (!is_array($content))
+				{
+					$content = array($content);
+				}
 
-			foreach ($content as $content_piece)
-			{
-				$sql .= '
-					(
-						'.$this->pdo->quote($user_id).',
+				foreach ($content as $content_piece)
+				{
+					$sql .= '
 						(
-							SELECT user_data_fields.id
-							FROM   user_data_fields
-							WHERE  user_data_fields.name = '.$this->pdo->quote($field).'
-						),
-						'.$this->pdo->quote($content_piece).'
-					),';
+							'.$this->pdo->quote($user_id).',
+							(
+								SELECT user_data_fields.id
+								FROM   user_data_fields
+								WHERE  user_data_fields.name = '.$this->pdo->quote($field).'
+							),
+							'.$this->pdo->quote($content_piece).'
+						),';
+				}
 			}
-		}
-		$sql = substr($sql, 0, strlen($sql) - 1);
+			$sql = substr($sql, 0, strlen($sql) - 1);
 
-		return $this->pdo->query($sql);
+			return $this->pdo->query($sql);
+		}
+
+		return TRUE;
 	}
 
 	public function set_password($user_id, $password)
