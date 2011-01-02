@@ -49,12 +49,23 @@ class Controller_Admin_Login extends Admincontroller {
 			{
 				$user = new User(FALSE, $post['username'], $post['password']);
 
-				if ($user->logged_in() && in_array('admin', $user->get_user_data('role')))
+				if ($user->logged_in() && ($user->get_user_data('role')) && in_array('admin', $user->get_user_data('role')))
 				{
 	    		$this->redirect('/admin');
 				}
+				elseif (!$user->logged_in())
+				{
+					$_SESSION['modules']['pajas']['error'] = 'Wrong username or password';
+				}
+				elseif (!($user->get_user_data('role')) || !in_array('admin', $user->get_user_data('role')))
+				{
+					$_SESSION['modules']['pajas']['error'] = 'You are not authorized';
+				}
+				else
+				{
+					$_SESSION['modules']['pajas']['error'] = 'Unknown error';
+				}
 			}
-			$_SESSION['modules']['pajas']['error'] = 'Wrong username or password';
 		}
 		$this->redirect();
 	}
