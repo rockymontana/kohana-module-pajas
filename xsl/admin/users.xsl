@@ -3,10 +3,6 @@
 
   <xsl:include href="tpl.default.xsl" />
 
-	<xsl:template name="title">
-		<title>Admin - Users</title>
-	</xsl:template>
-
 	<xsl:template name="tabs">
 		<ul class="tabs">
 		  <xsl:if test="/root/meta/controller = 'users'">
