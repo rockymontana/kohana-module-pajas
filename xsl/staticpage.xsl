@@ -2,6 +2,8 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:output method="html" encoding="utf-8" />
+	<xsl:include href="inc.elements.xsl" />
+
 
 	<xsl:template match="/">
 		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -15,7 +17,7 @@
 			</head>
 			<body>
 				<div class="main_container">
-					<xsl:value-of select="/root/content/page/content" />
+					<xsl:apply-templates select="/root/content/page/html_content" mode="elements" />
 				</div>
 				<footer>
 					<p>Generated in <xsl:value-of select="round(root/meta/benchmark/current/time * 1000)" /> ms using

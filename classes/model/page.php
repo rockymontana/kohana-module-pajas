@@ -56,7 +56,7 @@ class Model_Page extends Model
 		if ($field)
 		{
 			if (isset($this->page_data[$field])) return $this->page_data[$field];
-			else                                return FALSE;
+			else                                 return FALSE;
 		}
 		return $this->page_data;
 	}
