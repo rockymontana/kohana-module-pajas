@@ -498,23 +498,20 @@ class Xml
 	}
 
 	/**
-	 * Load an XML file and attach it to a DOMNode
-	 * Important! Just adds the data within the root-node in the XML document, not the root tag itself
+	 * Load an XML string and attach it to a DOMNode
 	 *
-	 * @param str $xml_file
+	 * @param str $xml
 	 * @param obj $DOM_node
 	 */
-	public static function xml_file_to_DOM_node($xml_file, $DOM_node)
+	public static function xml_to_DOM_node($xml, $DOM_node)
 	{
-		// Load a static XML file into a DOM Node
-
 		$xml_inc                     = new DOMDocument;
 		$xml_inc->resolveExternals   = TRUE;
 		$xml_inc->substituteEntities = TRUE;
 		$xml_inc->preserveWhiteSpace = FALSE;
-		$xml_inc->formatOutput       = TRUE;
 
-		$xml_inc->load(Kohana::find_file('xml', $xml_file, TRUE, 'xml'));
+		// The x-tag will be removed in the loop
+		$xml_inc->loadXML('<x>'.$xml.'</x>');
 
 		foreach ($xml_inc->documentElement->childNodes as $xml_child)
 		{
