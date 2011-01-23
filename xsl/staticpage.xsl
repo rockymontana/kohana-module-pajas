@@ -17,7 +17,12 @@
 			</head>
 			<body>
 				<div class="main_container">
+					<xsl:if test="/root/content/h1">
+						<h1><xsl:value-of select="/root/content/h1" /></h1>
+					</xsl:if>
+
 					<xsl:apply-templates select="/root/content/page/html_content" mode="elements" />
+
 				</div>
 				<footer>
 					<p>Generated in <xsl:value-of select="round(root/meta/benchmark/current/time * 1000)" /> ms using

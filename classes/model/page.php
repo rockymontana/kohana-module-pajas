@@ -154,8 +154,17 @@ class Model_Page extends Model
 
 		foreach ($routes as $name => $route)
 		{
+
 			if ($params = $route->matches($uri))
 			{
+				if ($default_params = $route->matches(''))
+				{
+					if ($params['controller'] != 'staticpage')
+					{
+						return TRUE;
+					}
+				}
+
 				if (
 					class_exists('controller_'.$params['controller']) &&
 					method_exists('controller_'.$params['controller'], 'action_'.$params['action'])
