@@ -8,16 +8,39 @@ abstract class Driver_User extends Model
 		parent::__construct();
 		if (Kohana::$environment == Kohana::DEVELOPMENT)
 		{
-			$this->check_db_structure();
+			if( ! $this->check_db_structure())
+			{
+				$this->create_db_structure();
+				$this->insert_initial_data();
+			}
 		}
 	}
 
 	/**
-	 * Create the db structure, if it doesnt exist
+	 * Create the db structure
 	 *
 	 * @return boolean
 	 */
-	abstract public function check_db_structure();
+	abstract protected function create_db_structure();
+	
+	/**
+	 * Returns true/false depending on if the db structure exists or not
+	 *
+	 * @return bool
+	 * @author Johnny Karhinen
+	 */
+	abstract protected function check_db_structure();
+
+	/**
+	 * Create the first user, who also becomes an administrator.
+	 *
+	 * @return void
+	 * @author Johnny Karhinen
+	 */
+	protected function insert_initial_data() {
+		$this->new_field('role');
+		User::new_user('admin', 'admin', array('role' => 'admin'));
+	}
 
 	/**
 	 * Get data field id by field name
