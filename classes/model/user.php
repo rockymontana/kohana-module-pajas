@@ -58,7 +58,6 @@ class Model_User extends Model
 	{
 		parent::__construct(); // Connect to the database
 		Session::instance(); // Make sure sessions is turned on
-		if (self::$driver == NULL) self::set_driver();
 
 		if ($session != TRUE) $this->instance_name = FALSE;
 		else                  $this->instance_name = $instance_name;
@@ -92,6 +91,17 @@ class Model_User extends Model
 		$driver_name = 'Driver_User_'.ucfirst(Kohana::config('user.driver'));
 		return (self::$driver = new $driver_name);
 	}
+	
+	/**
+	 * Loads the driver if it has not been loaded yet, then returns it
+	 *
+	 * @return Driver object
+	 * @author Johnny Karhinen
+	 */
+	public static function driver() {
+		if (self::$driver == NULL) self::set_driver();
+		return self::$driver;
+	}
 
 	/**
 	 * Checks if a field name is available
@@ -101,11 +111,7 @@ class Model_User extends Model
 	 */
 	public static function field_name_available($field_name)
 	{
-		if (self::get_data_field_id($field_name))
-		{
-			return FALSE;
-		}
-		else return TRUE;
+		return (bool) ! self::get_data_field_id($field_name);
 	}
 
 	/**
@@ -117,9 +123,7 @@ class Model_User extends Model
 	 */
 	public static function get_data_field_id($field_name)
 	{
-		if (self::$driver == NULL) self::set_driver();
-
-		return self::$driver->get_data_field_id($field_name);
+		return self::driver()->get_data_field_id($field_name);
 	}
 
 	/**
@@ -130,9 +134,7 @@ class Model_User extends Model
 	 */
 	public static function get_data_field_name($field_id)
 	{
-		if (self::$driver == NULL) self::set_driver();
-
-		return self::$driver->get_data_field_name($field_id);
+		return self::driver()->get_data_field_name($field_id);
 	}
 
 	/**
@@ -142,9 +144,7 @@ class Model_User extends Model
 	 */
 	public static function get_data_fields()
 	{
-		if (self::$driver == NULL) self::set_driver();
-
-		return self::$driver->get_data_fields();
+		return self::driver()->get_data_fields();
 	}
 
 	/**
@@ -228,8 +228,7 @@ class Model_User extends Model
 	 */
 	public static function get_users($q = FALSE, $start = FALSE, $limit = FALSE, $order_by = FALSE)
 	{
-		if (self::$driver == NULL) self::set_driver();
-		return self::$driver->get_users($q, $start, $limit, $order_by);
+		return self::driver()->get_users($q, $start, $limit, $order_by);
 	}
 
 	/**
@@ -267,10 +266,10 @@ class Model_User extends Model
 				'role' => array('admin')
 			);
 		}
-		elseif (($this->username) || $this->username = self::$driver->get_username_by_id($user_id))
+		elseif (($this->username) || $this->username = self::driver()->get_username_by_id($user_id))
 		{
 			$this->user_id    = (int) $user_id;
-			$this->user_data  = self::$driver->get_user_data($user_id);
+			$this->user_data  = self::driver()->get_user_data($user_id);
 			return TRUE;
 		}
 		return FALSE;
@@ -284,9 +283,9 @@ class Model_User extends Model
 	 */
 	public function login_by_user_id($user_id)
 	{
-		if (self::$driver->get_username_by_id($user_id) || $user_id == -1)
+		if (self::driver()->get_username_by_id($user_id) || $user_id == -1)
 		{
-			$this->username = self::$driver->get_username_by_id($user_id);
+			$this->username = self::driver()->get_username_by_id($user_id);
 
 			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = $user_id;
 			return $this->load_user_data($user_id);
@@ -303,7 +302,7 @@ class Model_User extends Model
 	 */
 	public function login_by_username_and_password($username, $password)
 	{
-		if ($user_id = self::$driver->get_user_id_by_username_and_password($username, self::password_encrypt($password)))
+		if ($user_id = self::driver()->get_user_id_by_username_and_password($username, self::password_encrypt($password)))
 		{
 			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = $user_id;
 			return $this->load_user_data($user_id);
@@ -323,11 +322,7 @@ class Model_User extends Model
 	 */
 	public function logged_in()
 	{
-		if (is_int($this->user_id))
-		{
-			return TRUE;
-		}
-		return FALSE;
+		return is_int($this->user_id);
 	}
 
 	/**
@@ -352,8 +347,7 @@ class Model_User extends Model
 	 */
 	public static function new_field($field_name)
 	{
-		if (self::$driver == NULL) self::set_driver();
-		return self::$driver->new_field($field_name);
+		return self::driver()->new_field($field_name);
 	}
 
 	/**
@@ -371,12 +365,11 @@ class Model_User extends Model
 	public static function new_user($username, $password, $user_data = array(), $load_to_instance = FALSE, $session = FALSE)
 	{
 		Session::instance(); // Make sure sessions is turned on
-		if (self::$driver == NULL) self::set_driver();
 		if ($load_to_instance === TRUE) $load_to_instance = 'default';
 
 		if (!self::username_available($username)) return FALSE;
 
-		$user_id = self::$driver->new_user($username, self::password_encrypt($password), $user_data);
+		$user_id = self::driver()->new_user($username, self::password_encrypt($password), $user_data);
 
 		if ($load_to_instance)
 		{
@@ -413,8 +406,7 @@ class Model_User extends Model
 	 */
 	public static function rm_field($field_id)
 	{
-		if (self::$driver == NULL) self::set_driver();
-		return self::$driver->rm_field($field_id);
+		return self::driver()->rm_field($field_id);
 	}
 
 	/**
@@ -426,7 +418,7 @@ class Model_User extends Model
 	{
 		if ($this->logged_in())
 		{
-			return self::$driver->rm_user($this->get_user_id());
+			return self::driver()->rm_user($this->get_user_id());
 		}
 		return FALSE;
 	}
@@ -446,7 +438,7 @@ class Model_User extends Model
 			{
 				if ($user_data['username'] != $this->get_username() && self::username_available($user_data['username']))
 				{
-					self::$driver->set_username($this->get_user_id(), $user_data['username']);
+					self::driver()->set_username($this->get_user_id(), $user_data['username']);
 					$this->username = $user_data['username'];
 				}
 				unset($user_data['username']);
@@ -454,11 +446,11 @@ class Model_User extends Model
 
 			if (isset($user_data['password']))
 			{
-				self::$driver->set_password($this->get_user_id(), self::password_encrypt($user_data['password']));
+				self::driver()->set_password($this->get_user_id(), self::password_encrypt($user_data['password']));
 				unset($user_data['password']);
 			}
 
-			self::$driver->set_data($this->get_user_id(), $user_data, TRUE);
+			self::driver()->set_data($this->get_user_id(), $user_data, TRUE);
 
 			// Clear local cache
 			$this->user_data = NULL;
@@ -477,8 +469,7 @@ class Model_User extends Model
 	 */
 	public static function username_available($username)
 	{
-		if (self::$driver == NULL) self::set_driver();
-		if (count(self::$driver->get_users(array('username' => $username))) || strtolower($username) == 'root')
+		if (count(self::driver()->get_users(array('username' => $username))) || strtolower($username) == 'root')
 		{
 			return FALSE;
 		}
@@ -494,8 +485,7 @@ class Model_User extends Model
 	 */
 	public static function update_field($field_id, $field_name)
 	{
-		if (self::$driver == NULL) self::set_driver();
-		return self::$driver->update_field($field_id, $field_name);
+		return self::driver()->update_field($field_id, $field_name);
 	}
 
 }

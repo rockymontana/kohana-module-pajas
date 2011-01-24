@@ -32,7 +32,6 @@ class Model_Page extends Model
 	public function __construct($id = FALSE)
 	{
 		parent::__construct(); // Connect to the database
-		if (self::$driver == NULL) self::set_driver();
 
 		if ($id)
 		{
@@ -43,6 +42,17 @@ class Model_Page extends Model
 				$this->page_id = NULL;
 			}
 		}
+	}
+	
+	/**
+	 * Loads the driver if it has not been loaded yet, then returns it
+	 *
+	 * @return Driver object
+	 * @author Johnny Karhinen
+	 */
+	public static function driver() {
+		if (self::$driver == NULL) self::set_driver();
+		return self::$driver;
 	}
 
 	/**
@@ -79,9 +89,7 @@ class Model_Page extends Model
 	 */
 	public static function get_page_id_by_uri($uri)
 	{
-		if (self::$driver == NULL) self::set_driver();
-
-		return self::$driver->get_page_id_by_uri($uri);
+		return self::driver()->get_page_id_by_uri($uri);
 	}
 
 	/**
@@ -104,30 +112,22 @@ class Model_Page extends Model
 	 */
 	public static function get_pages()
 	{
-		if (self::$driver == NULL) self::set_driver();
-
-		return self::$driver->get_pages();
+		return self::driver()->get_pages();
 	}
 
 	public function load_page_data()
 	{
-		if ($this->page_data = self::$driver->get_page_data($this->get_page_id()))
-		{
-			return TRUE;
-		}
-
-		return FALSE;
+		return ($this->page_data = self::driver()->get_page_data($this->get_page_id()));
 	}
 
 	public static function new_page($name, $uri = FALSE, $content = '')
 	{
-		if (self::$driver == NULL) self::set_driver();
 		if ($uri == FALSE)
 		{
 			$uri = uri::title($name, '-', TRUE);
 		}
 
-		return self::$driver->new_page($name, $uri, $content);
+		return self::driver()->new_page($name, $uri, $content);
 	}
 
 	/**
@@ -138,8 +138,7 @@ class Model_Page extends Model
 	 */
 	public static function page_name_available($name)
 	{
-		if (self::$driver == NULL) self::set_driver();
-		return self::$driver->page_name_available($name);
+		return self::driver()->page_name_available($name);
 	}
 
 	/**
@@ -180,7 +179,7 @@ class Model_Page extends Model
 
 	public function rm_page()
 	{
-		if (self::$driver->rm_page($this->get_page_id()))
+		if (self::driver()->rm_page($this->get_page_id()))
 		{
 			unset($this);
 			return TRUE;
@@ -202,7 +201,7 @@ class Model_Page extends Model
 
 	public function update_page_data($name, $uri, $content)
 	{
-		if (self::$driver->update_page_data($this->get_page_id(), $name, $uri, $content))
+		if (self::driver()->update_page_data($this->get_page_id(), $name, $uri, $content))
 		{
 			// We must update the local class page data also
 			$this->load_page_data();
