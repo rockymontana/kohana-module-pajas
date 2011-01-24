@@ -8,23 +8,22 @@ class Driver_Page_Mysql extends Driver_Page
 		parent::__construct();
 	}
 
-	public function check_db_structure()
+	protected function check_db_structure()
 	{
 		$columns = $this->pdo->query('SHOW TABLES like \'page%\';')->fetchAll(PDO::FETCH_COLUMN);
-		if (count($columns) != 1)
-		{
-			$this->pdo->query('CREATE TABLE IF NOT EXISTS `page_pages` (
-				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-				`name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-				`uri` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-				`content` text COLLATE utf8_unicode_ci NOT NULL,
-				PRIMARY KEY (`id`),
-				UNIQUE KEY `uri` (`uri`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-			');
-		}
-
-		return TRUE;
+		return count($columns) == 1;
+	}
+	
+	protected function create_db_structure() {
+		$this->pdo->query('CREATE TABLE IF NOT EXISTS `page_pages` (
+			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+			`uri` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+			`content` text COLLATE utf8_unicode_ci NOT NULL,
+			PRIMARY KEY (`id`),
+			UNIQUE KEY `uri` (`uri`)
+		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+		');
 	}
 
 	public function get_page_data($id)

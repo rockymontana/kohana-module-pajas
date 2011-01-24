@@ -8,16 +8,31 @@ abstract class Driver_Page extends Model
 		parent::__construct();
 		if (Kohana::$environment == Kohana::DEVELOPMENT)
 		{
-			$this->check_db_structure();
+			if( ! $this->check_db_structure()) {
+				$this->create_db_structure();
+				$this->insert_initial_data();
+			}
 		}
 	}
 
 	/**
-	 * Create the db structure, if it doesnt exist
+	 * Returns true/false depending on if the db structure exists or not
+	 *
+	 * @return boolean
+	 * @author Johnny Karhinen
+	 */
+	abstract protected function check_db_structure();
+	
+	/**
+	 * Create the db structure
 	 *
 	 * @return boolean
 	 */
-	abstract public function check_db_structure();
+	abstract protected function create_db_structure();
+	
+	protected function insert_initial_data() {
+		$this->new_page('Hello world!', 'welcome', 'You have successfully installed Pajas. You can edit this page in the <a href="/admin">administration section</a>.');
+	}
 
 	/**
 	 * Get page data
