@@ -8,7 +8,7 @@ abstract class Driver_User extends Model
 		parent::__construct();
 		if (Kohana::$environment == Kohana::DEVELOPMENT)
 		{
-			if( ! $this->check_db_structure())
+			if ( ! $this->check_db_structure())
 			{
 				$this->create_db_structure();
 				$this->insert_initial_data();
