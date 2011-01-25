@@ -8,7 +8,8 @@ abstract class Driver_Page extends Model
 		parent::__construct();
 		if (Kohana::$environment == Kohana::DEVELOPMENT)
 		{
-			if( ! $this->check_db_structure()) {
+			if ( ! $this->check_db_structure())
+			{
 				$this->create_db_structure();
 				$this->insert_initial_data();
 			}
@@ -30,8 +31,14 @@ abstract class Driver_Page extends Model
 	 */
 	abstract protected function create_db_structure();
 	
-	protected function insert_initial_data() {
-		$this->new_page('Hello world!', 'welcome', 'You have successfully installed Pajas. You can edit this page in the <a href="/admin">administration section</a>.');
+	/**
+	 * Insert initial data
+	 *
+	 * @return boolean
+	 */
+	protected function insert_initial_data()
+	{
+		return (bool) $this->new_page('Hello world!', 'welcome', 'You have successfully installed Pajas. You can edit this page in the <a href="/admin">administration section</a>.');
 	}
 
 	/**
