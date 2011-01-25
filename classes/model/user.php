@@ -98,7 +98,8 @@ class Model_User extends Model
 	 * @return Driver object
 	 * @author Johnny Karhinen
 	 */
-	public static function driver() {
+	public static function driver()
+	{
 		if (self::$driver == NULL) self::set_driver();
 		return self::$driver;
 	}
