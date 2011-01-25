@@ -36,7 +36,7 @@ class Model_Page extends Model
 		if ($id)
 		{
 			$this->page_id = $id;
-			if (!$this->load_page_data())
+			if ( ! $this->load_page_data())
 			{
 				// This page ID does not exist, unset the page id again
 				$this->page_id = NULL;
@@ -50,7 +50,8 @@ class Model_Page extends Model
 	 * @return Driver object
 	 * @author Johnny Karhinen
 	 */
-	public static function driver() {
+	public static function driver()
+	{
 		if (self::$driver == NULL) self::set_driver();
 		return self::$driver;
 	}
