@@ -23,6 +23,8 @@
 		<xsl:param name="error" />
 		<xsl:param name="disabled" />
 
+		<xsl:param name="rows" /> <!-- Only used for textarea -->
+
 		<xsl:param name="type">text</xsl:param>
 
 		<!-- Only used if type is textarea -->
@@ -38,6 +40,12 @@
 				<!-- Textarea -->
 				<xsl:if test="$type = 'textarea'">
 					<textarea id="{$id}" name="{$name}">
+
+						<xsl:if test="$rows">
+							<xsl:attribute name="rows">
+								<xsl:value-of select="$rows" />
+							</xsl:attribute>
+						</xsl:if>
 
 						<xsl:if test="$disabled">
 							<xsl:attribute name="disabled">disabled</xsl:attribute>
