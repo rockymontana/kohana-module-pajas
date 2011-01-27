@@ -23,8 +23,6 @@
 		<xsl:param name="error" />
 		<xsl:param name="disabled" />
 
-		<xsl:param name="rows" /> <!-- Only used for textarea -->
-
 		<xsl:param name="type">text</xsl:param>
 
 		<!-- Only used if type is textarea -->
@@ -167,9 +165,23 @@
 
 	<xsl:template name="form_button">
 		<xsl:param name="value" />
+		<xsl:param name="id" />
+		<xsl:param name="name" />
 
 		<label>
-			<input type="submit" class="button" value="{$value}" />
+			<input type="submit" class="button" value="{$value}">
+				<xsl:if test="$id">
+					<xsl:attribute name="id"><xsl:value-of select="$id" /></xsl:attribute>
+					<xsl:attribute name="name">
+						<xsl:if test="$name = ''">
+							<xsl:value-of select="$id" />
+						</xsl:if>
+						<xsl:if test="$name != ''">
+							<xsl:value-of select="$name" />
+						</xsl:if>
+					</xsl:attribute>
+				</xsl:if>
+			</input>
 		</label>
 	</xsl:template>
 
