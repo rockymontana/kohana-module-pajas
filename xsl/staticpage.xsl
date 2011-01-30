@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<xsl:output method="html" encoding="utf-8" />
+	<xsl:output
+		method="html"
+		encoding="utf-8"
+		omit-xml-declaration="yes"
+		doctype-public="HTML"
+	/>
 	<xsl:include href="inc.elements.xsl" />
 
 
 	<xsl:template match="/">
-		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+		<html>
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 				<link type="text/css" href="css/style.css" rel="stylesheet" media="all" />

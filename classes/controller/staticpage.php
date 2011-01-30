@@ -8,7 +8,7 @@ class Controller_Staticpage extends Xsltcontroller {
 		parent::__construct();
 	}
 
-	public function action_index($uri)
+	public function action_index($uri = 'welcome')
 	{
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'staticpage';
