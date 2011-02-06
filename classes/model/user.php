@@ -91,12 +91,12 @@ class Model_User extends Model
 		$driver_name = 'Driver_User_'.ucfirst(Kohana::config('user.driver'));
 		return (self::$driver = new $driver_name);
 	}
-	
+
 	/**
 	 * Loads the driver if it has not been loaded yet, then returns it
 	 *
 	 * @return Driver object
-	 * @author Johnny Karhinen
+	 * @author Johnny Karhinen, http://fullkorn.nu, johnny@fullkorn.nu
 	 */
 	public static function driver()
 	{

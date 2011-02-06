@@ -36,6 +36,13 @@
     </ul>
   </xsl:template>
 
+  <xsl:template match="ol" mode="elements">
+    <ol>
+      <xsl:copy-of select="@class" />
+      <xsl:apply-templates select="node()" mode="elements" />
+    </ol>
+  </xsl:template>
+
   <xsl:template match="li" mode="elements">
     <li>
       <xsl:copy-of select="@class" />
@@ -44,10 +51,10 @@
   </xsl:template>
 
   <xsl:template match="strong" mode="elements">
-    <span>
+    <strong>
       <xsl:copy-of select="@class" />
       <xsl:apply-templates select="node()" mode="elements" />
-    </span>
+    </strong>
   </xsl:template>
 
   <xsl:template match="em" mode="elements">

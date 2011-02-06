@@ -40,12 +40,26 @@ return array(
 		'position'    => 2,
   ),
 
+  'content' => array(
+    'name'        => 'Content',
+    '@category'   => 'CMS',
+    'description' => 'Handle content',
+		'href'        => 'content',
+		'position'    => 1,
+  ),
   'pages' => array(
     'name'        => 'Pages',
     '@category'   => 'CMS',
-    'description' => 'Handle static pages',
+    'description' => 'Handle pages',
 		'href'        => 'pages',
-		'position'    => 1,
+		'position'    => 2,
+  ),
+  'types' => array(
+    'name'        => 'Content types',
+    '@category'   => 'CMS',
+    'description' => 'Handle content types',
+		'href'        => 'types',
+		'position'    => 3,
   ),
 
 );

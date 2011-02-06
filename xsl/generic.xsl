@@ -21,15 +21,40 @@
 				<title>Pajas</title>
 			</head>
 			<body>
-				<div class="main_container">
-					<xsl:if test="/root/content/h1">
-						<h1><xsl:value-of select="/root/content/h1" /></h1>
-					</xsl:if>
+				<p id="header_address">Stockholm<br />Sweden</p>
 
-					<xsl:apply-templates select="/root/content/page/html_content" mode="elements" />
+				<ul id="menu">
+					<li><a href="" class="active">Home</a></li>
+					<li><a href="#">Portfolio</a></li>
+					<li><a href="#">About</a></li>
+					<li><a href="#">Contact</a></li>
+				</ul>
 
+				<div id="main_content">
+					<xsl:apply-templates select="/root/content/page/type[name = 'page_welcome']/contents/content[1]/html" mode="elements" />
 				</div>
-				<footer>
+
+				<h2>Some columns</h2>
+
+				<ul id="columns">
+
+					<li id="col1">
+						<xsl:apply-templates select="/root/content/page/type[name = 'Puff 1']/contents/content[1]/html" mode="elements" />
+					</li>
+
+					<li id="col2">
+						<xsl:apply-templates select="/root/content/page/type[name = 'Puff 2']/contents/content[1]/html" mode="elements" />
+					</li>
+
+					<li id="col3">
+						<xsl:apply-templates select="/root/content/page/type[name = 'Puff 3']/contents/content[1]/html" mode="elements" />
+					</li>
+
+				</ul>
+
+				<div id="footer">Design by <a href="http://www.megancreative.com/">Megan Sullivan</a>. Powered by <a href="http://larvit.se/pajas">Pajas</a>.</div>
+
+				<!--footer>
 					<p>Generated in <xsl:value-of select="round(root/meta/benchmark/current/time * 1000)" /> ms using
 
 					<xsl:choose>
@@ -39,8 +64,7 @@
 					</xsl:choose>
 
 					of memory.</p>
-				</footer>
-				<a href="http://kohanaframework.org" id="kohana_logo"><img src="img/kohana.png" alt="Kohana" /></a>
+				</footer-->
 			</body>
 		</html>
 	</xsl:template>

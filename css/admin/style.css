@@ -313,6 +313,7 @@ div#loginbox
 		.contentwrap2 input.button
 		{
 			width:             auto;
+			margin-top:        20px;
 		}
 
 			.contentwrap2 input.add_field

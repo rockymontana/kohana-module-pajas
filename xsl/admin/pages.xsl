@@ -63,7 +63,7 @@
 							<xsl:attribute name="class">odd</xsl:attribute>
 						</xsl:if>
 						<td><xsl:value-of select="name" /></td>
-						<td><xsl:value-of select="uri" /></td>
+						<td><xsl:value-of select="URI" /></td>
 						<td>
 							[<a>
 							<xsl:attribute name="href">
@@ -100,7 +100,7 @@
 					<xsl:with-param name="error" select="'Page name is required'" />
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="/root/content/errors/form_errors/name = 'Page::page_name_available'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Content_Page::page_name_available'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Page name:'" />
@@ -115,23 +115,28 @@
 			</xsl:if>
 
 			<!-- URI -->
-			<xsl:if test="/root/content/errors/form_errors/uri">
+			<xsl:if test="/root/content/errors/form_errors/URI">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'uri'" />
+					<xsl:with-param name="id" select="'URI'" />
 					<xsl:with-param name="label" select="'Page URI:'" />
-					<xsl:with-param name="error" select="'This uri is already taken'" />
+					<xsl:with-param name="error" select="'This URI is already taken'" />
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="not(/root/content/errors/form_errors/uri)">
+			<xsl:if test="not(/root/content/errors/form_errors/URI)">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'uri'" />
+					<xsl:with-param name="id" select="'URI'" />
 					<xsl:with-param name="label" select="'Page URI:'" />
 				</xsl:call-template>
 			</xsl:if>
 
-			<textarea rows="20" name="content" id="content">
-				<xsl:value-of select="/root/content/formdata/field[@id = 'content']" />
-			</textarea>
+			<h2>Content types</h2>
+			<xsl:for-each select="types/type">
+				<xsl:call-template name="form_line">
+					<xsl:with-param name="id" select="concat('type_',@id)" />
+					<xsl:with-param name="label" select="concat(name,':')" />
+					<xsl:with-param name="type" select="'checkbox'" />
+				</xsl:call-template>
+			</xsl:for-each>
 
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Add page'" />
@@ -141,7 +146,7 @@
 
 	<!-- Edit page -->
   <xsl:template match="content[../meta/controller = 'pages' and ../meta/action = 'edit_page']">
-  	<form method="post" action="pages/edit_page/{page_data/@id}">
+  	<form method="post" action="pages/edit_page/{page/@id}">
 
 			<h2>Page data</h2>
 
@@ -149,7 +154,7 @@
 			<xsl:call-template name="form_line">
 				<xsl:with-param name="type" select="'none'" />
 				<xsl:with-param name="label" select="'Page ID:'" />
-				<xsl:with-param name="value" select="page_data/@id" />
+				<xsl:with-param name="value" select="page/@id" />
 			</xsl:call-template>
 
 			<!-- Name -->
@@ -160,7 +165,7 @@
 					<xsl:with-param name="error" select="'Page name is required'" />
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="/root/content/errors/form_errors/name = 'Page::page_name_available'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Content_Page::page_name_available'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Page name:'" />
@@ -175,23 +180,28 @@
 			</xsl:if>
 
 			<!-- URI -->
-			<xsl:if test="/root/content/errors/form_errors/uri">
+			<xsl:if test="/root/content/errors/form_errors/URI">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'uri'" />
+					<xsl:with-param name="id" select="'URI'" />
 					<xsl:with-param name="label" select="'Page URI:'" />
-					<xsl:with-param name="error" select="'This uri is already taken'" />
+					<xsl:with-param name="error" select="'This URI is already taken'" />
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="not(/root/content/errors/form_errors/uri)">
+			<xsl:if test="not(/root/content/errors/form_errors/URI)">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'uri'" />
+					<xsl:with-param name="id" select="'URI'" />
 					<xsl:with-param name="label" select="'Page URI:'" />
 				</xsl:call-template>
 			</xsl:if>
 
-			<textarea rows="20" name="content" id="content">
-				<xsl:value-of select="/root/content/formdata/field[@id = 'content']" />
-			</textarea>
+			<h2>Content types</h2>
+			<xsl:for-each select="types/type">
+				<xsl:call-template name="form_line">
+					<xsl:with-param name="id" select="concat('type_',@id)" />
+					<xsl:with-param name="label" select="concat(name,':')" />
+					<xsl:with-param name="type" select="'checkbox'" />
+				</xsl:call-template>
+			</xsl:for-each>
 
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Save changes'" />

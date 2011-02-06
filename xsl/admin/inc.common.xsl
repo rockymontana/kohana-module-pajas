@@ -104,7 +104,7 @@
 							</xsl:if>
 						</xsl:attribute>
 
-						<xsl:if test="$type != 'password'">
+						<xsl:if test="$type != 'password' and $type != 'checkbox'">
 							<xsl:attribute name="value">
 								<xsl:if test="$value = '' and /root/content/formdata/field[@id = $id]">
 									<xsl:value-of select="/root/content/formdata/field[@id = $id]" />
@@ -113,6 +113,11 @@
 									<xsl:value-of select="$value" />
 								</xsl:if>
 							</xsl:attribute>
+						</xsl:if>
+						<xsl:if test="$type = 'checkbox'">
+							<xsl:if test="/root/content/formdata/field[@id = $id]">
+								<xsl:attribute name="checked">checked</xsl:attribute>
+							</xsl:if>
 						</xsl:if>
 
 					</input>

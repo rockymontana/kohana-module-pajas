@@ -12,30 +12,47 @@ class Controller_Admin_Pages extends Admincontroller {
 
 	public function action_index()
 	{
-		$page_model = new Page;
-
+		// List pages
 		$this->xml_content_pages = $this->xml_content->appendChild($this->dom->createElement('pages'));
-		xml::to_XML($page_model->get_pages(), $this->xml_content_pages, 'page', 'id');
+		foreach (Content_Page::get_pages() as $page)
+		{
+			// Create the page node and set the page data to it
+			$page_node = $this->xml_content_pages->appendChild($this->dom->createElement('page'));
+			unset($page['type_ids']); // This only clutters the XML
+			xml::to_XML($page, $page_node, NULL, 'id');
+		}
 	}
 
 	public function action_add_page()
 	{
+		$this->xml_content_types = $this->xml_content->appendChild($this->dom->createElement('types'));
+		xml::to_XML(Content_Type::get_types(), $this->xml_content_types, 'type', 'id');
+
 		if (count($_POST))
 		{
-			if ($_POST['uri'] == '') $_POST['uri'] = $_POST['name'];
+			if ($_POST['URI'] == '') $_POST['URI'] = $_POST['name'];
 
-			$_POST['uri'] = URL::title($_POST['uri'], '-', TRUE);
+			$_POST['URI'] = URL::title($_POST['URI'], '-', TRUE);
 
 			$post = new Validate($_POST);
 			$post->filter(TRUE, 'trim');
 			$post->rule('name', 'not_empty');
-			$post->rule('name', 'Page::page_name_available');
-			$post->rule('uri', 'Page::page_uri_available');
-			$post->label('content', 'Content');
+			$post->rule('name', 'Content_Page::page_name_available');
+			$post->rule('URI', 'Content_Page::page_URI_available');
+			foreach ($_POST as $key => $value)
+			{
+				// Add all selected content types
+				if (substr($key, 0, 5) == 'type_') $post->label($key, $key);
+			}
 
 			if ($post->check())
 			{
-				$page_id = Page::new_page($post['name'], $post['uri'], $post['content']);
+				$type_ids = array();
+				foreach ($post as $key => $value)
+				{
+					if (substr($key, 0, 5) == 'type_') $type_ids[] = (int) substr($key, 5);
+				}
+				$page_id = Content_Page::new_page($post['name'], $post['URI'], $type_ids);
 				$this->add_message('Page "'.$post['name'].'" added');
 			}
 			else
@@ -51,46 +68,63 @@ class Controller_Admin_Pages extends Admincontroller {
 
 	public function action_edit_page($id)
 	{
-		$page_model = new Page($id);
-		if ($page_model->get_page_id())
+		$content_page = new Content_Page($id);
+		if ($content_page->get_page_id())
 		{
-			$this->xml_content_page_data = $this->xml_content->appendChild($this->dom->createElement('page_data'));
+			$this->xml_content_types = $this->xml_content->appendChild($this->dom->createElement('types'));
+			xml::to_XML(Content_Type::get_types(), $this->xml_content_types, 'type', 'id');
+
+			$this->xml_content_page = $this->xml_content->appendChild($this->dom->createElement('page'));
 
 			if (count($_POST))
 			{
 
-				if ($_POST['uri'] == '') $_POST['uri'] = $_POST['name'];
+				if ($_POST['URI'] == '') $_POST['URI'] = $_POST['name'];
 
-				$_POST['uri'] = URL::title($_POST['uri'], '-', TRUE);
+				$_POST['URI'] = URL::title($_POST['URI'], '-', TRUE);
 
 				$post = new Validate($_POST);
 				$post->filter(TRUE, 'trim');
 				$post->rule('name', 'not_empty');
-				$post->label('uri', 'URI');
-				$post->label('content', 'Content');
+				$post->label('URI', 'URI');
+				foreach ($_POST as $key => $value)
+				{
+					// Add all selected content types
+					if (substr($key, 0, 5) == 'type_') $post->label($key, $key);
+				}
 
 				$valid = TRUE;
 				if ($post->check())
 				{
-					$current_page_data = $page_model->get_page_data();
+					$current_page_data = $content_page->get_page_data();
 
-					if ($post['name'] != $current_page_data['name'] && !Page::page_name_available($post['name']))
+					if ($post['name'] != $current_page_data['name'] && !Content_Page::page_name_available($post['name']))
 					{
-						$post->error('name', 'Page::page_name_available');
+						$post->error('name', 'Content_Page::page_name_available');
 						$valid = FALSE;
 					}
 
-					if ($post['uri'] != $current_page_data['uri'] && !Page::page_uri_available($post['uri']))
+					if ($post['URI'] != $current_page_data['URI'] && !Content_Page::page_URI_available($post['URI']))
 					{
-						$post->error('uri', 'Page::page_uri_available');
+						$post->error('URI', 'Content_Page::page_URI_available');
 						$valid = FALSE;
 					}
 
 					if ($valid)
 					{
-						$page_model->update_page_data($post['name'], $post['uri'], $post['content']);
+						$type_ids = array();
+						foreach ($post as $key => $value)
+						{
+							if (substr($key, 0, 5) == 'type_') $type_ids[] = (int) substr($key, 5);
+						}
+						$content_page->update_page_data($post['name'], $post['URI'], $type_ids);
 						$this->add_message('Page "'.$post['name'].'" updated');
-						$this->set_formdata($page_model->get_page_data());
+
+
+						$page_data = $content_page->get_page_data();
+						foreach ($page_data['type_ids'] as $type_id) $page_data['type_'.$type_id] = 'checked';
+						unset($page_data['type_ids']);
+						$this->set_formdata($page_data);
 					}
 				}
 				else $valid = FALSE;
@@ -107,23 +141,40 @@ class Controller_Admin_Pages extends Admincontroller {
 			}
 			else
 			{
-				$this->set_formdata($page_model->get_page_data());
+				$page_data = $content_page->get_page_data();
+				foreach ($page_data['type_ids'] as $type_id) $page_data['type_'.$type_id] = 'checked';
+				unset($page_data['type_ids']);
+				$this->set_formdata($page_data);
 			}
 
-			xml::to_XML($page_model->get_page_data(), $this->xml_content_page_data, NULL, 'id');
+			/**
+			 * Put the page data to the XML
+			 *
+			 */
+			$page_data = $content_page->get_page_data();
+			// Load the type ids to a variable of their own
+			$type_ids = $page_data['type_ids'];
+
+			// And unset it from the page data array, or it will cludge our XML
+			unset($page_data['type_ids']);
+
+			// Set the page data (name and URI) to the page node
+			xml::to_XML($page_data, $this->xml_content_page, NULL, 'id');
+
+			// For each type id, make a type node and set the attribute id to the type id
+			foreach ($type_ids as $type_id)
+			{
+				$type_node = $this->xml_content_page->appendChild($this->dom->createElement('type'));
+				$type_node->setAttribute('id', $type_id);
+			}
 		}
-		else
-		{
-			$this->redirect();
-		}
+		else $this->redirect();
 	}
 
 	public function action_rm_page($id)
 	{
-		$page_model = new Page($id);
-		$page_name  = $page_model->get_page_data('name');
-
-		$page_model->rm_page();
+		$content_page = new Content_Page($id);
+		$content_page->rm_page();
 
 		$this->redirect();
 	}

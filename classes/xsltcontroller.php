@@ -78,6 +78,7 @@ abstract class Xsltcontroller
 				'path'          => Request::instance()->uri,
 				'action'        => request::instance()->action,
 				'controller'    => request::instance()->controller,
+				'url_params'    => $_GET,
 			),
 			$this->xml_meta
 		);

@@ -22,12 +22,12 @@ abstract class Driver_User extends Model
 	 * @return boolean
 	 */
 	abstract protected function create_db_structure();
-	
+
 	/**
 	 * Returns true/false depending on if the db structure exists or not
 	 *
 	 * @return bool
-	 * @author Johnny Karhinen
+	 * @author Johnny Karhinen, http://fullkorn.nu, johnny@fullkorn.nu
 	 */
 	abstract protected function check_db_structure();
 
@@ -35,7 +35,7 @@ abstract class Driver_User extends Model
 	 * Create the first user, who also becomes an administrator.
 	 *
 	 * @return void
-	 * @author Johnny Karhinen
+	 * @author Johnny Karhinen, http://fullkorn.nu, johnny@fullkorn.nu
 	 */
 	protected function insert_initial_data() {
 		$this->new_field('role');

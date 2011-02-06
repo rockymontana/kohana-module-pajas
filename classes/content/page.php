@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
-class Model_Page extends Model
+class Content_Page extends Model
 {
 
 	/**
@@ -8,7 +8,7 @@ class Model_Page extends Model
 	 *
 	 * @var obj
 	 */
-	static $driver;
+	static private $driver;
 
 	/**
 	 * Page data
@@ -27,7 +27,7 @@ class Model_Page extends Model
 	/**
 	 * Constructor
 	 *
-	 * @param int $id - Page ID
+	 * @param int $id - Page id
 	 */
 	public function __construct($id = FALSE)
 	{
@@ -38,17 +38,17 @@ class Model_Page extends Model
 			$this->page_id = $id;
 			if ( ! $this->load_page_data())
 			{
-				// This page ID does not exist, unset the page id again
+				// This page id does not exist, unset the page id again
 				$this->page_id = NULL;
 			}
 		}
 	}
-	
+
 	/**
 	 * Loads the driver if it has not been loaded yet, then returns it
 	 *
 	 * @return Driver object
-	 * @author Johnny Karhinen
+	 * @author Johnny Karhinen, http://fullkorn.nu, johnny@fullkorn.nu
 	 */
 	public static function driver()
 	{
@@ -59,7 +59,7 @@ class Model_Page extends Model
 	/**
 	 * Get page data
 	 *
-	 * @param str $field - If specified, only return this field (id, name, uri, content)
+	 * @param str $field - If specified, only return this field (id, name, URI)
 	 * @return str or arr
 	 */
 	public function get_page_data($field = FALSE)
@@ -73,7 +73,7 @@ class Model_Page extends Model
 	}
 
 	/**
-	 * Get current page ID
+	 * Get current page id
 	 *
 	 * @return int
 	 */
@@ -83,14 +83,14 @@ class Model_Page extends Model
 	}
 
 	/**
-	 * Get page ID by URI
+	 * Get page id by URI
 	 *
-	 * @param str $uri
+	 * @param str $URI
 	 * @return int
 	 */
-	public static function get_page_id_by_uri($uri)
+	public static function get_page_id_by_URI($URI)
 	{
-		return self::driver()->get_page_id_by_uri($uri);
+		return self::driver()->get_page_id_by_URI($URI);
 	}
 
 	/**
@@ -100,13 +100,13 @@ class Model_Page extends Model
 	 *                      array(
 	 *                        id      => 1,
 	 *                        name    => About,
-	 *                        uri     => about,
+	 *                        URI     => about,
 	 *                        content => Lots of page content
 	 *                      ),
 	 *                      array(
 	 *                        id      => 2,
 	 *                        name    => Contact us,
-	 *                        uri     => contact,
+	 *                        URI     => contact,
 	 *                        content => Lots of page content
 	 *                      ),
 	 *                    )
@@ -116,19 +116,29 @@ class Model_Page extends Model
 		return self::driver()->get_pages();
 	}
 
+	/**
+	 * Load the page data into class cache array
+	 *
+	 * @return boolean
+	 */
 	public function load_page_data()
 	{
 		return ($this->page_data = self::driver()->get_page_data($this->get_page_id()));
 	}
 
-	public static function new_page($name, $uri = FALSE, $content = '')
+	/**
+	 * Create a new page
+	 *
+	 * @param str $name
+	 * @param str $URI      OPTIONAL
+	 * @param arr $type_ids OPTIONAL
+	 * @return int page id
+	 */
+	public static function new_page($name, $URI = FALSE, $type_ids = FALSE)
 	{
-		if ($uri == FALSE)
-		{
-			$uri = uri::title($name, '-', TRUE);
-		}
+		if ($URI == FALSE) $URI = uri::title($name, '-', TRUE);
 
-		return self::driver()->new_page($name, $uri, $content);
+		return self::driver()->new_page($name, $URI, $type_ids);
 	}
 
 	/**
@@ -143,19 +153,19 @@ class Model_Page extends Model
 	}
 
 	/**
-	 * Checks if a page uri is available
+	 * Checks if a page URI is available
 	 *
-	 * @param str $uri
+	 * @param str $URI
 	 * @return boolean
 	 */
-	public static function page_uri_available($uri)
+	public static function page_URI_available($URI)
 	{
 		$routes = Route::all();
 
 		foreach ($routes as $name => $route)
 		{
 
-			if ($params = $route->matches($uri))
+			if ($params = $route->matches($URI))
 			{
 				if ($default_params = $route->matches(''))
 				{
@@ -196,13 +206,21 @@ class Model_Page extends Model
 	 */
 	public static function set_driver()
 	{
-		$driver_name = 'Driver_Page_'.ucfirst(Kohana::config('page.driver'));
+		$driver_name = 'Driver_Content_'.ucfirst(Kohana::config('content.driver'));
 		return (self::$driver = new $driver_name);
 	}
 
-	public function update_page_data($name, $uri, $content)
+	/**
+	 * Update page data
+	 *
+	 * @param str $name     OPTIONAL
+	 * @param str $URI      OPTIONAL
+	 * @param arr $type_ids OPTIONAL - Type ids to tie to this page
+	 * @return boolean
+	 */
+	public function update_page_data($name = FALSE, $URI = FALSE, $type_ids = FALSE)
 	{
-		if (self::driver()->update_page_data($this->get_page_id(), $name, $uri, $content))
+		if (self::driver()->update_page_data($this->get_page_id(), $name, $URI, $type_ids))
 		{
 			// We must update the local class page data also
 			$this->load_page_data();
