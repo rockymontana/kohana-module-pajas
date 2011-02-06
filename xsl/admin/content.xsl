@@ -48,42 +48,32 @@
 
 	<!-- List content -->
   <xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'index']">
-  	<form method="get">
-  		<label for="content_type">
-  			Content Type:
-  			<select name="content_type">
-  				<xsl:for-each select="types/type">
-  					<xsl:sort select="name" />
-  					<option value="{@id}">
-  						<xsl:if test="/root/meta/url_params/content_type = @id">
-  							<xsl:attribute name="selected">selected</xsl:attribute>
-  						</xsl:if>
-  						<xsl:value-of select="name" />
-  					</option>
-  				</xsl:for-each>
-  			</select>
-  		</label>
-
-			<xsl:call-template name="form_button">
-				<xsl:with-param name="value" select="'Show contents'" />
-			</xsl:call-template>
-  	</form>
-
 		<table>
 			<thead>
 				<tr>
 					<th class="medium_row">Content ID</th>
+					<th>Content Type</th>
 					<th>Content</th>
 					<th class="medium_row">Action</th>
 				</tr>
 			</thead>
 			<tbody>
 				<xsl:for-each select="contents/content">
+					<xsl:sort select="types" />
+					<xsl:sort select="@id" />
 					<tr>
 						<xsl:if test="position() mod 2 = 1">
 							<xsl:attribute name="class">odd</xsl:attribute>
 						</xsl:if>
 						<td><xsl:value-of select="@id" /></td>
+						<td>
+							<xsl:for-each select="types/type">
+								<xsl:value-of select="." />
+								<xsl:if test="position() != last()">
+									<xsl:text>, </xsl:text>
+								</xsl:if>
+							</xsl:for-each>
+						</td>
 						<td><xsl:value-of select="concat(substring(content,1,60), '...')" /></td>
 						<td>
 							[<a>

@@ -64,6 +64,38 @@ abstract class Driver_Content extends Model
 	abstract public function get_content($content_id);
 
 	/**
+	 * Get all contents
+	 *
+	 * @return array - ex array(
+	 *                      array(
+	 *                        id      => 1,
+	 *                        content => Lots of content
+	 *                        types   => array(
+	 *                                     array(
+	 *                                       id   => 3,
+	 *                                       type => blog post,
+	 *                                     )
+	 *                                   )
+	 *                      ),
+	 *                      array(
+	 *                        id      => 2,
+	 *                        types   => array(
+	 *                                     array(
+	 *                                       id   => 4,
+	 *                                       type => News,
+	 *                                     )
+	 *                                     array(
+	 *                                       id   => 5,
+	 *                                       type => RSS post,
+	 *                                     )
+	 *                                   )
+	 *                        content => Lots of content
+	 *                      ),
+	 *                    )
+	 */
+	abstract public function get_contents();
+
+	/**
 	 * Get contents by type id
 	 *
 	 * @param int $type_id

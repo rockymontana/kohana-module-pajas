@@ -63,6 +63,36 @@ class Driver_Content_Mysql extends Driver_Content
 		return $this->pdo->query('SELECT content FROM content_content WHERE id = '.$this->pdo->quote($content_id))->fetchColumn();
 	}
 
+	public function get_contents()
+	{
+
+		$sql = '
+			SELECT
+				content_content.*,
+				content_content_types.type_id,
+				content_type.name
+			FROM
+				content_content
+				LEFT JOIN
+					content_content_types ON content_id = id
+				JOIN
+					content_type ON type_id = content_type.id;
+		';
+
+		$contents = array();
+		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $row)
+		{
+			$contents[$row['id']]['id']      = $row['id'];
+			$contents[$row['id']]['content'] = $row['content'];
+			$contents[$row['id']]['types'][] = array(
+			                                     'id'   => $row['type_id'],
+			                                     'type' => $row['name'],
+			                                   );
+		}
+
+		return $contents;
+	}
+
 	public function get_contents_by_type_id($type_id)
 	{
 		$sql = '

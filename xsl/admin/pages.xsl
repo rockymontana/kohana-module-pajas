@@ -129,6 +129,8 @@
 				</xsl:call-template>
 			</xsl:if>
 
+			<p>If you dont know what URI is, leave it blank</p>
+
 			<h2>Content types</h2>
 			<xsl:for-each select="types/type">
 				<xsl:call-template name="form_line">

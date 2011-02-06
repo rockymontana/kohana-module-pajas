@@ -16,10 +16,19 @@ class Controller_Admin_Content extends Admincontroller {
 
 	public function action_index()
 	{
-		if (isset($_GET['content_type']))
+		$this->xml_content_contents = $this->xml_content->appendChild($this->dom->createElement('contents'));
+		foreach (Content_Content::get_contents() as $content)
 		{
-			$this->xml_content_contents = $this->xml_content->appendChild($this->dom->createElement('contents'));
-			xml::to_XML(Content_Content::get_contents_by_type($_GET['content_type']), $this->xml_content_contents, 'content', 'id');
+			$content_node = $this->xml_content_contents->appendChild($this->dom->createElement('content'));
+			$content_node->setAttribute('id', $content['id']);
+			$content_node->appendChild($this->dom->createElement('content', $content['content']));
+			$types_node   = $content_node->appendChild($this->dom->createElement('types'));
+			foreach ($content['types'] as $type)
+			{
+				$type_node = $types_node->appendChild($this->dom->createElement('type', $type['type']));
+				$type_node->setAttribute('id', $type['id']);
+
+			}
 		}
 	}
 

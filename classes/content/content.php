@@ -84,8 +84,44 @@ class Content_Content extends Model
 	}
 
 	/**
+	 * Get contents
+	 *
+	 * @return array - ex array(
+	 *                      array(
+	 *                        id      => 1,
+	 *                        content => Lots of content
+	 *                        types   => array(
+	 *                                     array(
+	 *                                       id   => 3,
+	 *                                       type => blog post,
+	 *                                     )
+	 *                                   )
+	 *                      ),
+	 *                      array(
+	 *                        id      => 2,
+	 *                        types   => array(
+	 *                                     array(
+	 *                                       id   => 4,
+	 *                                       type => News,
+	 *                                     )
+	 *                                     array(
+	 *                                       id   => 5,
+	 *                                       type => RSS post,
+	 *                                     )
+	 *                                   )
+	 *                        content => Lots of content
+	 *                      ),
+	 *                    )
+	 */
+	public static function get_contents()
+	{
+		return self::driver()->get_contents();
+	}
+
+	/**
 	 * Get contents by type id
 	 *
+	 * @param int $type_id
 	 * @return array - ex array(
 	 *                      array(
 	 *                        id      => 1,
