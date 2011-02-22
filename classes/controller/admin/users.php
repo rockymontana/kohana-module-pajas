@@ -2,9 +2,9 @@
 
 class Controller_Admin_Users extends Admincontroller {
 
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
-		parent::__construct();
+		parent::__construct($request, $response);
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/users';
 		xml::to_XML(array('admin_page' => 'Users'), $this->xml_meta);
@@ -44,14 +44,14 @@ class Controller_Admin_Users extends Admincontroller {
 		$this->list_available_data_fields();
 
 		// The form is executed! Do something!
-		if (count($_POST))
+		if (count($_POST) && isset($_POST['username']) && isset($_POST['password']))
 		{
-			$post = new Validate($_POST);
-			$post->filter(TRUE, 'trim');
-			$post->filter('username', 'strtolower');
-			$post->rule('username', 'not_empty');
-			$post->rule('username', 'User::username_available');
-			$post->rule('password', 'not_empty');
+			$post = new Validation($_POST);
+			$post->filter('trim');
+			$post->filter('strtolower', 'username');
+			$post->rule('Valid::not_empty',         'username');
+			$post->rule('User::username_available', 'username');
+			$post->rule('Valid::not_empty',         'password');
 
 			if (isset($_POST['do_add_field']))
 			{
@@ -62,44 +62,65 @@ class Controller_Admin_Users extends Admincontroller {
 				}
 
 				$_SESSION['add_user_detail_fields'][] = $_POST['add_field'];
+
+				// Reconstruct the form data to repopulate the form
+				$formdata    = array();
+				$counter     = 0;
+				$post_values = $post->as_array();
+				foreach ($post_values as $field => $data)
+				{
+					if (substr($field, 0, 8) == 'fieldid_')
+					{
+						foreach ($data as $data_piece)
+						{
+							$counter++;
+							$formdata['field_'.substr($field, 8).'_'.$counter] = trim($data_piece);
+						}
+					}
+					elseif ($field == 'username') $formdata[$field] = $post_values[$field];
+				}
+
+				$this->set_formdata($formdata);
 			}
 			else
 			{
 				// Check for form errors
-				if ($post->check())
+				if ($post->validate())
 				{
 					// No form errors, add the user!
 
+					$post_values = $post->as_array();
+
 					// Erase the empty data fields
-					foreach ($_POST as $key => $value)
+					foreach ($post_values as $key => $value)
 					{
 						if (substr($key, 0, 8) == 'fieldid_' && is_array($value))
 						{
 							foreach ($value as $nr => $value_piece)
 							{
-								if ($value_piece == '') unset($_POST[$key][$nr]);
+								if ($value_piece == '') unset($post_values[$key][$nr]);
 							}
 						}
 					}
 
 					// Organize the field data and set the session fields
-					$fields = array();
-					foreach ($_POST as $key => $value)
+					$fields = $_SESSION['add_user_detail_fields'] = array();
+					foreach ($post_values as $key => $value)
 					{
 						if (substr($key, 0, 8) == 'fieldid_' && is_array($value))
 						{
 							$fields[User::get_data_field_name(substr($key, 8))] = $value;
+							foreach ($value as $foo) $_SESSION['add_user_detail_fields'][] = substr($key, 8);
 						}
 					}
 
 					// Actually add the user
 					User::new_user(
-						$post['username'],
-						$post['password'],
+						$post_values['username'],
+						$post_values['password'],
 						$fields
 					);
-					$this->add_message('User '.$post['username'].' added');
-					$_POST = array(); // Empty the POST array to stop repopulating the form
+					$this->add_message('User '.$post_values['username'].' added');
 				}
 				else
 				{
@@ -107,29 +128,25 @@ class Controller_Admin_Users extends Admincontroller {
 
 					$this->add_error('Fix errors and try again');
 					$this->add_form_errors($post->errors());
-				}
-			}
-
-			// Reconstruct the form data to repopulate the form
-			$formdata = array();
-			$counter  = 0;
-			foreach ($_POST as $field => $data)
-			{
-				if (substr($field, 0, 8) == 'fieldid_')
-				{
-					foreach ($data as $data_piece)
+					$formdata    = array();
+					$counter     = 0;
+					$post_values = $post->as_array();
+					foreach ($post_values as $field => $data)
 					{
-						$counter++;
-						$formdata['field_'.substr($field, 8).'_'.$counter] = trim($data_piece);
+						if (substr($field, 0, 8) == 'fieldid_')
+						{
+							foreach ($data as $data_piece)
+							{
+								$counter++;
+								$formdata['field_'.substr($field, 8).'_'.$counter] = trim($data_piece);
+							}
+						}
+						elseif ($field == 'username') $formdata[$field] = $post_values[$field];
 					}
-				}
-				elseif ($field == 'username')
-				{
-					$formdata[$field] = $post[$field];
+
+					$this->set_formdata($formdata);
 				}
 			}
-
-			$this->set_formdata($formdata);
 		}
 
 		// Define wich extra user detail fields should be listed
@@ -160,11 +177,11 @@ class Controller_Admin_Users extends Admincontroller {
 		// The form is executed! Do something!
 		if (count($_POST))
 		{
-			$post = new Validate($_POST);
-			$post->filter(TRUE, 'trim');
-			$post->filter('username', 'strtolower');
-			$post->rule('username', 'not_empty');
-			$post->label('password', 'Password');
+			$post = new Validation($_POST);
+			$post->filter('trim');
+			$post->filter('strtolower', 'username');
+			$post->rule('Valid::not_empty', 'username');
+			$post_values = $post->as_array();
 
 			if (isset($_POST['do_add_field']))
 			{
@@ -180,29 +197,27 @@ class Controller_Admin_Users extends Admincontroller {
 			else
 			{
 
-				if ($post->check())
+				if ($post->validate())
 				{
-					if ($post['username'] != $user->get_username() && !User::username_available($post['username']))
+					if ($post_values['username'] != $user->get_username() && ! User::username_available($post_values['username']))
 					{
-						$post->error('username', 'username_available');
+						$post->add_error('username', 'User::username_available');
 					}
 				}
 
-				// Try to save the form data
-
-				if (!count($post->errors()))
+				if ($post->validate())
 				{
 					// No errors, save!
 
-					$fields = array('username' => $post['username']);
+					$fields = array('username' => $post_values['username']);
 
-					if (isset($post['password']) && $post['password'] != '')
+					if (isset($post_values['password']) && $post_values['password'] != '')
 					{
-						$fields['password'] = $post['password'];
+						$fields['password'] = $post_values['password'];
 					}
 
 					// Format the field data so it fits the set_user_data()
-					foreach ($_POST as $field => $data)
+					foreach ($post_values as $field => $data)
 					{
 						if (substr($field, 0, 8) == 'fieldid_')
 						{
@@ -214,7 +229,7 @@ class Controller_Admin_Users extends Admincontroller {
 								{
 									// Unset all emtpy fields
 									unset($_SESSION['edit_user_detail_fields'][array_search(substr($field, 8), $_SESSION['edit_user_detail_fields'])]);
-									unset($_POST[$field][$nr]);
+									unset($post_values[$field][$nr]);
 								}
 								else
 								{
@@ -241,7 +256,7 @@ class Controller_Admin_Users extends Admincontroller {
 					// Reconstruct the form data to repopulate the form
 					$formdata = array();
 					$counter  = 0;
-					foreach ($_POST as $field => $data)
+					foreach ($post_values as $field => $data)
 					{
 						if (substr($field, 0, 8) == 'fieldid_')
 						{

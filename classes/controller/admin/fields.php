@@ -2,9 +2,9 @@
 
 class Controller_Admin_Fields extends Admincontroller {
 
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
-		parent::__construct();
+		parent::__construct($request, $response);
 		$this->xslt_stylesheet = 'admin/users';
 		xml::to_XML(array('admin_page' => 'Fields'), $this->xml_meta);
 	}
@@ -23,17 +23,18 @@ class Controller_Admin_Fields extends Admincontroller {
 
 	public function action_add_field()
 	{
-		if (count($_POST))
+		if (count($_POST) && isset($_POST['field_name']))
 		{
-			$post = new Validate($_POST);
-			$post->filter(TRUE, 'trim');
-			$post->rule('field_name', 'not_empty');
-			$post->rule('field_name', 'User::field_name_available');
+			$post = new Validation($_POST);
+			$post->filter('trim');
+			$post->rule('Valid::not_empty',           'field_name');
+			$post->rule('User::field_name_available', 'field_name');
 
-			if ($post->check())
+			if ($post->validate())
 			{
-				User::new_field($post['field_name']);
-				$this->add_message('Field '.$post['field_name'].' added');
+				$post_values = $post->as_array();
+				User::new_field($post_values['field_name']);
+				$this->add_message('Field '.$post_values['field_name'].' added');
 			}
 			else
 			{
@@ -57,26 +58,28 @@ class Controller_Admin_Fields extends Admincontroller {
 			$this->xml_content
 		);
 
-		if (count($_POST))
+		if (count($_POST) && isset($_POST['field_name']))
 		{
-			$post = new Validate($_POST);
-			$post->filter(TRUE, 'trim');
-			$post->rule('field_name', 'not_empty');
+			$post = new Validation($_POST);
+			$post->filter('trim');
+			$post->rule('Valid::not_empty', 'field_name');
 
-
-			if ($post->check())
+			if ($post->validate())
 			{
-				if ($post['field_name'] != User::get_data_field_name($field_id) && !User::field_name_available($post['field_name']))
+				$post_values = $post->as_array();
+				if ($post_values['field_name'] != User::get_data_field_name($field_id) && ! User::field_name_available($post_values['field_name']))
 				{
-					$post->error('field_name', 'field_name_available');
+					$post->add_error('field_name', 'User::field_name_available');
 				}
 			}
 
-			if (!count($post->errors()))
+			// Retry
+			if ($post->validate())
 			{
-				User::update_field($field_id, $post['field_name']);
-				$this->add_message('Field '.$post['field_name'].' updated');
-				$this->set_formdata(array('field_name' => $post['field_name']));
+				$post_values = $post->as_array();
+				User::update_field($field_id, $post_values['field_name']);
+				$this->add_message('Field '.$post_values['field_name'].' updated');
+				$this->set_formdata(array('field_name' => $post_values['field_name']));
 			}
 			else
 			{

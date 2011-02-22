@@ -2,11 +2,6 @@
 
 class Controller_Admin_Logout extends Admincontroller {
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
 	public function action_index()
 	{
 		$user = User::instance();

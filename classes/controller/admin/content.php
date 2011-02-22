@@ -2,9 +2,9 @@
 
 class Controller_Admin_Content extends Admincontroller {
 
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
-		parent::__construct();
+		parent::__construct($request, $response);
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/content';
 		xml::to_XML(array('admin_page' => 'Content'), $this->xml_meta);
@@ -34,41 +34,22 @@ class Controller_Admin_Content extends Admincontroller {
 
 	public function action_add_content()
 	{
-		if (count($_POST))
+		if (count($_POST) && isset($_POST['content']))
 		{
-			$post = new Validate($_POST);
-			$post->filter(TRUE, 'trim');
-			$post->label('content', 'content');
+			$post = new Validation($_POST);
+			$post->filter('trim');
+			$post_values = $post->as_array();
 
-			foreach ($_POST as $key => $value)
+			$type_ids = array();
+			foreach ($post_values as $key => $value)
 			{
 				if (substr($key, 0, 8) == 'type_id_')
 				{
-					$post->label($key, $key);
+					$type_ids[] = (int) substr($key, 8);
 				}
 			}
-
-			if ($post->check())
-			{
-				$type_ids = array();
-				foreach ($post as $key => $value)
-				{
-					if (substr($key, 0, 8) == 'type_id_')
-					{
-						$type_ids[] = (int) substr($key, 8);
-					}
-				}
-				$content_id = Content_Content::new_content($post['content'], $type_ids);
-				$this->add_message('Content #'.$content_id.' added');
-			}
-			else
-			{
-				// Form errors detected!
-
-				$this->add_error('Fix errors and try again');
-				$this->add_form_errors($post->errors());
-				$this->set_formdata($post);
-			}
+			$content_id = Content_Content::new_content($post_values['content'], $type_ids);
+			$this->add_message('Content #'.$content_id.' added');
 		}
 	}
 
@@ -80,51 +61,32 @@ class Controller_Admin_Content extends Admincontroller {
 		{
 			$this->xml_content->appendChild($this->dom->createElement('content_id', $id));
 
-			if (count($_POST))
+			if (count($_POST) && isset($_POST['content']))
 			{
-				$post = new Validate($_POST);
-				$post->filter(TRUE, 'trim');
-				$post->label('content', 'content');
+				$post = new Validation($_POST);
+				$post->filter('trim');
+				$post_values = $post->as_array();
 
-				foreach ($_POST as $key => $value)
+				$type_ids = array();
+				foreach ($post_values as $key => $value)
 				{
 					if (substr($key, 0, 8) == 'type_id_')
 					{
-						$post->label($key, $key);
+						$type_ids[] = (int) substr($key, 8);
 					}
 				}
 
-				if ($post->check())
+				$content_content->update_content($post_values['content'], $type_ids);
+				$this->add_message('Content #'.$id.' updated');
+
+				$form_data = array('content' => $content_content->get_content());
+
+				foreach ($content_content->get_type_ids() as $type_id)
 				{
-
-					$type_ids = array();
-					foreach ($post as $key => $value)
-					{
-						if (substr($key, 0, 8) == 'type_id_')
-						{
-							$type_ids[] = (int) substr($key, 8);
-						}
-					}
-
-					$content_content->update_content($post['content'], $type_ids);
-					$this->add_message('Content #'.$id.' updated');
-
-					$form_data = array('content' => $content_content->get_content());
-
-					foreach ($content_content->get_type_ids() as $type_id)
-					{
-						$form_data['type_id_'.$type_id] = 'checked';
-					}
-
-					$this->set_formdata($form_data);
-				}
-				else
-				{
-					$this->add_error('Fix errors and try again');
-					$this->add_form_errors($post->errors());
-					$this->set_formdata($post);
+					$form_data['type_id_'.$type_id] = 'checked';
 				}
 
+				$this->set_formdata($form_data);
 			}
 			else
 			{

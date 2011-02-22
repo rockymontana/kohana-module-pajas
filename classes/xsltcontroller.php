@@ -6,14 +6,14 @@
  *
  * Downloaded from http://kohana.lillem4n.se
  */
-abstract class Xsltcontroller
+abstract class Xsltcontroller extends Controller
 {
 
 	/**
 	 * If set to TRUE, render() will automaticly be ran
 	 * when the controller is done.
 	 */
-	var $auto_render = TRUE;
+	public $auto_render = TRUE;
 
 	/**
 	 * Decides where the transformation of XSLT->HTML
@@ -27,25 +27,31 @@ abstract class Xsltcontroller
 	 * FALSE  = Always send XML+XSLT
 	 *
 	 */
-	var $transform;
+	public $transform;
 
 	/**
 	 * Where to look for the XSLT stylesheets
 	 */
-	var $xslt_path;
+	public $xslt_path;
 
 	/**
 	 * The filename of the XSLT stylesheet, excluding .xsl
 	 */
-	var $xslt_stylesheet = 'default';
+	public $xslt_stylesheet = 'generic';
+
 
 	/**
-	 * Loads URI, and Input into this controller.
+	 * Creates a new controller instance. Each controller must be constructed
+	 * with the request object that created it.
 	 *
-	 * @return	void
+	 * @param   Request   $request  Request that created the controller
+	 * @param   Response  $response The request's response
+	 * @return  void
 	 */
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
+		parent::__construct($request, $response);
+
 		// Set transformation
 		if (isset($_GET['transform']))
 		{
@@ -70,14 +76,15 @@ abstract class Xsltcontroller
 
 		// Create the meta node
 		$this->xml_meta = $this->xml->appendChild($this->dom->createElement('meta'));
+
 		xml::to_XML(
 			array(
 				'protocol'      => (isset($_SERVER['HTTPS'])) ? 'https' : 'http',
-				'domain'        => $_SERVER['HTTP_HOST'],
+				'domain'        => $_SERVER['SERVER_NAME'],
 				'base'					=> URL::base(),
-				'path'          => Request::instance()->uri,
-				'action'        => request::instance()->action,
-				'controller'    => request::instance()->controller,
+				'path'          => Request::current()->uri(),
+				'action'        => Request::current()->action(),
+				'controller'    => Request::current()->controller(),
 				'url_params'    => $_GET,
 			),
 			$this->xml_meta
@@ -88,9 +95,7 @@ abstract class Xsltcontroller
 
 	}
 
-	public function before()
-	{
-	}
+	public function before() {}
 
 	/**
 	 * Render the page - this is ran automaticly
@@ -142,7 +147,8 @@ abstract class Xsltcontroller
 		}
 		else
 		{
-			Request::instance()->headers['Content-Type'] = 'application/xml; encoding='.Kohana::$charset.';';
+			$this->response->headers('Content-Type', 'application/xml; encoding='.Kohana::$charset.';');
+//			Request::current()->headers('Content-Type', 'application/xml; encoding='.Kohana::$charset.';');
 			echo $this->dom->saveXML();
 		}
 
@@ -177,15 +183,15 @@ abstract class Xsltcontroller
 		{
 			if (isset($_SERVER['HTTP_REFERER']))
 			{
-				Request::instance()->redirect($_SERVER['HTTP_REFERER']);
+				Request::current()->redirect($_SERVER['HTTP_REFERER']);
 			}
 			else
 			{
-				Request::instance()->redirect(Kohana::$base_url);
+				Request::current()->redirect(Kohana::$base_url);
 			}
 		}
 
-		Request::instance()->redirect($uri);
+		Request::current()->redirect($uri);
 	}
 
 }

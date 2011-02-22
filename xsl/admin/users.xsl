@@ -129,16 +129,26 @@
 		<form method="post" action="fields/add_field">
 
 			<!-- Include an error -->
-			<xsl:if test="/root/content/errors/form_errors/field_name = 'User::field_name_available'">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'field_name'" />
-					<xsl:with-param name="label" select="'Field name:'" />
-					<xsl:with-param name="error" select="'This field name is already taken'" />
-				</xsl:call-template>
+			<xsl:if test="/root/content/errors/form_errors/field_name">
+				<xsl:if test="/root/content/errors/form_errors/field_name = 'User::field_name_available'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'field_name'" />
+						<xsl:with-param name="label" select="'Field name:'" />
+						<xsl:with-param name="error" select="'This field name is already taken'" />
+					</xsl:call-template>
+				</xsl:if>
+
+				<xsl:if test="/root/content/errors/form_errors/field_name = 'Valid::not_empty'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'field_name'" />
+						<xsl:with-param name="label" select="'Field name:'" />
+						<xsl:with-param name="error" select="'Must not be empty'" />
+					</xsl:call-template>
+				</xsl:if>
 			</xsl:if>
 
 			<!-- no error -->
-			<xsl:if test="not(/root/content/errors/form_errors/field_name = 'User::field_name_available')">
+			<xsl:if test="not(/root/content/errors/form_errors/field_name)">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'field_name'" />
 					<xsl:with-param name="label" select="'Field name:'" />
@@ -157,16 +167,26 @@
 		<form method="post" action="fields/edit_field/{field/@id}">
 
 			<!-- Include an error -->
-			<xsl:if test="/root/content/errors/form_errors/field_name = 'User::field_name_available'">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'field_name'" />
-					<xsl:with-param name="label" select="'Field name:'" />
-					<xsl:with-param name="error" select="'This field name is already taken'" />
-				</xsl:call-template>
+			<xsl:if test="/root/content/errors/form_errors/field_name">
+				<xsl:if test="/root/content/errors/form_errors/field_name = 'User::field_name_available'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'field_name'" />
+						<xsl:with-param name="label" select="'Field name:'" />
+						<xsl:with-param name="error" select="'This field name is already taken'" />
+					</xsl:call-template>
+				</xsl:if>
+
+				<xsl:if test="/root/content/errors/form_errors/field_name = 'Valid::not_empty'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'field_name'" />
+						<xsl:with-param name="label" select="'Field name:'" />
+						<xsl:with-param name="error" select="'Must not be empty'" />
+					</xsl:call-template>
+				</xsl:if>
 			</xsl:if>
 
 			<!-- no error -->
-			<xsl:if test="not(/root/content/errors/form_errors/field_name = 'User::field_name_available')">
+			<xsl:if test="not(/root/content/errors/form_errors/field_name)">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'field_name'" />
 					<xsl:with-param name="label" select="'Field name:'" />
@@ -227,19 +247,28 @@
 			<h2>Basic user information</h2>
 
 			<!-- Username -->
-			<xsl:if test="/root/content/errors/form_errors/username">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'username'" />
-					<xsl:with-param name="label" select="'Username:'" />
-					<xsl:with-param name="error" select="'This username already taken'" />
-				</xsl:call-template>
-			</xsl:if>
-			<xsl:if test="not(/root/content/errors/form_errors/username)">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'username'" />
-					<xsl:with-param name="label" select="'Username:'" />
-				</xsl:call-template>
-			</xsl:if>
+      <xsl:choose>
+        <xsl:when test="/root/content/errors/form_errors/username = 'Valid::not_empty'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="label" select="'Username:'" />
+						<xsl:with-param name="error" select="'A username is required'" />
+					</xsl:call-template>
+        </xsl:when>
+        <xsl:when test="/root/content/errors/form_errors/username = 'User::username_available'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="label" select="'Username:'" />
+						<xsl:with-param name="error" select="'This username already taken'" />
+					</xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="label" select="'Username:'" />
+					</xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
 
 			<!-- Password -->
 			<xsl:if test="/root/content/errors/form_errors/password">
@@ -304,11 +333,23 @@
 
 			<!-- Username -->
 			<xsl:if test="/root/content/errors/form_errors/username">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'username'" />
-					<xsl:with-param name="label" select="'Username:'" />
-					<xsl:with-param name="error" select="'This username already taken'" />
-				</xsl:call-template>
+
+				<xsl:if test="/root/content/errors/form_errors/username = 'Valid::not_empty'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="label" select="'Username:'" />
+						<xsl:with-param name="error" select="'A username is required'" />
+					</xsl:call-template>
+				</xsl:if>
+
+				<xsl:if test="/root/content/errors/form_errors/username = 'User::username_available'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="label" select="'Username:'" />
+						<xsl:with-param name="error" select="'This username already taken'" />
+					</xsl:call-template>
+				</xsl:if>
+
 			</xsl:if>
 			<xsl:if test="not(/root/content/errors/form_errors/username)">
 				<xsl:call-template name="form_line">

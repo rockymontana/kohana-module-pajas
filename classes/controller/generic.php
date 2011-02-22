@@ -2,19 +2,22 @@
 
 class Controller_Generic extends Xsltcontroller {
 
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
 		// This is needed for the XSLT setup
-		parent::__construct();
+		parent::__construct($request, $response);
 	}
 
-	public function action_index($uri = 'welcome')
+	public function action_index($URI = 'welcome')
 	{
+		// Empty string defaults to 'welcome'
+		if ($URI == '') $URI = 'welcome';
+
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'generic';
 
 		// Initiate the page model
-		$content_page = new Content_Page(Content_Page::get_page_id_by_uri($uri));
+		$content_page = new Content_Page(Content_Page::get_page_id_by_uri($URI));
 
 		// Create the DOM node <page>
 		$this->xml_content_page = $this->xml_content->appendChild($this->dom->createElement('page'));

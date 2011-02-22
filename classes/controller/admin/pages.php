@@ -2,9 +2,9 @@
 
 class Controller_Admin_Pages extends Admincontroller {
 
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
-		parent::__construct();
+		parent::__construct($request, $response);
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/pages';
 		xml::to_XML(array('admin_page' => 'Pages'), $this->xml_meta);
@@ -28,32 +28,28 @@ class Controller_Admin_Pages extends Admincontroller {
 		$this->xml_content_types = $this->xml_content->appendChild($this->dom->createElement('types'));
 		xml::to_XML(Content_Type::get_types(), $this->xml_content_types, 'type', 'id');
 
-		if (count($_POST))
+		if (count($_POST) && isset($_POST['URI']) && isset($_POST['name']))
 		{
 			if ($_POST['URI'] == '') $_POST['URI'] = $_POST['name'];
 
 			$_POST['URI'] = URL::title($_POST['URI'], '-', TRUE);
 
-			$post = new Validate($_POST);
-			$post->filter(TRUE, 'trim');
-			$post->rule('name', 'not_empty');
-			$post->rule('name', 'Content_Page::page_name_available');
-			$post->rule('URI', 'Content_Page::page_URI_available');
-			foreach ($_POST as $key => $value)
-			{
-				// Add all selected content types
-				if (substr($key, 0, 5) == 'type_') $post->label($key, $key);
-			}
+			$post = new Validation($_POST);
+			$post->filter('trim');
+			$post->rule('Valid::not_empty',                  'name');
+			$post->rule('Content_Page::page_name_available', 'name');
+			$post->rule('Content_Page::page_URI_available',  'URI');
+			$post_values = $post->as_array();
 
-			if ($post->check())
+			if ($post->validate())
 			{
 				$type_ids = array();
 				foreach ($post as $key => $value)
 				{
 					if (substr($key, 0, 5) == 'type_') $type_ids[] = (int) substr($key, 5);
 				}
-				$page_id = Content_Page::new_page($post['name'], $post['URI'], $type_ids);
-				$this->add_message('Page "'.$post['name'].'" added');
+				$page_id = Content_Page::new_page($post_values['name'], $post_values['URI'], $type_ids);
+				$this->add_message('Page "'.$post_values['name'].'" added');
 			}
 			else
 			{
@@ -61,7 +57,7 @@ class Controller_Admin_Pages extends Admincontroller {
 
 				$this->add_error('Fix errors and try again');
 				$this->add_form_errors($post->errors());
-				$this->set_formdata($post);
+				$this->set_formdata($post_values);
 			}
 		}
 	}
@@ -76,63 +72,51 @@ class Controller_Admin_Pages extends Admincontroller {
 
 			$this->xml_content_page = $this->xml_content->appendChild($this->dom->createElement('page'));
 
-			if (count($_POST))
+			if (count($_POST) && isset($_POST['URI']) && isset($_POST['name']))
 			{
-
 				if ($_POST['URI'] == '') $_POST['URI'] = $_POST['name'];
-
 				$_POST['URI'] = URL::title($_POST['URI'], '-', TRUE);
 
-				$post = new Validate($_POST);
-				$post->filter(TRUE, 'trim');
-				$post->rule('name', 'not_empty');
-				$post->label('URI', 'URI');
-				foreach ($_POST as $key => $value)
-				{
-					// Add all selected content types
-					if (substr($key, 0, 5) == 'type_') $post->label($key, $key);
-				}
+				$post = new Validation($_POST);
+				$post->filter('trim');
+				$post->rule('Valid::not_empty', 'name');
 
-				$valid = TRUE;
-				if ($post->check())
+				if ($post->validate())
 				{
+					$post_values       = $post->as_array();
 					$current_page_data = $content_page->get_page_data();
 
-					if ($post['name'] != $current_page_data['name'] && !Content_Page::page_name_available($post['name']))
+					if ($post_values['name'] != $current_page_data['name'] && ! Content_Page::page_name_available($post_values['name']))
 					{
-						$post->error('name', 'Content_Page::page_name_available');
-						$valid = FALSE;
+						$post->add_error('name', 'Content_Page::page_name_available');
 					}
 
-					if ($post['URI'] != $current_page_data['URI'] && !Content_Page::page_URI_available($post['URI']))
+					if ($post_values['URI'] != $current_page_data['URI'] && ! Content_Page::page_URI_available($post_values['URI']))
 					{
-						$post->error('URI', 'Content_Page::page_URI_available');
-						$valid = FALSE;
+						$post->add_error('URI', 'Content_Page::page_URI_available');
 					}
 
-					if ($valid)
-					{
-						$type_ids = array();
-						foreach ($post as $key => $value)
-						{
-							if (substr($key, 0, 5) == 'type_') $type_ids[] = (int) substr($key, 5);
-						}
-						$content_page->update_page_data($post['name'], $post['URI'], $type_ids);
-						$this->add_message('Page "'.$post['name'].'" updated');
-
-
-						$page_data = $content_page->get_page_data();
-						foreach ($page_data['type_ids'] as $type_id) $page_data['type_'.$type_id] = 'checked';
-						unset($page_data['type_ids']);
-						$this->set_formdata($page_data);
-					}
 				}
-				else $valid = FALSE;
 
-				if ($valid == FALSE)
+				// Retry
+				if ($post->validate())
 				{
-					// Form errors detected!
+					$post_values = $post->as_array();
+					$type_ids    = array();
+					foreach ($post_values as $key => $value)
+					{
+						if (substr($key, 0, 5) == 'type_') $type_ids[] = (int) substr($key, 5);
+					}
+					$content_page->update_page_data($post_values['name'], $post_values['URI'], $type_ids);
+					$this->add_message('Page "'.$post_values['name'].'" updated');
 
+					$page_data = $content_page->get_page_data();
+					foreach ($page_data['type_ids'] as $type_id) $page_data['type_'.$type_id] = 'checked';
+					unset($page_data['type_ids']);
+					$this->set_formdata($page_data);
+				}
+				else
+				{
 					$this->add_error('Fix errors and try again');
 					$this->add_form_errors($post->errors());
 					$this->set_formdata($post);

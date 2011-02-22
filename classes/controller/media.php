@@ -1,8 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
-class Controller_Media {
-
-	public function __construct() {}
+class Controller_Media extends Controller
+{
 
 	public function before() {
 		// We need to load all theme modules
@@ -15,21 +14,20 @@ class Controller_Media {
 		}
 	}
 
-	public function after() {}
-
 	public function action_css($path)
 	{
 		$file = Kohana::find_file('css', $path, 'css');
 		if ($file)
 		{
-			Request::instance()->headers['Last-Modified'] = gmdate('D, d M Y H:i:s', filemtime($file)).' GMT';
-			Request::instance()->headers['Content-Type'] = 'text/css';
-		  echo file_get_contents($file);
+			Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+			Request::current()->headers('Content-Type', 'text/css');
+			echo file_get_contents($file);
 		}
 		else
 		{
-		  Request::instance()->status = 404;
-		  echo Request::factory('404')->execute()->response;
+// This needs to be altered to function in Kohana 3.1
+			Request::current()->status = 404;
+			echo Request::factory('404')->execute()->response;
 		}
 	}
 
@@ -45,7 +43,7 @@ class Controller_Media {
 			$mime = File::mime_by_ext($file_ending);
 			if (substr($mime, 0, 5) == 'image')
 			{
-				Request::instance()->headers['Content-Type'] = 'content-type: '.$mime.'; encoding='.Kohana::$charset.';';
+				Request::current()->headers('Content-Type', 'content-type: '.$mime.'; encoding='.Kohana::$charset.';');
 
 				// Getting headers sent by the client.
 				$headers = apache_request_headers();
@@ -54,30 +52,28 @@ class Controller_Media {
 				if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == filemtime($file)))
 				{
 					// Client's cache IS current, so we just respond '304 Not Modified'.
-					Request::instance()->headers['Last-Modified'] = gmdate('D, d M Y H:i:s', filemtime($file)).' GMT';
-					Request::instance()->status = 304;
+					Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+					$this->response->status(304);
 				}
 				else
 				{
 					// Image not cached or cache outdated, we respond '200 OK' and output the image.
-					Request::instance()->headers['Last-Modified']  = gmdate('D, d M Y H:i:s', filemtime($file)).' GMT';
-					Request::instance()->headers['Content-Length'] = filesize($file);
-					Request::instance()->status = 200;
+					Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+					Request::current()->headers('Content-Length', filesize($file));
+					$this->response->status(200);
 					echo file_get_contents($file);
 				}
 			}
 			else
 			{
 				// This is not an image, so we respond that it is not found
-				Request::instance()->status = 404;
-				echo Request::factory('404')->execute()->response;
+				throw new Http_Exception_404('File not found!');
 			}
 		}
 		else
 		{
 			// File not found at all
-		  Request::instance()->status = 404;
-		  echo Request::factory('404')->execute()->response;
+			throw new Http_Exception_404('File not found!');
 		}
 	}
 
@@ -86,14 +82,13 @@ class Controller_Media {
 		$file = Kohana::find_file('js', $path, 'js');
 		if ($file)
 		{
-			Request::instance()->headers['Last-Modified'] = gmdate('D, d M Y H:i:s', filemtime($file)).' GMT';
-			Request::instance()->headers['Content-Type'] = 'application/javascript';
-		  echo file_get_contents($file);
+			Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+			Request::current()->headers('Content-Type', 'application/javascript');
+			echo file_get_contents($file);
 		}
 		else
 		{
-		  Request::instance()->status = 404;
-		  echo Request::factory('404')->execute()->response;
+			throw new Http_Exception_404('File not found!');
 		}
 	}
 
@@ -102,13 +97,12 @@ class Controller_Media {
 		$file = Kohana::find_file('xsl', $path, 'xsl');
 		if ($file)
 		{
-			Request::instance()->headers['Content-Type'] = 'content-type: text/xml; encoding='.Kohana::$charset.';';
-		  echo file_get_contents($file);
+			Request::current()->headers('Content-Type', 'content-type: text/xml; encoding='.Kohana::$charset.';');
+			echo file_get_contents($file);
 		}
 		else
 		{
-		  Request::instance()->status = 404;
-		  echo Request::factory('404')->execute()->response;
+			throw new Http_Exception_404('File not found!');
 		}
 	}
 

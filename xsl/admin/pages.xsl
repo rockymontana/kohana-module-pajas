@@ -93,7 +93,7 @@
 			<h2>Page data</h2>
 
 			<!-- Name -->
-			<xsl:if test="/root/content/errors/form_errors/name = 'not_empty'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Valid::not_empty'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Page name:'" />
@@ -160,7 +160,7 @@
 			</xsl:call-template>
 
 			<!-- Name -->
-			<xsl:if test="/root/content/errors/form_errors/name = 'not_empty'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Valid::not_empty'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Page name:'" />
