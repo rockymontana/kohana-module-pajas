@@ -82,9 +82,9 @@ abstract class Xsltcontroller extends Controller
 				'protocol'      => (isset($_SERVER['HTTPS'])) ? 'https' : 'http',
 				'domain'        => $_SERVER['SERVER_NAME'],
 				'base'					=> URL::base(),
-				'path'          => Request::current()->uri(),
-				'action'        => Request::current()->action(),
-				'controller'    => Request::current()->controller(),
+				'path'          => $this->request->uri(),
+				'action'        => $this->request->action(),
+				'controller'    => $this->request->controller(),
 				'url_params'    => $_GET,
 			),
 			$this->xml_meta
@@ -148,7 +148,6 @@ abstract class Xsltcontroller extends Controller
 		else
 		{
 			$this->response->headers('Content-Type', 'application/xml; encoding='.Kohana::$charset.';');
-//			Request::current()->headers('Content-Type', 'application/xml; encoding='.Kohana::$charset.';');
 			echo $this->dom->saveXML();
 		}
 
@@ -183,15 +182,15 @@ abstract class Xsltcontroller extends Controller
 		{
 			if (isset($_SERVER['HTTP_REFERER']))
 			{
-				Request::current()->redirect($_SERVER['HTTP_REFERER']);
+				$this->request->redirect($_SERVER['HTTP_REFERER']);
 			}
 			else
 			{
-				Request::current()->redirect(Kohana::$base_url);
+				$this->request->redirect(Kohana::$base_url);
 			}
 		}
 
-		Request::current()->redirect($uri);
+		$this->request->redirect($uri);
 	}
 
 }

@@ -24,7 +24,7 @@ abstract class Admincontroller extends Xsltcontroller
 			 * Must be a logged in user with admin role to access the admin pages
 			 */
 			$user = User::instance();
-			if (( ! $user->logged_in() || !$user->get_user_data('role') == 'admin') && Request::current()->controller() != 'login')
+			if (( ! $user->logged_in() || !$user->get_user_data('role') == 'admin') && $this->request->controller() != 'login')
 			{
 				$this->redirect('admin/login');
 			}
@@ -43,7 +43,7 @@ abstract class Admincontroller extends Xsltcontroller
 			}
 		}
 
-		if (Request::current()->controller() != 'login')
+		if ($this->request->controller() != 'login')
 		{
 			/**
 			 * Build the menu alternatives

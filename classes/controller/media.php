@@ -19,14 +19,14 @@ class Controller_Media extends Controller
 		$file = Kohana::find_file('css', $path, 'css');
 		if ($file)
 		{
-			Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
-			Request::current()->headers('Content-Type', 'text/css');
+			$this->response->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+			$this->response->headers('Content-Type', 'text/css');
 			echo file_get_contents($file);
 		}
 		else
 		{
 // This needs to be altered to function in Kohana 3.1
-			Request::current()->status = 404;
+			$this->response->status = 404;
 			echo Request::factory('404')->execute()->response;
 		}
 	}
@@ -43,7 +43,7 @@ class Controller_Media extends Controller
 			$mime = File::mime_by_ext($file_ending);
 			if (substr($mime, 0, 5) == 'image')
 			{
-				Request::current()->headers('Content-Type', 'content-type: '.$mime.'; encoding='.Kohana::$charset.';');
+				$this->response->headers('Content-Type', 'content-type: '.$mime.'; encoding='.Kohana::$charset.';');
 
 				// Getting headers sent by the client.
 				$headers = apache_request_headers();
@@ -52,14 +52,14 @@ class Controller_Media extends Controller
 				if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == filemtime($file)))
 				{
 					// Client's cache IS current, so we just respond '304 Not Modified'.
-					Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+					$this->response->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
 					$this->response->status(304);
 				}
 				else
 				{
 					// Image not cached or cache outdated, we respond '200 OK' and output the image.
-					Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
-					Request::current()->headers('Content-Length', filesize($file));
+					$this->response->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+					$this->response->headers('Content-Length', filesize($file));
 					$this->response->status(200);
 					echo file_get_contents($file);
 				}
@@ -82,8 +82,8 @@ class Controller_Media extends Controller
 		$file = Kohana::find_file('js', $path, 'js');
 		if ($file)
 		{
-			Request::current()->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
-			Request::current()->headers('Content-Type', 'application/javascript');
+			$this->response->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
+			$this->response->headers('Content-Type', 'application/javascript');
 			echo file_get_contents($file);
 		}
 		else
@@ -97,7 +97,7 @@ class Controller_Media extends Controller
 		$file = Kohana::find_file('xsl', $path, 'xsl');
 		if ($file)
 		{
-			Request::current()->headers('Content-Type', 'content-type: text/xml; encoding='.Kohana::$charset.';');
+			$this->response->headers('Content-type', 'text/xml; encoding='.Kohana::$charset.';');
 			echo file_get_contents($file);
 		}
 		else
