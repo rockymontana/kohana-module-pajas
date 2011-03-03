@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:include href="tpl.default.xsl" />
+	<xsl:include href="tpl.default.xsl" />
 
 	<xsl:template name="tabs">
 		<ul class="tabs">
-			<li>
-				<a href="pages">
-					<xsl:if test="/root/meta/action = 'index'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>List pages</xsl:text>
-				</a>
-			</li>
-			<li>
-				<a href="pages/add_page">
-					<xsl:if test="/root/meta/action = 'add_page'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>Add page</xsl:text>
-				</a>
-			</li>
+
+			<xsl:call-template name="tab">
+				<xsl:with-param name="href"   select="'pages'" />
+				<xsl:with-param name="text"   select="'List pages'" />
+			</xsl:call-template>
+
+			<xsl:call-template name="tab">
+				<xsl:with-param name="href"   select="'pages/add_page'" />
+				<xsl:with-param name="action" select="'add_page'" />
+				<xsl:with-param name="text"   select="'Add page'" />
+			</xsl:call-template>
+
 		</ul>
 	</xsl:template>
 
 
-  <xsl:template match="/">
-  	<xsl:if test="/root/meta/action = 'index'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Pages'" />
-		  	<xsl:with-param name="h1" select="'List pages'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  	<xsl:if test="/root/meta/action = 'add_page'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Pages'" />
-		  	<xsl:with-param name="h1" select="'Add page'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  	<xsl:if test="/root/meta/action = 'edit_page'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Pages'" />
-		  	<xsl:with-param name="h1" select="'Edit page'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  </xsl:template>
+	<xsl:template match="/">
+		<xsl:if test="/root/meta/action = 'index'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Pages'" />
+				<xsl:with-param name="h1" select="'List pages'" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="/root/meta/action = 'add_page'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Pages'" />
+				<xsl:with-param name="h1" select="'Add page'" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="/root/meta/action = 'edit_page'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Pages'" />
+				<xsl:with-param name="h1" select="'Edit page'" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- List pages -->
-  <xsl:template match="content[../meta/controller = 'pages' and ../meta/action = 'index']">
+	<xsl:template match="content[../meta/controller = 'pages' and ../meta/action = 'index']">
 		<table>
 			<thead>
 				<tr>
@@ -84,16 +80,16 @@
 				</xsl:for-each>
 			</tbody>
 		</table>
-  </xsl:template>
+	</xsl:template>
 
 	<!-- Add page -->
-  <xsl:template match="content[../meta/controller = 'pages' and ../meta/action = 'add_page']">
-  	<form method="post" action="pages/add_page">
+	<xsl:template match="content[../meta/controller = 'pages' and ../meta/action = 'add_page']">
+		<form method="post" action="pages/add_page">
 
 			<h2>Page data</h2>
 
 			<!-- Name -->
-			<xsl:if test="/root/content/errors/form_errors/name = 'not_empty'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Valid::not_empty'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Page name:'" />
@@ -143,12 +139,12 @@
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Add page'" />
 			</xsl:call-template>
-  	</form>
-  </xsl:template>
+		</form>
+	</xsl:template>
 
 	<!-- Edit page -->
-  <xsl:template match="content[../meta/controller = 'pages' and ../meta/action = 'edit_page']">
-  	<form method="post" action="pages/edit_page/{page/@id}">
+	<xsl:template match="content[../meta/controller = 'pages' and ../meta/action = 'edit_page']">
+		<form method="post" action="pages/edit_page/{page/@id}">
 
 			<h2>Page data</h2>
 
@@ -160,7 +156,7 @@
 			</xsl:call-template>
 
 			<!-- Name -->
-			<xsl:if test="/root/content/errors/form_errors/name = 'not_empty'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Valid::not_empty'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Page name:'" />
@@ -208,7 +204,7 @@
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Save changes'" />
 			</xsl:call-template>
-  	</form>
-  </xsl:template>
+		</form>
+	</xsl:template>
 
 </xsl:stylesheet>

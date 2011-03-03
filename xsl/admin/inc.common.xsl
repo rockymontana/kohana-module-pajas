@@ -14,6 +14,22 @@
 		</div>
 	</xsl:template>
 
+	<!-- The small tab thingies in the top of every admin page -->
+	<xsl:template name="tab">
+		<xsl:param name="href" />
+		<xsl:param name="action">index</xsl:param>
+		<xsl:param name="text"><xsl:value-of select="$href" /></xsl:param>
+
+		<li>
+			<a href="{$href}">
+				<xsl:if test="/root/meta/action = $action">
+					<xsl:attribute name="class">selected</xsl:attribute>
+				</xsl:if>
+				<xsl:value-of select="$text" />
+			</a>
+		</li>
+	</xsl:template>
+
 	<xsl:template name="form_line">
 		<xsl:param name="id" /><!-- This should always be set -->
 		<xsl:param name="name" />

@@ -14,9 +14,9 @@ abstract class Admincontroller extends Xsltcontroller
 	 *
 	 * @return	void
 	 */
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
-		parent::__construct();
+		parent::__construct($request, $response);
 
 		if (class_exists('User'))
 		{
@@ -24,7 +24,7 @@ abstract class Admincontroller extends Xsltcontroller
 			 * Must be a logged in user with admin role to access the admin pages
 			 */
 			$user = User::instance();
-			if ((!$user->logged_in() || !$user->get_user_data('role') == 'admin') && request::instance()->controller != 'login')
+			if (( ! $user->logged_in() || !$user->get_user_data('role') == 'admin') && $this->request->controller() != 'login')
 			{
 				$this->redirect('admin/login');
 			}
@@ -43,7 +43,7 @@ abstract class Admincontroller extends Xsltcontroller
 			}
 		}
 
-		if (request::instance()->controller != 'login')
+		if ($this->request->controller() != 'login')
 		{
 			/**
 			 * Build the menu alternatives
@@ -85,7 +85,7 @@ abstract class Admincontroller extends Xsltcontroller
 	 */
 	public function add_error($error)
 	{
-		if (!isset($this->xml_content_errors))
+		if ( ! isset($this->xml_content_errors))
 		{
 			$this->xml_content_errors = $this->xml_content->appendChild($this->dom->createElement('errors'));
 		}
@@ -102,12 +102,41 @@ abstract class Admincontroller extends Xsltcontroller
 	 */
 	public function add_form_errors($errors)
 	{
-		if (!isset($this->xml_content_errors))
+/*
+Array
+(
+    [username] => Array
+        (
+            [0] => Valid::not_empty
+            [1] => User::username_available
+        )
+
+    [password] => Array
+        (
+            [0] => Valid::not_empty
+        )
+
+)*/
+
+
+		if ( ! isset($this->xml_content_errors))
 		{
 			$this->xml_content_errors = $this->xml_content->appendChild($this->dom->createElement('errors'));
 		}
 
-		xml::to_XML(array('form_errors' => $errors), $this->xml_content_errors);
+		if ( ! isset($this->xml_content_errors_form_errors))
+		{
+			$this->xml_content_errors_form_errors = $this->xml_content_errors->appendChild($this->dom->createElement('form_errors'));
+		}
+
+		foreach ($errors as $field => $field_errors)
+		{
+			foreach ($field_errors as $field_error)
+			{
+				xml::to_XML(array($field => $field_error), $this->xml_content_errors_form_errors);
+			}
+		}
+
 		return TRUE;
 	}
 
@@ -119,7 +148,7 @@ abstract class Admincontroller extends Xsltcontroller
 	 */
 	public function add_message($message)
 	{
-		if (!isset($this->xml_content_messages))
+		if ( ! isset($this->xml_content_messages))
 		{
 			$this->xml_content_messages = $this->xml_content->appendChild($this->dom->createElement('messages'));
 		}
@@ -136,7 +165,7 @@ abstract class Admincontroller extends Xsltcontroller
 	 */
 	public function set_formdata($formdata)
 	{
-		if (!isset($this->xml_content_formdata))
+		if ( ! isset($this->xml_content_formdata))
 		{
 			$this->xml_content_formdata = $this->xml_content->appendChild($this->dom->createElement('formdata'));
 		}

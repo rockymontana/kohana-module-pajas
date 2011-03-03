@@ -2,11 +2,6 @@
 
 class Controller_Admin_Themes extends Admincontroller {
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
 	public function action_index()
 	{
 		// Set the name of the template to use

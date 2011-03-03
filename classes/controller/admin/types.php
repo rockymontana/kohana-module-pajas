@@ -2,9 +2,9 @@
 
 class Controller_Admin_Types extends Admincontroller {
 
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
-		parent::__construct();
+		parent::__construct($request, $response);
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/types';
 		xml::to_XML(array('admin_page' => 'Content types'), $this->xml_meta);
@@ -18,18 +18,18 @@ class Controller_Admin_Types extends Admincontroller {
 
 	public function action_add_type()
 	{
-		if (count($_POST))
+		if (count($_POST) && isset($_POST['name']) && isset($_POST['description']))
 		{
-			$post = new Validate($_POST);
-			$post->filter(TRUE, 'trim');
-			$post->rule('name', 'not_empty');
-			$post->rule('name', 'Content_Type::type_name_available');
-			$post->label('description', 'description');
+			$post = new Validation($_POST);
+			$post->filter('trim');
+			$post->rule('Valid::not_empty',                  'name');
+			$post->rule('Content_Type::type_name_available', 'name');
+			$post_values = $post->as_array();
 
-			if ($post->check())
+			if ($post->validate())
 			{
-				$type_id = Content_Type::new_type($post['name'], $post['description']);
-				$this->add_message('Content type "'.$post['name'].'" added');
+				$type_id = Content_Type::new_type($post_values['name'], $post_values['description']);
+				$this->add_message('Content type "'.$post_values['name'].'" added');
 			}
 			else
 			{
@@ -37,7 +37,7 @@ class Controller_Admin_Types extends Admincontroller {
 
 				$this->add_error('Fix errors and try again');
 				$this->add_form_errors($post->errors());
-				$this->set_formdata($post);
+				$this->set_formdata($post_values);
 			}
 		}
 	}
@@ -51,40 +51,33 @@ class Controller_Admin_Types extends Admincontroller {
 
 			if (count($_POST))
 			{
-				$post = new Validate($_POST);
-				$post->filter(TRUE, 'trim');
-				$post->rule('name', 'not_empty');
-				$post->label('description', 'description');
+				$post = new Validation($_POST);
+				$post->filter('trim');
+				$post->rule('Valid::not_empty', 'name');
+				$post_values = $post->as_array();
 
-				$valid = TRUE;
-				if ($post->check())
+				if ($post->validate())
 				{
 					$current_type_data = $content_type->get_type_data();
 
-					if ($post['name'] != $current_type_data['name'] && !Content_Type::type_name_available($post['name']))
+					if ($post_values['name'] != $current_type_data['name'] && ! Content_Type::type_name_available($post_values['name']))
 					{
-						$post->error('name', 'Content_Type::type_name_available');
-						$valid = FALSE;
-					}
-
-					if ($valid)
-					{
-						$content_type->update_type_data($post['name'], $post['description']);
-						$this->add_message('Content type "'.$post['name'].'" updated');
-						$this->set_formdata($content_type->get_type_data());
+						$post->add_error('name', 'Content_Type::type_name_available');
 					}
 				}
-				else $valid = FALSE;
 
-				if ($valid == FALSE)
+				if ($post->validate())
 				{
-					// Form errors detected!
-
+					$content_type->update_type_data($post_values['name'], $post_values['description']);
+					$this->add_message('Content type "'.$post_values['name'].'" updated');
+					$this->set_formdata($content_type->get_type_data());
+				}
+				else
+				{
 					$this->add_error('Fix errors and try again');
 					$this->add_form_errors($post->errors());
-					$this->set_formdata($post);
+					$this->set_formdata($post_values);
 				}
-
 			}
 			else
 			{

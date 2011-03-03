@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:include href="tpl.default.xsl" />
+	<xsl:include href="tpl.default.xsl" />
 
 	<xsl:template name="tabs">
 		<ul class="tabs">
-			<li>
-				<a href="content">
-					<xsl:if test="/root/meta/action = 'index'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>List content</xsl:text>
-				</a>
-			</li>
-			<li>
-				<a href="content/add_content">
-					<xsl:if test="/root/meta/action = 'add_content'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>Add content</xsl:text>
-				</a>
-			</li>
+
+			<xsl:call-template name="tab">
+				<xsl:with-param name="href"   select="'content'" />
+				<xsl:with-param name="text"   select="'List content'" />
+			</xsl:call-template>
+
+			<xsl:call-template name="tab">
+				<xsl:with-param name="href"   select="'content/add_content'" />
+				<xsl:with-param name="action" select="'add_content'" />
+				<xsl:with-param name="text"   select="'Add content'" />
+			</xsl:call-template>
+
 		</ul>
 	</xsl:template>
 
 
-  <xsl:template match="/">
-  	<xsl:if test="/root/meta/action = 'index'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Content'" />
-		  	<xsl:with-param name="h1" select="'List content'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  	<xsl:if test="/root/meta/action = 'add_content'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Content'" />
-		  	<xsl:with-param name="h1" select="'Add content'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  	<xsl:if test="/root/meta/action = 'edit_content'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Content'" />
-		  	<xsl:with-param name="h1" select="'Edit content'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  </xsl:template>
+	<xsl:template match="/">
+		<xsl:if test="/root/meta/action = 'index'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Content'" />
+				<xsl:with-param name="h1" select="'List content'" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="/root/meta/action = 'add_content'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Content'" />
+				<xsl:with-param name="h1" select="'Add content'" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="/root/meta/action = 'edit_content'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Content'" />
+				<xsl:with-param name="h1" select="'Edit content'" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- List content -->
-  <xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'index']">
+	<xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'index']">
 		<table>
 			<thead>
 				<tr>
@@ -95,11 +91,11 @@
 				</xsl:for-each>
 			</tbody>
 		</table>
-  </xsl:template>
+	</xsl:template>
 
 	<!-- Add content -->
-  <xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'add_content']">
-  	<form method="post" action="content/add_content">
+	<xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'add_content']">
+		<form method="post" action="content/add_content">
 
 			<h2>Content types</h2>
 
@@ -122,12 +118,12 @@
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Add content'" />
 			</xsl:call-template>
-  	</form>
-  </xsl:template>
+		</form>
+	</xsl:template>
 
 	<!-- Edit content -->
-  <xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'edit_content']">
-  	<form method="post" action="content/edit_content/{content_id}">
+	<xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'edit_content']">
+		<form method="post" action="content/edit_content/{content_id}">
 
 			<h2>Content types</h2>
 
@@ -150,7 +146,7 @@
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Save'" />
 			</xsl:call-template>
-  	</form>
-  </xsl:template>
+		</form>
+	</xsl:template>
 
 </xsl:stylesheet>

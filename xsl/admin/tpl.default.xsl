@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <!-- INCLUDES -->
-  <!--xsl:include href="inc.elements.xsl" /-->
-  <xsl:include href="inc.common.xsl" />
+	<!-- INCLUDES -->
+	<!--xsl:include href="inc.elements.xsl" /-->
+	<xsl:include href="inc.common.xsl" />
 
 	<xsl:output
 		method="html"
@@ -13,13 +13,13 @@
 
 	<xsl:key name="nav_categories" match="/root/content/menuoptions/menuoption" use="@category" />
 
-  <!-- TEMPLATE -->
-  <xsl:template name="template">
-  	<xsl:param name="title" />
-  	<xsl:param name="h1" />
+	<!-- TEMPLATE -->
+	<xsl:template name="template">
+		<xsl:param name="title" />
+		<xsl:param name="h1" />
 
-    <html>
-      <head>
+		<html>
+			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 				<link type="text/css" href="{/root/meta/base}css/admin/style.css" rel="stylesheet" media="all" />
 				<link href='http://fonts.googleapis.com/css?family=Cuprum&amp;subset=latin' rel='stylesheet' type='text/css' />
@@ -33,8 +33,8 @@
 						}
 					</style>
 				<![endif]-->
-      </head>
-      <body>
+			</head>
+			<body>
 
 				<xsl:call-template name="header" />
 
@@ -56,7 +56,7 @@
 										<div class="message"><xsl:value-of select="." /></div>
 									</xsl:for-each>
 
-        					<xsl:apply-templates select="/root/content" />
+									<xsl:apply-templates select="/root/content" />
 
 									<!-- Content end -->
 								</div>
@@ -64,7 +64,7 @@
 							</div>
 						</div>
 
-				    <div class="menu">
+						<div class="menu">
 							<!-- Menu start -->
 
 							<xsl:for-each select="/root/content/menuoptions/menuoption">
@@ -97,12 +97,12 @@
 				<!--div id="footer">
 					Fot
 				</div-->
-      </body>
-    </html>
-  </xsl:template>
+			</body>
+		</html>
+	</xsl:template>
 
-  <xsl:template name="menuoptions">
-  	<xsl:param name="cat_name" />
+	<xsl:template name="menuoptions">
+		<xsl:param name="cat_name" />
 
 		<xsl:for-each select="/root/content/menuoptions/menuoption">
 			<xsl:sort select="position" />
@@ -123,6 +123,6 @@
 			</xsl:if>
 		</xsl:for-each>
 
-  </xsl:template>
+	</xsl:template>
 
 </xsl:stylesheet>

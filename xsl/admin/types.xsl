@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:include href="tpl.default.xsl" />
+	<xsl:include href="tpl.default.xsl" />
 
 	<xsl:template name="tabs">
 		<ul class="tabs">
-			<li>
-				<a href="types">
-					<xsl:if test="/root/meta/action = 'index'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>List content types</xsl:text>
-				</a>
-			</li>
-			<li>
-				<a href="types/add_type">
-					<xsl:if test="/root/meta/action = 'add_type'">
-						<xsl:attribute name="class">selected</xsl:attribute>
-					</xsl:if>
-					<xsl:text>Add content type</xsl:text>
-				</a>
-			</li>
+
+			<xsl:call-template name="tab">
+				<xsl:with-param name="href"   select="'types'" />
+				<xsl:with-param name="text"   select="'List content types'" />
+			</xsl:call-template>
+
+			<xsl:call-template name="tab">
+				<xsl:with-param name="href"   select="'types/add_type'" />
+				<xsl:with-param name="action" select="'add_type'" />
+				<xsl:with-param name="text"   select="'Add content type'" />
+			</xsl:call-template>
+
 		</ul>
 	</xsl:template>
 
 
-  <xsl:template match="/">
-  	<xsl:if test="/root/meta/action = 'index'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Content Types'" />
-		  	<xsl:with-param name="h1" select="'List content types'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  	<xsl:if test="/root/meta/action = 'add_type'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Content Types'" />
-		  	<xsl:with-param name="h1" select="'Add content type'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  	<xsl:if test="/root/meta/action = 'edit_type'">
-  		<xsl:call-template name="template">
-		  	<xsl:with-param name="title" select="'Admin - Content Types'" />
-		  	<xsl:with-param name="h1" select="'Edit content type'" />
-  		</xsl:call-template>
-  	</xsl:if>
-  </xsl:template>
+	<xsl:template match="/">
+		<xsl:if test="/root/meta/action = 'index'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Content Types'" />
+				<xsl:with-param name="h1" select="'List content types'" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="/root/meta/action = 'add_type'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Content Types'" />
+				<xsl:with-param name="h1" select="'Add content type'" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="/root/meta/action = 'edit_type'">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Content Types'" />
+				<xsl:with-param name="h1" select="'Edit content type'" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- List types -->
-  <xsl:template match="content[../meta/controller = 'types' and ../meta/action = 'index']">
+	<xsl:template match="content[../meta/controller = 'types' and ../meta/action = 'index']">
 		<table>
 			<thead>
 				<tr>
@@ -84,16 +80,16 @@
 				</xsl:for-each>
 			</tbody>
 		</table>
-  </xsl:template>
+	</xsl:template>
 
 	<!-- Add type -->
-  <xsl:template match="content[../meta/controller = 'types' and ../meta/action = 'add_type']">
-  	<form method="post" action="types/add_type">
+	<xsl:template match="content[../meta/controller = 'types' and ../meta/action = 'add_type']">
+		<form method="post" action="types/add_type">
 
 			<h2>Content type data</h2>
 
 			<!-- Name -->
-			<xsl:if test="/root/content/errors/form_errors/name = 'not_empty'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Valid::not_empty'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Content type name:'" />
@@ -122,12 +118,12 @@
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Add content type'" />
 			</xsl:call-template>
-  	</form>
-  </xsl:template>
+		</form>
+	</xsl:template>
 
 	<!-- Edit type -->
-  <xsl:template match="content[../meta/controller = 'types' and ../meta/action = 'edit_type']">
-  	<form method="post" action="types/edit_type/{type_data/@id}">
+	<xsl:template match="content[../meta/controller = 'types' and ../meta/action = 'edit_type']">
+		<form method="post" action="types/edit_type/{type_data/@id}">
 
 			<h2>Content type data</h2>
 
@@ -139,7 +135,7 @@
 			</xsl:call-template>
 
 			<!-- Name -->
-			<xsl:if test="/root/content/errors/form_errors/name = 'not_empty'">
+			<xsl:if test="/root/content/errors/form_errors/name = 'Valid::not_empty'">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'name'" />
 					<xsl:with-param name="label" select="'Content type name:'" />
@@ -169,7 +165,7 @@
 			<xsl:call-template name="form_button">
 				<xsl:with-param name="value" select="'Save changes'" />
 			</xsl:call-template>
-  	</form>
-  </xsl:template>
+		</form>
+	</xsl:template>
 
 </xsl:stylesheet>

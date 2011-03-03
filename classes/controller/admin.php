@@ -2,9 +2,9 @@
 
 class Controller_Admin extends Admincontroller {
 
-	public function __construct()
+	public function __construct(Request $request, Response $response)
 	{
-		parent::__construct();
+		parent::__construct($request, $response);
 	}
 
 	public function action_index()
