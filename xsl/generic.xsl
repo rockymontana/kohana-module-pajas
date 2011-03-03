@@ -31,7 +31,9 @@
 				</ul>
 
 				<div id="main_content">
-					<xsl:apply-templates select="/root/content/page/type[name = 'page_welcome']/contents/content[1]/html" mode="elements" />
+					<xsl:call-template name="load_content">
+						<xsl:with-param name="content_type" select="'page_welcome'" />
+					</xsl:call-template>
 				</div>
 
 				<h2>Some columns</h2>
@@ -39,15 +41,21 @@
 				<ul id="columns">
 
 					<li id="col1">
-						<xsl:apply-templates select="/root/content/page/type[name = 'Puff 1']/contents/content[1]/html" mode="elements" />
+						<xsl:call-template name="load_content">
+							<xsl:with-param name="content_type" select="'Puff 1'" />
+						</xsl:call-template>
 					</li>
 
 					<li id="col2">
-						<xsl:apply-templates select="/root/content/page/type[name = 'Puff 2']/contents/content[1]/html" mode="elements" />
+						<xsl:call-template name="load_content">
+							<xsl:with-param name="content_type" select="'Puff 2'" />
+						</xsl:call-template>
 					</li>
 
 					<li id="col3">
-						<xsl:apply-templates select="/root/content/page/type[name = 'Puff 3']/contents/content[1]/html" mode="elements" />
+						<xsl:call-template name="load_content">
+							<xsl:with-param name="content_type" select="'Puff 3'" />
+						</xsl:call-template>
 					</li>
 
 				</ul>
