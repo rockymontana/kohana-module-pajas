@@ -2,8 +2,8 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:template name="load_content">
-		<xsl:param name="content_type" />
-		<xsl:apply-templates select="/root/content/page/type[name = $content_type]/contents/content[1]/html" mode="elements" />
+		<xsl:param name="field_id" />
+		<xsl:apply-templates select="/root/content/page/type[@template_field_id = $field_id]/contents/content[1]/html" mode="elements" />
 	</xsl:template>
 
 	<xsl:template match="h1" mode="elements">

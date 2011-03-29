@@ -25,21 +25,26 @@ class Controller_Generic extends Xsltcontroller {
 		// And load the page data into it
 		$page_data = $content_page->get_page_data();
 
-		foreach ($page_data['type_ids'] as $nr => $type_id)
+		$counter = 0;
+		foreach ($page_data['type_ids'] as $template_field_id => $type_id)
 		{
-			$content_type          = new Content_Type($type_id);
-			$page_data[$nr.'type'] = $content_type->get_type_data();
+			$content_type               = new Content_Type($type_id);
+			$page_data[$counter.'type'] = array_merge(
+			                                $content_type->get_type_data(),
+			                                array('template_field_id' => $template_field_id)
+			                              );
 			foreach (Content_Content::get_contents_by_type($type_id) as $content)
 			{
-				$page_data[$nr.'type']['contents']['content'] = array(
+				$page_data[$counter.'type']['contents']['content'] = array(
 					'id'  => $content['id'],
 					'raw' => $content['content'],
 				);
 			}
+			$counter++;
 		}
 		unset($page_data['type_ids']);
 
-		xml::to_XML($page_data, $this->xml_content_page, NULL, 'id');
+		xml::to_XML($page_data, $this->xml_content_page, NULL, array('id', 'template_field_id'));
 
 		// We need to put some HTML in from our transformator
 		// The reason for all this mess is that we must inject this directly in to the DOM, or else the <> will get destroyed

@@ -32,7 +32,7 @@
 
 				<div id="main_content">
 					<xsl:call-template name="load_content">
-						<xsl:with-param name="content_type" select="'page_welcome'" />
+						<xsl:with-param name="field_id" select="'1'" />
 					</xsl:call-template>
 				</div>
 
@@ -42,19 +42,19 @@
 
 					<li id="col1">
 						<xsl:call-template name="load_content">
-							<xsl:with-param name="content_type" select="'Puff 1'" />
+							<xsl:with-param name="field_id" select="'2'" />
 						</xsl:call-template>
 					</li>
 
 					<li id="col2">
 						<xsl:call-template name="load_content">
-							<xsl:with-param name="content_type" select="'Puff 2'" />
+							<xsl:with-param name="field_id" select="'3'" />
 						</xsl:call-template>
 					</li>
 
 					<li id="col3">
 						<xsl:call-template name="load_content">
-							<xsl:with-param name="content_type" select="'Puff 3'" />
+							<xsl:with-param name="field_id" select="'4'" />
 						</xsl:call-template>
 					</li>
 

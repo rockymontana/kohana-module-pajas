@@ -20,7 +20,7 @@ class Driver_Content_Mysql extends Driver_Content
 				`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				`content` text COLLATE utf8_unicode_ci NOT NULL,
 				PRIMARY KEY (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_content_types` (
 				`content_id` bigint(20) unsigned NOT NULL,
 				`type_id` int(10) unsigned NOT NULL,
@@ -35,22 +35,23 @@ class Driver_Content_Mysql extends Driver_Content
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_pages` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-				`name` varchar(100) NOT NULL,
+				`name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 				`URI` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `URI` (`URI`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_pages_types` (
 				`page_id` int(10) unsigned NOT NULL,
 				`type_id` int(10) unsigned NOT NULL,
-				PRIMARY KEY (`page_id`,`type_id`)
+				`template_field_id` int(10) unsigned NOT NULL COMMENT \'Where in the template this should reside\',
+				PRIMARY KEY (`page_id`,`type_id`,`template_field_id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_type` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 				`description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 				PRIMARY KEY (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_types_details` (
 				`type_id` int(10) unsigned NOT NULL,
 				`detail_id` int(10) unsigned NOT NULL,
@@ -111,7 +112,10 @@ class Driver_Content_Mysql extends Driver_Content
 	public function get_page_data($id)
 	{
 		$sql = '
-			SELECT content_pages.* , content_pages_types.type_id
+			SELECT
+				content_pages.*,
+				content_pages_types.type_id,
+				content_pages_types.template_field_id
 			FROM content_pages
 				LEFT JOIN content_pages_types ON page_id = id
 			WHERE id = '.$this->pdo->quote($id);
@@ -120,10 +124,10 @@ class Driver_Content_Mysql extends Driver_Content
 
 		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $data_line)
 		{
-			$page_data['id']         = $data_line['id'];
-			$page_data['name']       = $data_line['name'];
-			$page_data['URI']        = $data_line['URI'];
-			$page_data['type_ids'][] = $data_line['type_id'];
+			$page_data['id']                                        = $data_line['id'];
+			$page_data['name']                                      = $data_line['name'];
+			$page_data['URI']                                       = $data_line['URI'];
+			$page_data['type_ids'][$data_line['template_field_id']] = $data_line['type_id'];
 		}
 
 		return $page_data;
@@ -209,11 +213,11 @@ class Driver_Content_Mysql extends Driver_Content
 				// Add the type connections
 				if ($type_ids)
 				{
-					$sql = 'INSERT INTO content_pages_types (page_id, type_id) VALUES';
+					$sql = 'INSERT INTO content_pages_types (page_id, type_id, template_field_id) VALUES';
 
-					foreach ($type_ids as $type_id)
+					foreach ($type_ids as $template_field_id => $type_id)
 					{
-						$sql .= '('.$this->pdo->quote($page_id).','.$this->pdo->quote($type_id).'),';
+						$sql .= '('.$this->pdo->quote($page_id).','.$this->pdo->quote($type_id).','.$this->pdo->quote($template_field_id).'),';
 					}
 
 					$this->pdo->exec(substr($sql, 0, strlen($sql) - 1));
@@ -296,10 +300,10 @@ class Driver_Content_Mysql extends Driver_Content
 				DELETE FROM content_content_types
 				WHERE content_id = '.$this->pdo->quote($content_id).';');
 
-			$sql = 'INSERT INTO content_content_types (content_id, type_id) VALUES';
-			foreach ($type_ids as $type_id)
+			$sql = 'INSERT INTO content_content_types (content_id, type_id, template_field_id) VALUES';
+			foreach ($type_ids as $template_field_id => $type_id)
 			{
-				$sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote($type_id).'),';
+				$sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote($type_id).','.$this->pdo->quote($template_field_id).'),';
 			}
 			$this->pdo->exec(substr($sql, 0, strlen($sql) - 1).';');
 		}

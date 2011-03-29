@@ -50,7 +50,7 @@ abstract class Driver_Content extends Model
 		$this->new_content('### Col 3'."\n\n".'Lorem ipsum dolor sit amet, consectetur adipizscing elit. Fusce velit quam, pharetra id, vehicula eu, consectetur ut, orci. Donec odio. Donec non neque. Ut rutrum lectus nec elit. Ut id quam. Cras aliquam erat eu mi. Aliquam orci neque, lobortis a, tempus ut, lacinia sit amet, purus.', array(4));
 
 		// We set the URI to 'welcome' since that is Kohanas default route
-		$this->new_page('Hello world!', 'welcome', array(1,2,3,4));
+		$this->new_page('Hello world!', 'welcome', array(1=>1,2=>2,3=>3,4=>4));
 
 		return TRUE;
 	}
@@ -114,7 +114,12 @@ abstract class Driver_Content extends Model
 	 *                 'id'       => 1
 	 *                 'name'     => Some page
 	 *                 'URI'      => some-page
-	 *                 'type_ids' => array(1,4)
+	 *                 'type_ids' => array(
+	 *                                 template_field_id => type_id
+	 *                                 1 => 1,
+	 *                                 2 => 4,
+	 *                                 5 => 2,
+	 *                               )
 	 *               )
 	 */
 	abstract public function get_page_data($id);
@@ -206,7 +211,7 @@ abstract class Driver_Content extends Model
 	 * @param str $name     - Page name
 	 * @param str $URI      - Page URL (Defaults to page name, just URL formatted)
 	 * @param str $content  - Page content (Defaults to empty string)
-	 * @param arr $type_ids - Array of content type ids to connect this page to
+	 * @param arr $type_ids - Array with template_field_id as key and type_id as value
 	 * @return int page id
 	 */
 	abstract public function new_page($name, $URL, $type_ids = FALSE);
@@ -274,9 +279,9 @@ abstract class Driver_Content extends Model
 	 * Update page data
 	 *
 	 * @param int $id       - Page ID
-	 * @param str $name     - Page name    OPTIONAL
-	 * @param str $URI      - Page URL     OPTIONAL
-	 * @param arr $type_ids - Type IDs     OPTIONAL
+	 * @param str $name     - Page name                                                    OPTIONAL
+	 * @param str $URI      - Page URL                                                     OPTIONAL
+	 * @param arr $type_ids - Array with template_field_id as key and type_id as value     OPTIONAL
 	 * @return bool
 	 */
 	abstract public function update_page_data($id, $name = FALSE, $URI = FALSE, $type_ids = FALSE);

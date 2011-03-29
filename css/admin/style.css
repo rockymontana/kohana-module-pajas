@@ -16,7 +16,7 @@ body
 	                              /* The min-width property does not work in old versions of Internet Explorer */
 }
 
-h1 /* More styles for h1 can be found in the menu-section */
+h1                              /* More styles for h1 can be found in the menu-section */
 {
 	font-weight:        normal;
 }
@@ -298,6 +298,19 @@ div#loginbox
 		clear:             left;
 		margin-right:      5px;
 	}
+
+		.contentwrap2 label.content_types {}
+
+			.contentwrap2 label.content_types input
+			{
+				width:             auto;
+				margin-right:      5px;
+			}
+
+			.contentwrap2 label.content_types select
+			{
+				width:             auto;
+			}
 
 	.contentwrap2 span.instead_of_input
 	{
