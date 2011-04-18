@@ -20,7 +20,6 @@
 		</ul>
 	</xsl:template>
 
-
 	<xsl:template match="/">
 		<xsl:if test="/root/meta/action = 'index'">
 			<xsl:call-template name="template">
@@ -167,28 +166,6 @@
 					</input>
 				</label>
 
-				<!--xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="concat('type_',@id)" />
-					<xsl:with-param name="label" select="concat(name,':')" />
-					<xsl:with-param name="type" select="'checkbox'" />
-				</xsl:call-template>
-
-				<label>
-					<xsl:attribute name="for">
-						<xsl:value-of select="concat('template_for_type_', current()/@id)" />
-					</xsl:attribute>
-					<xsl:text>Template place:</xsl:text>
-					<select>
-						<xsl:attribute name="id">
-							<xsl:value-of select="concat('template_for_type_', current()/@id)" />
-						</xsl:attribute>
-						<xsl:attribute name="name">
-							<xsl:value-of select="concat('template_for_type_', current()/@id)" />
-						</xsl:attribute>
-						<xsl:call-template name="template_for_type" />
-					</select>
-				</label>
-				<p class="error"> </p-->
 			</xsl:for-each>
 
 			<xsl:if test="../meta/action = 'add_page'">
@@ -206,7 +183,7 @@
 
 	<xsl:template name="template_for_type">
 		<xsl:param name="i">1</xsl:param>
-		<option value="$i">
+		<option value="{$i}">
 			<xsl:if test="/root/content/formdata/field[@id = concat('template_for_type_', current()/@id)] = $i">
 				<xsl:attribute name="selected">selected</xsl:attribute>
 			</xsl:if>

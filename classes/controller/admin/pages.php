@@ -44,9 +44,11 @@ class Controller_Admin_Pages extends Admincontroller {
 			if ($post->validate())
 			{
 				$type_ids = array();
-				foreach ($post as $key => $value)
+				foreach ($post_values as $key => $value)
 				{
-					if (substr($key, 0, 5) == 'type_') $type_ids[] = (int) substr($key, 5);
+					if (substr($key, 0, 5) == 'type_') {
+						$type_ids[$post_values['template_for_type_'.substr($key, 5)]] = (int) substr($key, 5);
+					}
 				}
 				$page_id = Content_Page::new_page($post_values['name'], $post_values['URI'], $type_ids);
 				$this->add_message('Page "'.$post_values['name'].'" added');
@@ -101,17 +103,22 @@ class Controller_Admin_Pages extends Admincontroller {
 				// Retry
 				if ($post->validate())
 				{
-					$post_values = $post->as_array();
-					$type_ids    = array();
+					$type_ids = array();
 					foreach ($post_values as $key => $value)
 					{
-						if (substr($key, 0, 5) == 'type_') $type_ids[] = (int) substr($key, 5);
+						if (substr($key, 0, 5) == 'type_') {
+							$type_ids[$post_values['template_for_type_'.substr($key, 5)]] = (int) substr($key, 5);
+						}
 					}
 					$content_page->update_page_data($post_values['name'], $post_values['URI'], $type_ids);
 					$this->add_message('Page "'.$post_values['name'].'" updated');
 
 					$page_data = $content_page->get_page_data();
-					foreach ($page_data['type_ids'] as $type_id) $page_data['type_'.$type_id] = 'checked';
+					foreach ($page_data['type_ids'] as $template_field_id => $type_id)
+					{
+						$page_data['type_'.$type_id]              = 'checked';
+						$page_data['template_for_type_'.$type_id] = $template_field_id;
+					}
 					unset($page_data['type_ids']);
 					$this->set_formdata($page_data);
 				}
@@ -126,7 +133,11 @@ class Controller_Admin_Pages extends Admincontroller {
 			else
 			{
 				$page_data = $content_page->get_page_data();
-				foreach ($page_data['type_ids'] as $type_id) $page_data['type_'.$type_id] = 'checked';
+				foreach ($page_data['type_ids'] as $template_field_id => $type_id)
+				{
+					$page_data['type_'.$type_id]              = 'checked';
+					$page_data['template_for_type_'.$type_id] = $template_field_id;
+				}
 				unset($page_data['type_ids']);
 				$this->set_formdata($page_data);
 			}
@@ -146,10 +157,11 @@ class Controller_Admin_Pages extends Admincontroller {
 			xml::to_XML($page_data, $this->xml_content_page, NULL, 'id');
 
 			// For each type id, make a type node and set the attribute id to the type id
-			foreach ($type_ids as $type_id)
+			foreach ($type_ids as $template_field_id => $type_id)
 			{
 				$type_node = $this->xml_content_page->appendChild($this->dom->createElement('type'));
 				$type_node->setAttribute('id', $type_id);
+				$type_node->setAttribute('template_field_id', $template_field_id);
 			}
 		}
 		else $this->redirect();

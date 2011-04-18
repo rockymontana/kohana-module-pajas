@@ -101,13 +101,11 @@ class Content_Page extends Model
 	 *                        id      => 1,
 	 *                        name    => About,
 	 *                        URI     => about,
-	 *                        content => Lots of page content
 	 *                      ),
 	 *                      array(
 	 *                        id      => 2,
 	 *                        name    => Contact us,
 	 *                        URI     => contact,
-	 *                        content => Lots of page content
 	 *                      ),
 	 *                    )
 	 */
@@ -131,7 +129,7 @@ class Content_Page extends Model
 	 *
 	 * @param str $name
 	 * @param str $URI      OPTIONAL
-	 * @param arr $type_ids OPTIONAL
+	 * @param arr $type_ids OPTIONAL template position as key, type ID as value
 	 * @return int page id
 	 */
 	public static function new_page($name, $URI = FALSE, $type_ids = FALSE)
@@ -215,7 +213,7 @@ class Content_Page extends Model
 	 *
 	 * @param str $name     OPTIONAL
 	 * @param str $URI      OPTIONAL
-	 * @param arr $type_ids OPTIONAL - Type ids to tie to this page
+	 * @param arr $type_ids OPTIONAL - template position as key, type ID as value
 	 * @return boolean
 	 */
 	public function update_page_data($name = FALSE, $URI = FALSE, $type_ids = FALSE)

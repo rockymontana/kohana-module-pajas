@@ -72,8 +72,8 @@ abstract class Driver_Content extends Model
 	 *                        content => Lots of content
 	 *                        types   => array(
 	 *                                     array(
-	 *                                       id   => 3,
-	 *                                       type => blog post,
+	 *                                       id                => 3,
+	 *                                       type              => blog post,
 	 *                                     )
 	 *                                   )
 	 *                      ),
@@ -81,12 +81,12 @@ abstract class Driver_Content extends Model
 	 *                        id      => 2,
 	 *                        types   => array(
 	 *                                     array(
-	 *                                       id   => 4,
-	 *                                       type => News,
+	 *                                       id                => 4,
+	 *                                       type              => News,
 	 *                                     )
 	 *                                     array(
-	 *                                       id   => 5,
-	 *                                       type => RSS post,
+	 *                                       id                => 5,
+	 *                                       type              => RSS post,
 	 *                                     )
 	 *                                   )
 	 *                        content => Lots of content

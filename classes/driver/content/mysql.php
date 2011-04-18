@@ -358,11 +358,11 @@ class Driver_Content_Mysql extends Driver_Content
 			if (count($type_ids))
 			{
 				// Then add the new ones
-				$sql = 'INSERT INTO content_pages_types (page_id, type_id) VALUES';
+				$sql = 'INSERT INTO content_pages_types (page_id, type_id, template_field_id) VALUES';
 
-				foreach ($type_ids as $type_id)
+				foreach ($type_ids as $template_field_id => $type_id)
 				{
-					$sql .= '('.$this->pdo->quote($id).','.$this->pdo->quote($type_id).'),';
+					$sql .= '('.$this->pdo->quote($id).','.$this->pdo->quote($type_id).','.$this->pdo->quote($template_field_id).'),';
 				}
 
 				$this->pdo->exec(substr($sql, 0, strlen($sql) - 1));
