@@ -300,10 +300,10 @@ class Driver_Content_Mysql extends Driver_Content
 				DELETE FROM content_content_types
 				WHERE content_id = '.$this->pdo->quote($content_id).';');
 
-			$sql = 'INSERT INTO content_content_types (content_id, type_id, template_field_id) VALUES';
-			foreach ($type_ids as $template_field_id => $type_id)
+			$sql = 'INSERT INTO content_content_types (content_id, type_id) VALUES';
+			foreach ($type_ids as $type_id)
 			{
-				$sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote($type_id).','.$this->pdo->quote($template_field_id).'),';
+				$sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote($type_id).'),';
 			}
 			$this->pdo->exec(substr($sql, 0, strlen($sql) - 1).';');
 		}
