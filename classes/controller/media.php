@@ -59,7 +59,7 @@ class Controller_Media extends Controller
 				{
 					// Image not cached or cache outdated, we respond '200 OK' and output the image.
 					$this->response->headers('Last-Modified', gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
-					$this->response->headers('Content-Length', filesize($file));
+					$this->response->headers('Content-Length', strval(filesize($file)));
 					$this->response->status(200);
 					echo file_get_contents($file);
 				}
