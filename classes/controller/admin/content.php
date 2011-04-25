@@ -21,8 +21,10 @@ class Controller_Admin_Content extends Admincontroller {
 		{
 			$content_node = $this->xml_content_contents->appendChild($this->dom->createElement('content'));
 			$content_node->setAttribute('id', $content['id']);
-			$content_node->appendChild($this->dom->createElement('content', $content['content']));
-			$types_node   = $content_node->appendChild($this->dom->createElement('types'));
+			$content_node_content = $this->dom->createElement('content');
+			$content_node_content->appendChild($this->dom->createTextNode($content['content']));
+			$content_node->appendChild($content_node_content);
+			$types_node = $content_node->appendChild($this->dom->createElement('types'));
 			foreach ($content['types'] as $type)
 			{
 				$type_node = $types_node->appendChild($this->dom->createElement('type', $type['type']));

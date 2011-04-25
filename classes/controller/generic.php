@@ -29,16 +29,20 @@ class Controller_Generic extends Xsltcontroller {
 		foreach ($page_data['type_ids'] as $template_field_id => $type_id)
 		{
 			$content_type               = new Content_Type($type_id);
-			$page_data[$counter.'type'] = array_merge(
-			                                $content_type->get_type_data(),
-			                                array('template_field_id' => $template_field_id)
-			                              );
-			foreach (Content_Content::get_contents_by_type($type_id) as $content)
+			if ($content_type->get_type_id())
 			{
-				$page_data[$counter.'type']['contents']['content'] = array(
-					'id'  => $content['id'],
-					'raw' => $content['content'],
-				);
+				$page_data[$counter.'type'] = array_merge(
+					                              $content_type->get_type_data(),
+					                              array('template_field_id' => $template_field_id)
+					                            );
+
+				foreach (Content_Content::get_contents_by_type($type_id) as $content)
+				{
+					$page_data[$counter.'type']['contents']['content'] = array(
+						'id'  => $content['id'],
+						'raw' => $content['content'],
+					);
+				}
 			}
 			$counter++;
 		}
