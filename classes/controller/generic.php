@@ -1,6 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
-class Controller_Generic extends Xsltcontroller {
+class Controller_Generic extends Xsltcontroller
+{
 
 	public function __construct(Request $request, Response $response)
 	{
