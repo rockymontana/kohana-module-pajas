@@ -480,7 +480,9 @@ class Markdown
 		'encode_amps_and_angles' =>  40,
 
 		'do_italics_and_bold'    =>  50,
-		'do_hard_breaks'         =>  60,
+
+// This is done in the paragraph section now
+//		'do_hard_breaks'         =>  60,
 	);
 
 	/*
@@ -500,7 +502,8 @@ class Markdown
 	private static function do_hard_breaks($text)
 	{
 		// Do hard breaks:
-		return preg_replace_callback('/ {2,}\n/', array(__CLASS__, '_do_hard_breaks_callback'), $text);
+//		return preg_replace_callback('/ {2,}\n/', array(__CLASS__, '_do_hard_breaks_callback'), $text);
+		return preg_replace_callback('/\n/', array(__CLASS__, '_do_hard_breaks_callback'), $text);
 	}
 	private static function _do_hard_breaks_callback($matches) {
 		return self::hash_part('<br'.self::$empty_element_suffix."\n");
@@ -1247,6 +1250,9 @@ class Markdown
 		// Wrap <p> tags and unhashify HTML blocks
 		foreach ($grafs as $key => $value)
 		{
+			// Make <br /> of all single line breaks
+			$value = self::do_hard_breaks($value);
+
 			if (!preg_match('/^B\x1A[0-9]+B$/', $value))
 			{
 				// Is a paragraph.
