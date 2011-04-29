@@ -76,7 +76,7 @@
 												<xsl:value-of select="@category" />
 											</xsl:if>
 											<xsl:if test="@category = ''">
-												System
+												<xsl:text>System</xsl:text>
 											</xsl:if>
 										</p>
 										<ul>
@@ -112,10 +112,8 @@
 						<xsl:if test="/root/meta/admin_page = name">
 							<xsl:attribute name="class">selected</xsl:attribute>
 						</xsl:if>
-						<xsl:if test="not(/root/meta/admin_page)">
-							<xsl:if test="concat('admin/',href) = /root/meta/path or (href = '' and /root/meta/path = 'admin')">
-								<xsl:attribute name="class">selected</xsl:attribute>
-							</xsl:if>
+						<xsl:if test="not(/root/meta/admin_page) and href = ''">
+							<xsl:attribute name="class">selected</xsl:attribute>
 						</xsl:if>
 						<xsl:value-of select="name" />
 					</a>
