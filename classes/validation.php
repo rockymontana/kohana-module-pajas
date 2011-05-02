@@ -77,6 +77,11 @@ class Validation
 		return TRUE;
 	}
 
+	public function set($field, $value)
+	{
+		return $this->array[$field] = $value;
+	}
+
 	public function validate()
 	{
 		return (bool) ! (count($this->errors()));
