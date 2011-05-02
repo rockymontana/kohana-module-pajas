@@ -53,6 +53,15 @@ class Validation
 		return $array;
 	}
 
+	public function get($field)
+	{
+		if (isset($this->array[$field]))
+		{
+			return $this->array[$field];
+		}
+		return FALSE;
+	}
+
 	public function rule($rule, $field = FALSE)
 	{
 		if (($field) && isset($this->array[$field]) && is_callable($rule))
