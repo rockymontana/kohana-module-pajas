@@ -2,10 +2,8 @@
 
 class Controller_Admin_Content extends Admincontroller {
 
-	public function __construct(Request $request, Response $response)
+	public function before()
 	{
-		parent::__construct($request, $response);
-		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/content';
 		xml::to_XML(array('admin_page' => 'Content'), $this->xml_meta);
 

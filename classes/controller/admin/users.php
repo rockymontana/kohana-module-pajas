@@ -2,9 +2,8 @@
 
 class Controller_Admin_Users extends Admincontroller {
 
-	public function __construct(Request $request, Response $response)
+	public function before()
 	{
-		parent::__construct($request, $response);
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/users';
 		xml::to_XML(array('admin_page' => 'Users'), $this->xml_meta);

@@ -2,9 +2,8 @@
 
 class Controller_Admin_Types extends Admincontroller {
 
-	public function __construct(Request $request, Response $response)
+	public function before()
 	{
-		parent::__construct($request, $response);
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/types';
 		xml::to_XML(array('admin_page' => 'Content types'), $this->xml_meta);

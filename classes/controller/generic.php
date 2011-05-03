@@ -3,12 +3,6 @@
 class Controller_Generic extends Xsltcontroller
 {
 
-	public function __construct(Request $request, Response $response)
-	{
-		// This is needed for the XSLT setup
-		parent::__construct($request, $response);
-	}
-
 	public function action_index($URI = 'welcome')
 	{
 		// Empty string defaults to 'welcome'
