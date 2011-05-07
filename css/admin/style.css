@@ -274,6 +274,11 @@ div#loginbox
 			background-color:  #d7e8ef;
 		}
 
+		.contentwrap2 table td
+		{
+			vertical-align:   top;
+		}
+
 		.contentwrap2 table th
 		{
 			font-weight:       bold;
@@ -289,6 +294,11 @@ div#loginbox
 		.contentwrap2 table .medium_row
 		{
 			width:             100px;
+		}
+
+		.contentwrap2 table .large_row
+		{
+			width:             300px;
 		}
 
 	.contentwrap2 label

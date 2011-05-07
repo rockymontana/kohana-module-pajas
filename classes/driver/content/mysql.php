@@ -11,7 +11,7 @@ class Driver_Content_Mysql extends Driver_Content
 	protected function check_db_structure()
 	{
 		$columns = $this->pdo->query('SHOW TABLES like \'content_%\';')->fetchAll(PDO::FETCH_COLUMN);
-		return count($columns) == 7;
+		return count($columns) == 10;
 	}
 
 	protected function create_db_structure() {
@@ -33,6 +33,22 @@ class Driver_Content_Mysql extends Driver_Content
 				`content` text COLLATE utf8_unicode_ci NOT NULL,
 				PRIMARY KEY (`content_id`,`type_id`,`detail_id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			CREATE TABLE IF NOT EXISTS `content_details` (
+				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`name` varchar(255) NOT NULL,
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `name` (`name`)
+			) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+			CREATE TABLE IF NOT EXISTS `content_images` (
+				`name` varchar(255) NOT NULL,
+				PRIMARY KEY (`name`)
+			) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+			CREATE TABLE IF NOT EXISTS `content_images_details` (
+				`image_name` varchar(255) NOT NULL,
+				`detail_id` int(10) unsigned NOT NULL,
+				`data` text NOT NULL,
+				KEY `image_name` (`image_name`,`detail_id`)
+			) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 			CREATE TABLE IF NOT EXISTS `content_pages` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -109,6 +125,56 @@ class Driver_Content_Mysql extends Driver_Content
 		return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+// DETAILS NOT WORKING!!!
+	public function get_images($names = NULL, $details = array(), $names_only = FALSE)
+	{
+		if (is_array($names) && count($names) == 0) return array();
+		if (is_string($names))                      $names = array($names);
+
+		$sql = 'SELECT name FROM content_images WHERE 1';
+
+		if (is_array($names))
+		{
+			$sql .= ' AND name IN (\''.implode('\',\'',$names).'\')';
+		}
+
+/* Fix this shit!!
+		if (count($details))
+		{
+			$sql .= ' AND name IN (SELECT image_name FROM content_images_details WHERE ';
+			foreach ($details as $detail_name => $detail_value)
+			{
+				$sql .= '(detail_id = (SELECT id FROM content_details WHERE name = '.$this->pdo->quote($detail_name).') AND
+			}
+			$sql .= ')';
+		}
+/**/
+
+		$image_names = $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+		if ($names_only) return $image_names;
+
+		$images = array();
+		foreach ($image_names as $image_name) $images[$image_name] = array();
+
+		$sql = '
+			SELECT
+				image_name,
+				detail_id,
+				content_details.name AS detail_name,
+				data
+			FROM
+				content_images_details
+				INNER JOIN content_details ON content_details.id = content_images_details.detail_id
+			WHERE image_name IN (\''.implode('\',\'',$image_names).'\');';
+
+		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $row)
+		{
+			$images[$row['image_name']][$row['detail_name']] = $row['data'];
+		}
+
+		return $images;
+	}
+
 	public function get_page_data($id)
 	{
 		$sql = '
@@ -179,6 +245,11 @@ class Driver_Content_Mysql extends Driver_Content
 		return $this->pdo->query('SELECT * FROM content_type ORDER BY name;')->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+	public function image_name_available($name)
+	{
+		return ! (bool) $this->pdo->query('SELECT name FROM content_images WHERE name = '.$this->pdo->quote($name))->fetchColumn();
+	}
+
 	public function new_content($content, $type_ids = FALSE)
 	{
 		$this->pdo->exec('INSERT INTO content_content (content) VALUES('.$this->pdo->quote($content).');');
@@ -195,6 +266,33 @@ class Driver_Content_Mysql extends Driver_Content
 		}
 
 		return (int) $content_id;
+	}
+
+	public function new_image($name, $details = array())
+	{
+		if ($this->image_name_available($name))
+		{
+			$this->pdo->exec('INSERT INTO content_images (name) VALUES('.$this->pdo->quote($name).');');
+
+			$sql = 'INSERT INTO content_images_details (image_name, detail_id, data) VALUES';
+			foreach ($details as $detail_name => $detail_value)
+			{
+				if ( ! ($detail_id = $this->pdo->query('SELECT id FROM content_details WHERE name = '.$this->pdo->quote($detail_name))->fetchColumn()))
+				{
+					$this->pdo->exec('INSERT INTO content_details (name) VALUES('.$this->pdo->quote($detail_name).');');
+					$detail_id = $this->pdo->lastInsertId();
+				}
+
+				$sql .= '('.$this->pdo->quote($name).','.$this->pdo->quote($detail_id).','.$this->pdo->quote($detail_value).'),';
+			}
+
+			// If we have any details, add them
+			if (count($details)) $this->pdo->exec(substr($sql, 0, strlen($sql) - 1));
+
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 	public function new_page($name, $URI, $type_ids = FALSE)

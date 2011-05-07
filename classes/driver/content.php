@@ -14,6 +14,20 @@ abstract class Driver_Content extends Model
 				$this->insert_initial_data();
 			}
 		}
+
+		// Add image files that does not exist in database
+		$tracked_images = $this->get_images(NULL, array(), TRUE);
+		$cwd = getcwd();
+		chdir(Kohana::config('user_content.dir').'/images');
+		$actual_images = glob('*.jpg');
+		chdir($cwd);
+		foreach (array_diff($actual_images, $tracked_images) as $non_tracked_image)
+		{
+			$gd_img_object = ImageCreateFromJpeg(Kohana::config('user_content.dir').'/images/'.$non_tracked_image);
+			$width         = imagesx($gd_img_object);
+			$height        = imagesy($gd_img_object);
+			$this->new_image($non_tracked_image, array('width'=>$width,'height'=>$height));
+		}
 	}
 
 	/**
@@ -107,6 +121,28 @@ abstract class Driver_Content extends Model
 	abstract public function get_contents_by_type_id($type_id);
 
 	/**
+	 * Get images
+	 *
+	 * @param str or array  $names      - Fetch specific images based on name
+	 * @param arr           $details    - Fetch specific images based on details,
+	 *                                    key as detail name, value as detail value.
+	 *                                    If value is boolean TRUE, all images
+	 *                                    with this detail will be fetched.
+	 * @param bol           $names_only - Make this method return an array of image
+	 *                                    names only
+	 * @return arr - array(
+	 *                 // Image name
+	 *                 'foobar' => array(
+	 *                               // Image details
+	 *                               'date'        => '2011-05-03',
+	 *                               'description' => 'Some description',
+	 *                               etc...
+	 *                             ),
+	 *               )
+	 */
+	abstract public function get_images($names = NULL, $details = array(), $names_only = FALSE);
+
+	/**
 	 * Get page data
 	 *
 	 * @param int $id - Page ID
@@ -197,6 +233,14 @@ abstract class Driver_Content extends Model
 	abstract public function get_types();
 
 	/**
+	 * Checks if a image name is available
+	 *
+	 * @param str $name - Image name
+	 * @return boolean
+	 */
+	abstract public function image_name_available($name);
+
+	/**
 	 * New content
 	 *
 	 * @param str $content
@@ -204,6 +248,15 @@ abstract class Driver_Content extends Model
 	 * @return int content id
 	 */
 	abstract public function new_content($content, $type_ids = FALSE);
+
+	/**
+	 * New image
+	 *
+	 * @param str $name    - Image name
+	 * @param arr $details - Detail name as key, value as value
+	 * @return boolean
+	 */
+	abstract public function new_image($name, $details = array());
 
 	/**
 	 * Create a new page

@@ -40,6 +40,7 @@ return array(
 		'position'    => 2,
   ),
 
+	// CMS admin pages
   'content' => array(
     'name'        => 'Content',
     '@category'   => 'CMS',
@@ -60,6 +61,13 @@ return array(
     'description' => 'Handle content types',
 		'href'        => 'types',
 		'position'    => 3,
+  ),
+  'images' => array(
+    'name'        => 'Images',
+    '@category'   => 'CMS',
+    'description' => 'Handle images',
+		'href'        => 'images',
+		'position'    => 4,
   ),
 
 );
