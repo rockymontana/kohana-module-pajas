@@ -393,7 +393,7 @@ abstract class Driver_Content extends Model
 	 *                          )
 	 * @return boolean
 	 */
-	abstract public function update_image_data($image_name, $image_data);
+	abstract public function update_image_data($image_name, $image_data = array());
 
 	/**
 	 * Update image name
