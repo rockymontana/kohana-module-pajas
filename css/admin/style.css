@@ -250,6 +250,17 @@ div#loginbox
 					overflow:           auto;
 				}
 
+					.contentwrap2 .content .column
+					{
+						float:              left;
+						margin-right:       10px;
+					}
+
+						.contentwrap2 .content .column h2:first-child
+						{
+							padding-top:        0;
+						}
+
 					.contentwrap2 .content form textarea
 					{
 						clear:              both;
@@ -353,6 +364,8 @@ div#loginbox
 	.contentwrap2 form p.error
 	{
 		clear:             right;
+		float:             left;
+		margin:            0;
 	}
 
 	.contentwrap2 div.message

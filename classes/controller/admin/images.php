@@ -18,11 +18,15 @@ class Controller_Admin_Images extends Admincontroller {
 			// Create the image node and set the image data to it
 			$image_node = $this->xml_content_images->appendChild($this->dom->createElement('image'));
 			$image_node->setAttribute('name', $image_name);
+			$image_node->appendChild($this->dom->createElement('name', substr($image_name, 0, strlen($image_name) - 4)));
 			$image_node->appendChild($this->dom->createElement('URL', 'user_content/images/'.$image_name));
 
-			foreach ($image_details as $detail_name => $detail_value)
+			foreach ($image_details as $detail_name => $detail_values)
 			{
-				$image_node->appendChild($this->dom->createElement($detail_name, $detail_value));
+				foreach ($detail_values as $detail_value)
+				{
+					$image_node->appendChild($this->dom->createElement($detail_name, $detail_value));
+				}
 			}
 		}
 	}
@@ -62,111 +66,92 @@ class Controller_Admin_Images extends Admincontroller {
 
 	public function action_edit_image($name)
 	{
-		$content_page = new Content_Page($id);
-		if ($content_page->get_page_id())
+		$short_name = substr($name, 0, strlen($name) - 4);
+
+		$this->xml_content_image = $this->xml_content->appendChild($this->dom->createElement('image'));
+		$this->xml_content_image->setAttribute('name', $name);
+
+		xml::to_XML(array('field' => array($short_name,                  '@name' => 'name')), $this->xml_content_image);
+		xml::to_XML(array('field' => array('user_content/images/'.$name, '@name' => 'URL' )), $this->xml_content_image);
+
+		if ($content_image = new Content_Image($name))
 		{
-			$this->xml_content_types = $this->xml_content->appendChild($this->dom->createElement('types'));
-			xml::to_XML(Content_Type::get_types(), $this->xml_content_types, 'type', 'id');
 
-			$this->xml_content_page = $this->xml_content->appendChild($this->dom->createElement('page'));
-
-			if (count($_POST) && isset($_POST['URI']) && isset($_POST['name']))
+			if (count($_POST))
 			{
-				if ($_POST['URI'] == '') $_POST['URI'] = $_POST['name'];
-				$_POST['URI'] = URL::title($_POST['URI'], '-', TRUE);
-
+				$_POST['name'] = URL::title($_POST['name'], '-', TRUE);
 				$post = new Validation($_POST);
 				$post->filter('trim');
 				$post->rule('Valid::not_empty', 'name');
 
-				if ($post->validate())
+				$form_data = $post->as_array();
+				if ($form_data['name'] != $short_name)
 				{
-					$post_values       = $post->as_array();
-					$current_page_data = $content_page->get_page_data();
-
-					if ($post_values['name'] != $current_page_data['name'] && ! Content_Page::page_name_available($post_values['name']))
-					{
-						$post->add_error('name', 'Content_Page::page_name_available');
-					}
-
-					if ($post_values['URI'] != $current_page_data['URI'] && ! Content_Page::page_URI_available($post_values['URI']))
-					{
-						$post->add_error('URI', 'Content_Page::page_URI_available');
-					}
-
+					$post->rule('Content_Image::image_name_available', 'name');
 				}
 
-				// Retry
+				// Check for form errors
 				if ($post->validate())
 				{
-					$type_ids = array();
-					foreach ($post_values as $key => $value)
-					{
-						if (substr($key, 0, 5) == 'type_') {
-							$type_ids[$post_values['template_for_type_'.substr($key, 5)]] = (int) substr($key, 5);
-						}
-					}
-					$content_page->update_page_data($post_values['name'], $post_values['URI'], $type_ids);
-					$this->add_message('Page "'.$post_values['name'].'" updated');
+					// No form errors, edit image
 
-					$page_data = $content_page->get_page_data();
-					foreach ($page_data['type_ids'] as $template_field_id => $type_id)
+					$old_image_data = $content_image->get_data();
+					$new_image_data = array_merge($content_image->get_data(), $form_data);
+					$new_image_data['name'] .= substr($name, strlen($name) - 4);
+					$content_image->set_data($new_image_data);
+
+					if ($form_data['name'] != $short_name)
 					{
-						$page_data['type_'.$type_id]              = 'checked';
-						$page_data['template_for_type_'.$type_id] = $template_field_id;
+						$_SESSION['content']['image']['message'] = 'Image data saved';
+						// Redirect to the new name
+						$this->redirect('/admin/images/edit_image/'.$new_image_data['name']);
 					}
-					unset($page_data['type_ids']);
-					$this->set_formdata($page_data);
-				}
-				else
-				{
-					$this->add_error('Fix errors and try again');
-					$this->add_form_errors($post->errors());
-					$this->set_formdata($post);
+					else $this->add_message('Image data saved');
 				}
 
 			}
 			else
 			{
-				$page_data = $content_page->get_page_data();
-				foreach ($page_data['type_ids'] as $template_field_id => $type_id)
+				$image_data = $content_image->get_data();
+				if ( ! isset($image_data['description'])) $image_data['description'][0] = '';
+				if ( ! isset($image_data['date']))        $image_data['date'][0]        = date('Y-m-d', time());
+				$form_data = array(
+					'name'        => $short_name,
+					'URL'         => 'user_content/images/'.$name,
+					'description' => $image_data['description'][0],
+					'date'        => $image_data['date'][0],
+				);
+
+/*
+				$counter = 2; // name and URL are counted
+				foreach ($content_image->get_data() as $field => $values)
 				{
-					$page_data['type_'.$type_id]              = 'checked';
-					$page_data['template_for_type_'.$type_id] = $template_field_id;
+					foreach ($values as $value)
+					{
+						$counter++;
+						$xml_field = $this->xml_content_image->appendChild($this->dom->createElement('field', $value));
+						$xml_field->setAttribute('name', $field);
+						$form_data[$field.'_'.$counter] = $value;
+					}
 				}
-				unset($page_data['type_ids']);
-				$this->set_formdata($page_data);
+*/
+				if (isset($_SESSION['content']['image']['message']))
+				{
+					$this->add_message($_SESSION['content']['image']['message']);
+					unset($_SESSION['content']['image']['message']);
+				}
+
 			}
 
-			/**
-			 * Put the page data to the XML
-			 *
-			 */
-			$page_data = $content_page->get_page_data();
-			// Load the type ids to a variable of their own
-			$type_ids = $page_data['type_ids'];
-
-			// And unset it from the page data array, or it will cludge our XML
-			unset($page_data['type_ids']);
-
-			// Set the page data (name and URI) to the page node
-			xml::to_XML($page_data, $this->xml_content_page, NULL, 'id');
-
-			// For each type id, make a type node and set the attribute id to the type id
-			foreach ($type_ids as $template_field_id => $type_id)
-			{
-				$type_node = $this->xml_content_page->appendChild($this->dom->createElement('type'));
-				$type_node->setAttribute('id', $type_id);
-				$type_node->setAttribute('template_field_id', $template_field_id);
-			}
+			$this->set_formdata($form_data);
 		}
 		else $this->redirect();
 	}
 
-	public function action_rm_page($id)
+	public function action_rm_image($name)
 	{
-		$content_page = new Content_Page($id);
-		$content_page->rm_page();
+		$content_image = new Content_Image($name);
+		$content_image->rm_image();
 
 		$this->redirect();
 	}

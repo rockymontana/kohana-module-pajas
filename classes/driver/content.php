@@ -17,9 +17,9 @@ abstract class Driver_Content extends Model
 
 		// Add image files that does not exist in database
 		$tracked_images = $this->get_images(NULL, array(), TRUE);
-		$cwd = getcwd();
+		$cwd            = getcwd();
 		chdir(Kohana::config('user_content.dir').'/images');
-		$actual_images = glob('*.jpg');
+		$actual_images  = glob('*.jpg');
 		chdir($cwd);
 		foreach (array_diff($actual_images, $tracked_images) as $non_tracked_image)
 		{
@@ -121,6 +121,32 @@ abstract class Driver_Content extends Model
 	abstract public function get_contents_by_type_id($type_id);
 
 	/**
+	 * Get detail id by name
+	 *
+	 * @param str $name
+	 * @return int
+	 */
+	abstract public function get_detail_id($name);
+
+	/**
+	 * Get name by id
+	 *
+	 * @param int $id
+	 * @return str
+	 */
+	abstract public function get_detail_name($id);
+
+	/**
+	 * Get details
+	 *
+	 * @return arr - array(
+	 *                 id => name,
+	 *                 etc
+	 *               )
+	 */
+	abstract public function get_details();
+
+	/**
 	 * Get images
 	 *
 	 * @param str or array  $names      - Fetch specific images based on name
@@ -134,8 +160,9 @@ abstract class Driver_Content extends Model
 	 *                 // Image name
 	 *                 'foobar' => array(
 	 *                               // Image details
-	 *                               'date'        => '2011-05-03',
-	 *                               'description' => 'Some description',
+	 *                               'date'        => array('2011-05-03'),
+	 *                               'description' => array('Some description'),
+	 *                               'tag'         => array('car', 'blue', 'fast'),
 	 *                               etc...
 	 *                             ),
 	 *               )
@@ -250,10 +277,18 @@ abstract class Driver_Content extends Model
 	abstract public function new_content($content, $type_ids = FALSE);
 
 	/**
+	 * New detail
+	 *
+	 * @param str $name
+	 * @return int - The new detail id
+	 */
+	abstract public function new_detail($name);
+
+	/**
 	 * New image
 	 *
 	 * @param str $name    - Image name
-	 * @param arr $details - Detail name as key, value as value
+	 * @param arr $details - Detail name as key, value or array of values as value
 	 * @return boolean
 	 */
 	abstract public function new_image($name, $details = array());
@@ -295,6 +330,22 @@ abstract class Driver_Content extends Model
 	abstract public function rm_content($content_id);
 
 	/**
+	 * Deletes a detail
+	 *
+	 * @param int $detail_id
+	 * @return boolean
+	 */
+	abstract public function rm_detail($detail_id);
+
+	/**
+	 * Remove image from database
+	 *
+	 * @param str $name
+	 * @return boolean
+	 */
+	abstract public function rm_image($name);
+
+	/**
 	 * Remove a page
 	 *
 	 * @param int $id - Page ID
@@ -329,13 +380,56 @@ abstract class Driver_Content extends Model
 	abstract public function update_content($content_id, $content = FALSE, $type_ids = FALSE);
 
 	/**
+	 * Update image data
+	 * WARNING! Removes all previous data!
+	 *
+	 * @param str $image_name
+	 * @param arr $image_data - array(
+	 *                            'description' => 'Some description',
+	 *                            'tag'         => array(
+	 *                                               'car',
+	 *                                               'yellow'
+	 *                                             )
+	 *                          )
+	 * @return boolean
+	 */
+	abstract public function update_image_data($image_name, $image_data);
+
+	/**
+	 * Update image name
+	 *
+	 * @param str $old_image_name
+	 * @param str $new_image_name
+	 * @return boolean
+	 */
+	abstract public function update_image_name($old_image_name, $new_image_name);
+
+	/**
+	 * Rename the physical files, should be called from the driver
+	 *
+	 * @param str $old_image_name
+	 * @param str $new_image_name
+	 * @return boolean
+	 */
+	protected function rename_image_files($old_image_name, $new_image_name)
+	{
+		rename(Kohana::config('user_content.dir').'/images/'.$old_image_name, Kohana::config('user_content.dir').'/images/'.$new_image_name);
+		$cwd            = getcwd();
+		chdir(Kohana::config('user_content.dir').'/images');
+		$cached_images  = glob($old_image_name.'*');
+		chdir($cwd);
+		foreach ($cached_images as $cached_image) unlink(Kohana::$cache_dir.'/user_content/images/'.$cached_image);
+		return TRUE;
+	}
+
+	/**
 	 * Update page data
 	 *
 	 * @param int $id       - Page ID
 	 * @param str $name     - Page name                                                    OPTIONAL
 	 * @param str $URI      - Page URL                                                     OPTIONAL
 	 * @param arr $type_ids - Array with template_field_id as key and type_id as value     OPTIONAL
-	 * @return bool
+	 * @return boolean
 	 */
 	abstract public function update_page_data($id, $name = FALSE, $URI = FALSE, $type_ids = FALSE);
 

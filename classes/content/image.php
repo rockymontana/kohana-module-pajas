@@ -40,8 +40,9 @@ class Content_Image extends Model
 			{
 				// This image does not exist, unset the name again
 				$this->name = NULL;
-			}
+			} else return TRUE;
 		}
+		return FALSE;
 	}
 
 	/**
@@ -87,50 +88,78 @@ class Content_Image extends Model
 	}
 
 	/**
-	 * Get contents by type id
+	 * Checks if an image name is available
 	 *
-	 * @param int $type_id
-	 * @return array - ex array(
-	 *                      array(
-	 *                        id      => 1,
-	 *                        content => Lots of content
-	 *                      ),
-	 *                      array(
-	 *                        id      => 2,
-	 *                        content => Lots of content
-	 *                      ),
-	 *                    )
+	 * @param str $name (With or without file ending)
+	 * @return boolean
 	 */
-	public static function get_contents_by_type($type_id)
+	public static function image_name_available($name)
 	{
-		return self::driver()->get_contents_by_type_id($type_id);
-	}
+		foreach (self::driver()->get_images() as $image_name => $image_data)
+		{
+			// First remove possible file ending from both names
+			if (substr($image_name, 0, strlen($image_name) - 4) == substr($name, 0, strlen($name) - 4)) return FALSE;
 
-	public function get_type_ids()
-	{
-		return $this->type_ids;
-	}
+			// Then try without removing the file ending
+			if (substr($image_name, 0, strlen($image_name) - 4) == $name)                               return FALSE;
+		}
 
-	public function load_content()
-	{
-		$this->type_ids = self::driver()->get_type_ids_by_content_id($this->get_content_id());
-		$this->content  = self::driver()->get_content($this->get_content_id());
+		// No matches found, image name is available
 		return TRUE;
 	}
 
-	public static function new_content($content, $type_ids = FALSE)
+	/**
+	 * Load data from database
+	 *
+	 * @return boolean
+	 */
+	private function load_data()
 	{
-		return self::driver()->new_content($content, $type_ids);
+		$data = self::driver()->get_images($this->get_name());
+
+		if (count($data))  return $this->data = $data[$this->get_name()];
+		else               return FALSE;
 	}
 
-	public function rm_content()
+	/**
+	 * Remove an image
+	 *
+	 * @return boolean
+	 */
+	public function rm_image()
 	{
-		if (self::driver()->rm_content($this->get_content_id()))
+		if ($this->get_name())
 		{
-			unset($this);
+			// Remove files
+			$cache_images = glob(Kohana::$cache_dir.'/user_content/images/'.$this->get_name().'*');
+			foreach ($cache_images as $image_to_delete) unlink($image_to_delete);
+			unlink(Kohana::config('user_content.dir').'/images/'.$this->get_name());
+
+			// Remove from database
+			self::driver()->rm_image($this->get_name());
+
+			unset($this); // Destroy instance
+
 			return TRUE;
 		}
 
+		return FALSE;
+	}
+
+	public function set_data($data = array())
+	{
+		if ($this->get_name())
+		{
+			self::driver()->update_image_data($this->get_name(), $data);
+			if (
+					isset($data['name']) &&
+					is_string($data['name']) &&
+					$this->get_name() != $data['name']
+				)
+			{
+				self::driver()->update_image_name($this->get_name(), $data['name']);
+			}
+		}
 		return FALSE;
 	}
 
@@ -143,18 +172,6 @@ class Content_Image extends Model
 	{
 		$driver_name = 'Driver_Content_'.ucfirst(Kohana::config('content.driver'));
 		return (self::$driver = new $driver_name);
-	}
-
-	public function update_content($content, $type_ids = FALSE)
-	{
-		if (self::driver()->update_content($this->get_content_id(), $content, $type_ids))
-		{
-			// We must update the local class content also
-			$this->load_content();
-			return TRUE;
-		}
-
-		return FALSE;
 	}
 
 }

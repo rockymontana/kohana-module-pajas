@@ -112,6 +112,7 @@ class Controller_Media extends Controller
 		{
 			// Resizing needed
 			exec('mkdir -p '.Kohana::$cache_dir.'/user_content/images'); // Make sure the cache dir exists
+			exec('chmod a+w '.Kohana::$cache_dir.'/user_content/images'); // Make sure its writeable by all
 			$file = Kohana::$cache_dir.'/user_content/images/'.$filename.$cache_ending;
 			if ( ! file_exists($file))
 			{

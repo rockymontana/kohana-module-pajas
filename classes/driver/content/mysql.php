@@ -11,7 +11,7 @@ class Driver_Content_Mysql extends Driver_Content
 	protected function check_db_structure()
 	{
 		$columns = $this->pdo->query('SHOW TABLES like \'content_%\';')->fetchAll(PDO::FETCH_COLUMN);
-		return count($columns) == 10;
+		return count($columns) >= 10;
 	}
 
 	protected function create_db_structure() {
@@ -125,6 +125,27 @@ class Driver_Content_Mysql extends Driver_Content
 		return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+	public function get_detail_id($name)
+	{
+		return $this->pdo->query('SELECT id FROM content_details WHERE name = '.$this->pdo->quote($name))->fetchColumn();
+	}
+
+	public function get_detail_name($id)
+	{
+		return $this->pdo->query('SELECT name FROM content_details WHERE id = '.$this->pdo->quote($id))->fetchColumn();
+	}
+
+	public function get_details()
+	{
+		$details = array();
+		foreach ($this->pdo->query('SELECT * FROM content_details;')->fetchAll(PDO::FETCH_ASSOC) as $row)
+		{
+			$details[$row['id']] = $row['name'];
+		}
+
+		return $details;
+	}
+
 // DETAILS NOT WORKING!!!
 	public function get_images($names = NULL, $details = array(), $names_only = FALSE)
 	{
@@ -169,7 +190,8 @@ class Driver_Content_Mysql extends Driver_Content
 
 		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $row)
 		{
-			$images[$row['image_name']][$row['detail_name']] = $row['data'];
+			if ( ! isset($images[$row['image_name']][$row['detail_name']])) $images[$row['image_name']][$row['detail_name']] = array();
+			$images[$row['image_name']][$row['detail_name']][] = $row['data'];
 		}
 
 		return $images;
@@ -268,6 +290,16 @@ class Driver_Content_Mysql extends Driver_Content
 		return (int) $content_id;
 	}
 
+	public function new_detail($name)
+	{
+		if ($this->pdo->exec('INSERT INTO content_details (name) VALUES('.$this->pdo->quote($name).');'))
+		{
+			return (int) $this->pdo->lastInsertId();
+		}
+
+		return FALSE;
+	}
+
 	public function new_image($name, $details = array())
 	{
 		if ($this->image_name_available($name))
@@ -275,15 +307,20 @@ class Driver_Content_Mysql extends Driver_Content
 			$this->pdo->exec('INSERT INTO content_images (name) VALUES('.$this->pdo->quote($name).');');
 
 			$sql = 'INSERT INTO content_images_details (image_name, detail_id, data) VALUES';
-			foreach ($details as $detail_name => $detail_value)
+			foreach ($details as $detail_name => $detail_values)
 			{
+				if ( ! is_array($detail_values)) $detail_values = array($detail_values);
+
 				if ( ! ($detail_id = $this->pdo->query('SELECT id FROM content_details WHERE name = '.$this->pdo->quote($detail_name))->fetchColumn()))
 				{
 					$this->pdo->exec('INSERT INTO content_details (name) VALUES('.$this->pdo->quote($detail_name).');');
 					$detail_id = $this->pdo->lastInsertId();
 				}
 
-				$sql .= '('.$this->pdo->quote($name).','.$this->pdo->quote($detail_id).','.$this->pdo->quote($detail_value).'),';
+				foreach ($detail_values as $detail_value)
+				{
+					$sql .= '('.$this->pdo->quote($name).','.$this->pdo->quote($detail_id).','.$this->pdo->quote($detail_value).'),';
+				}
 			}
 
 			// If we have any details, add them
@@ -357,6 +394,24 @@ class Driver_Content_Mysql extends Driver_Content
 		return TRUE;
 	}
 
+	public function rm_detail($detail_id)
+	{
+		$this->pdo->exec('DELETE FROM content_content_types_details WHERE detail_id = '.$this->pdo->quote($detail_id));
+		$this->pdo->exec('DELETE FROM content_images_details        WHERE detail_id = '.$this->pdo->quote($detail_id));
+		$this->pdo->exec('DELETE FROM content_types_details         WHERE detail_id = '.$this->pdo->quote($detail_id));
+		$this->pdo->exec('DELETE FROM content_details               WHERE id        = '.$this->pdo->quote($detail_id));
+
+		return TRUE;
+	}
+
+	public function rm_image($name)
+	{
+		$this->pdo->exec('DELETE FROM content_images_details WHERE image_name = '.$this->pdo->quote($name));
+		$this->pdo->exec('DELETE FROM content_images         WHERE name       = '.$this->pdo->quote($name));
+
+		return TRUE;
+	}
+
 	public function rm_page($id)
 	{
 		$this->pdo->exec('DELETE FROM content_pages WHERE id = '.$this->pdo->quote($id));
@@ -407,6 +462,48 @@ class Driver_Content_Mysql extends Driver_Content
 		}
 
 		return (int) $content_id;
+	}
+
+	public function update_image_data($image_name, $image_data = array())
+	{
+		// Clear previous data
+		$this->pdo->exec('DELETE FROM content_images_details WHERE image_name = '.$this->pdo->quote($image_name).';');
+
+		if (count($image_data))
+		{
+			$sql = 'INSERT INTO content_images_details (image_name, detail_id, data) VALUES';
+
+			foreach ($image_data as $detail => $values)
+			{
+				if ($detail != 'name') // Name is forbidden, that is to be handled by update_image_name
+				{
+					$detail_id = $this->get_detail_id($detail);
+					if ( ! $detail_id) $detail_id = $this->new_detail($detail);
+
+					if ( ! is_array($values)) $values = array($values);
+					foreach ($values as $value)
+					{
+						$sql .= '('.$this->pdo->quote($image_name).','.$detail_id.','.$this->pdo->quote($value).'),';
+					}
+				}
+			}
+			$sql = substr($sql, 0, strlen($sql) - 1);
+			$this->pdo->exec($sql);
+		}
+
+		return TRUE;
+	}
+
+	public function update_image_name($old_image_name, $new_image_name)
+	{
+		if ($old_image_name != $new_image_name && Content_Image::image_name_available($new_image_name))
+		{
+			$this->pdo->exec('UPDATE content_images_details SET image_name = '.$this->pdo->quote($new_image_name).' WHERE image_name = '.$this->pdo->quote($old_image_name));
+			$this->pdo->exec('UPDATE content_images SET name = '.$this->pdo->quote($new_image_name).' WHERE name = '.$this->pdo->quote($old_image_name));
+
+			return $this->rename_image_files($old_image_name, $new_image_name);
+		}
+		return FALSE;
 	}
 
 	public function update_page_data($id, $name = FALSE, $URI = FALSE, $type_ids = FALSE)

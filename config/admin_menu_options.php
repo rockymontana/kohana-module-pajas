@@ -69,5 +69,12 @@ return array(
 		'href'        => 'images',
 		'position'    => 4,
   ),
+  'details' => array(
+    'name'        => 'Detail fields',
+    '@category'   => 'CMS',
+    'description' => 'Handle detail fields for all CMS types',
+		'href'        => 'details',
+		'position'    => 5,
+  ),
 
 );

@@ -72,20 +72,23 @@
 						</td>
 						<td><xsl:value-of select="concat(substring(content,1,60), '...')" /></td>
 						<td>
-							[<a>
-							<xsl:attribute name="href">
-								<xsl:text>content/edit_content/</xsl:text>
-								<xsl:value-of select="@id" />
-							</xsl:attribute>
-							<xsl:text>Edit</xsl:text>
-							</a>]
-							[<a>
-							<xsl:attribute name="href">
-								<xsl:text>content/rm_content/</xsl:text>
-								<xsl:value-of select="@id" />
-							</xsl:attribute>
-							<xsl:text>Delete</xsl:text>
-							</a>]
+							<xsl:text>[</xsl:text>
+							<a>
+							  <xsl:attribute name="href">
+								  <xsl:text>content/edit_content/</xsl:text>
+								  <xsl:value-of select="@id" />
+							  </xsl:attribute>
+							  <xsl:text>Edit</xsl:text>
+							</a>
+							<xsl:text>] [</xsl:text>
+							<a>
+							  <xsl:attribute name="href">
+								  <xsl:text>content/rm_content/</xsl:text>
+								  <xsl:value-of select="@id" />
+							  </xsl:attribute>
+							  <xsl:text>Delete</xsl:text>
+							</a>
+							<xsl:text>]</xsl:text>
 						</td>
 					</tr>
 				</xsl:for-each>

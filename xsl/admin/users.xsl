@@ -40,37 +40,37 @@
 		<xsl:if test="/root/content[../meta/controller = 'fields' and ../meta/action = 'index']">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Users'" />
-				<xsl:with-param name="h1" select="'Fields'" />
+				<xsl:with-param name="h1"    select="'Fields'" />
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="/root/content[../meta/controller = 'fields' and ../meta/action = 'add_field']">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Users'" />
-				<xsl:with-param name="h1" select="'Add field'" />
+				<xsl:with-param name="h1"    select="'Add field'" />
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="/root/content[../meta/controller = 'fields' and ../meta/action = 'edit_field']">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Users'" />
-				<xsl:with-param name="h1" select="'Edit field'" />
+				<xsl:with-param name="h1"    select="'Edit field'" />
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="/root/content[../meta/controller = 'users' and ../meta/action = 'index']">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Users'" />
-				<xsl:with-param name="h1" select="'Users'" />
+				<xsl:with-param name="h1"    select="'Users'" />
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="/root/content[../meta/controller = 'users' and ../meta/action = 'add_user']">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Users'" />
-				<xsl:with-param name="h1" select="'Add user'" />
+				<xsl:with-param name="h1"    select="'Add user'" />
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="/root/content[../meta/controller = 'users' and ../meta/action = 'edit_user']">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Users'" />
-				<xsl:with-param name="h1" select="'Edit user'" />
+				<xsl:with-param name="h1"    select="'Edit user'" />
 			</xsl:call-template>
 		</xsl:if>
 	</xsl:template>
@@ -115,13 +115,19 @@
 		</table>
 	</xsl:template>
 
-	<!-- Add field -->
-	<xsl:template match="content[../meta/controller = 'fields' and ../meta/action = 'add_field']">
+	<!-- Add or edit field -->
+	<xsl:template match="content[../meta/controller = 'fields' and (../meta/action = 'add_field' or ../meta/action = 'edit_field')]">
 		<form method="post" action="fields/add_field">
+			<xsl:if test="../meta/action = 'edit_field'">
+				<xsl:attribute name="action">
+					<xsl:text>fields/edit_field/</xsl:text>
+					<xsl:value-of select="field/@id" />
+				</xsl:attribute>
+			</xsl:if>
 
 			<!-- Include an error -->
-			<xsl:if test="/root/content/errors/form_errors/field_name">
-				<xsl:if test="/root/content/errors/form_errors/field_name = 'User::field_name_available'">
+			<xsl:if test="errors/form_errors/field_name">
+				<xsl:if test="errors/form_errors/field_name = 'User::field_name_available'">
 					<xsl:call-template name="form_line">
 						<xsl:with-param name="id" select="'field_name'" />
 						<xsl:with-param name="label" select="'Field name:'" />
@@ -129,7 +135,7 @@
 					</xsl:call-template>
 				</xsl:if>
 
-				<xsl:if test="/root/content/errors/form_errors/field_name = 'Valid::not_empty'">
+				<xsl:if test="errors/form_errors/field_name = 'Valid::not_empty'">
 					<xsl:call-template name="form_line">
 						<xsl:with-param name="id" select="'field_name'" />
 						<xsl:with-param name="label" select="'Field name:'" />
@@ -139,54 +145,23 @@
 			</xsl:if>
 
 			<!-- no error -->
-			<xsl:if test="not(/root/content/errors/form_errors/field_name)">
+			<xsl:if test="not(errors/form_errors/field_name)">
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="id" select="'field_name'" />
 					<xsl:with-param name="label" select="'Field name:'" />
 				</xsl:call-template>
 			</xsl:if>
 
-			<xsl:call-template name="form_button">
-				<xsl:with-param name="value" select="'Add'" />
-			</xsl:call-template>
-
-		</form>
-	</xsl:template>
-
-	<!-- Edit field -->
-	<xsl:template match="content[../meta/controller = 'fields' and ../meta/action = 'edit_field']">
-		<form method="post" action="fields/edit_field/{field/@id}">
-
-			<!-- Include an error -->
-			<xsl:if test="/root/content/errors/form_errors/field_name">
-				<xsl:if test="/root/content/errors/form_errors/field_name = 'User::field_name_available'">
-					<xsl:call-template name="form_line">
-						<xsl:with-param name="id" select="'field_name'" />
-						<xsl:with-param name="label" select="'Field name:'" />
-						<xsl:with-param name="error" select="'This field name is already taken'" />
-					</xsl:call-template>
-				</xsl:if>
-
-				<xsl:if test="/root/content/errors/form_errors/field_name = 'Valid::not_empty'">
-					<xsl:call-template name="form_line">
-						<xsl:with-param name="id" select="'field_name'" />
-						<xsl:with-param name="label" select="'Field name:'" />
-						<xsl:with-param name="error" select="'Must not be empty'" />
-					</xsl:call-template>
-				</xsl:if>
-			</xsl:if>
-
-			<!-- no error -->
-			<xsl:if test="not(/root/content/errors/form_errors/field_name)">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'field_name'" />
-					<xsl:with-param name="label" select="'Field name:'" />
+			<xsl:if test="../meta/action = 'edit_field'">
+				<xsl:call-template name="form_button">
+					<xsl:with-param name="value" select="'Save'" />
 				</xsl:call-template>
 			</xsl:if>
-
-			<xsl:call-template name="form_button">
-				<xsl:with-param name="value" select="'Save'" />
-			</xsl:call-template>
+			<xsl:if test="../meta/action = 'add_field'">
+				<xsl:call-template name="form_button">
+					<xsl:with-param name="value" select="'Add'" />
+				</xsl:call-template>
+			</xsl:if>
 
 		</form>
 	</xsl:template>
@@ -231,152 +206,90 @@
 		</table>
 	</xsl:template>
 
-	<!-- Add user -->
-	<xsl:template match="content[../meta/controller = 'users' and ../meta/action = 'add_user']">
-		<form method="post" action="users/add_user">
+	<!-- Add or edit user -->
+	<xsl:template match="content[../meta/controller = 'users' and (../meta/action = 'add_user' or ../meta/action = 'edit_user')]">
+		<form method="post" action="users/add_user" autocomplete="off">
+			<xsl:if test="../meta/action = 'edit_user'">
+				<xsl:attribute name="action">
+					<xsl:text>users/edit_user/</xsl:text>
+					<xsl:value-of select="user/user_id" />
+				</xsl:attribute>
+			</xsl:if>
 
 			<h2>Basic user information</h2>
 
+			<!-- User ID -->
+			<xsl:if test="../meta/action = 'edit_user'">
+				<xsl:call-template name="form_line">
+					<xsl:with-param name="type"  select="'none'" />
+					<xsl:with-param name="label" select="'User ID:'" />
+					<xsl:with-param name="value" select="user/user_id" />
+				</xsl:call-template>
+			</xsl:if>
+
 			<!-- Username -->
 			<xsl:choose>
-				<xsl:when test="/root/content/errors/form_errors/username = 'Valid::not_empty'">
+				<xsl:when test="errors/form_errors/username = 'Valid::not_empty'">
 					<xsl:call-template name="form_line">
-						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="id"    select="'username'" />
 						<xsl:with-param name="label" select="'Username:'" />
 						<xsl:with-param name="error" select="'A username is required'" />
 					</xsl:call-template>
 				</xsl:when>
-				<xsl:when test="/root/content/errors/form_errors/username = 'User::username_available'">
+				<xsl:when test="errors/form_errors/username = 'User::username_available'">
 					<xsl:call-template name="form_line">
-						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="id"    select="'username'" />
 						<xsl:with-param name="label" select="'Username:'" />
 						<xsl:with-param name="error" select="'This username already taken'" />
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:call-template name="form_line">
-						<xsl:with-param name="id" select="'username'" />
+						<xsl:with-param name="id"    select="'username'" />
 						<xsl:with-param name="label" select="'Username:'" />
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
 
 			<!-- Password -->
-			<xsl:if test="/root/content/errors/form_errors/password">
+			<xsl:if test="errors/form_errors/password">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'password'" />
+					<xsl:with-param name="id"    select="'password'" />
 					<xsl:with-param name="label" select="'Password:'" />
-					<xsl:with-param name="type" select="'password'" />
+					<xsl:with-param name="type"  select="'password'" />
 					<xsl:with-param name="error" select="'A password is required'" />
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="not(/root/content/errors/form_errors/password)">
+			<xsl:if test="not(errors/form_errors/password)">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'password'" />
+					<xsl:with-param name="id"    select="'password'" />
 					<xsl:with-param name="label" select="'Password:'" />
-					<xsl:with-param name="type" select="'password'" />
+					<xsl:with-param name="type"  select="'password'" />
 				</xsl:call-template>
 			</xsl:if>
 
-			<h2>User details</h2>
-
-			<p>&quot;role: admin&quot; grants a user access to the admin interface</p>
-
-			<xsl:for-each select="/root/content/users/custom_detail_field">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="concat('field_',.,'_',position())" />
-					<xsl:with-param name="name" select="concat('fieldid_',.,'[]')" />
-					<xsl:with-param name="label" select="/root/content/users/field[@id = current()]" />
-				</xsl:call-template>
-			</xsl:for-each>
-
-			<p>(To remove a field, just leave it blank)</p>
-
-			<h2>Add user detail field:</h2>
-
-			<label for="add_field">
-				Add field:
-				<select name="add_field">
-					<option selected="selected"></option>
-					<xsl:for-each select="/root/content/users/field">
-						<option value="{@id}"><xsl:value-of select="." /></option>
-					</xsl:for-each>
-				</select>
-			</label>
-			<input type="submit" name="do_add_field" value="Add Field" class="button add_field" />
-
-			<xsl:call-template name="form_button">
-				<xsl:with-param name="value" select="'Add User'" />
-			</xsl:call-template>
-		</form>
-	</xsl:template>
-
-	<!-- Edit user -->
-	<xsl:template match="content[../meta/controller = 'users' and ../meta/action = 'edit_user']">
-		<form method="post" action="users/edit_user/{user/user_id}" autocomplete="off">
-
-			<h2>Basic user information</h2>
-
-			<!-- User ID -->
-			<xsl:call-template name="form_line">
-				<xsl:with-param name="type" select="'none'" />
-				<xsl:with-param name="label" select="'User ID:'" />
-				<xsl:with-param name="value" select="user/user_id" />
-			</xsl:call-template>
-
-			<!-- Username -->
-			<xsl:if test="/root/content/errors/form_errors/username">
-
-				<xsl:if test="/root/content/errors/form_errors/username = 'Valid::not_empty'">
-					<xsl:call-template name="form_line">
-						<xsl:with-param name="id" select="'username'" />
-						<xsl:with-param name="label" select="'Username:'" />
-						<xsl:with-param name="error" select="'A username is required'" />
-					</xsl:call-template>
-				</xsl:if>
-
-				<xsl:if test="/root/content/errors/form_errors/username = 'User::username_available'">
-					<xsl:call-template name="form_line">
-						<xsl:with-param name="id" select="'username'" />
-						<xsl:with-param name="label" select="'Username:'" />
-						<xsl:with-param name="error" select="'This username already taken'" />
-					</xsl:call-template>
-				</xsl:if>
-
+			<xsl:if test="../meta/action = 'edit_user'">
+				<p>(Leave password field blank to use the old password)</p>
 			</xsl:if>
-			<xsl:if test="not(/root/content/errors/form_errors/username)">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="'username'" />
-					<xsl:with-param name="label" select="'Username:'" />
-				</xsl:call-template>
-			</xsl:if>
-
-			<!-- Password -->
-			<xsl:call-template name="form_line">
-				<xsl:with-param name="id" select="'password'" />
-				<xsl:with-param name="label" select="'Password:'" />
-				<xsl:with-param name="type" select="'password'" />
-			</xsl:call-template>
-			<p>(Leave password field blank to use the old password)</p>
 
 			<h2>User details</h2>
 
 			<p>&quot;role: admin&quot; grants a user access to the admin interface</p>
 
 			<!-- Already stored data -->
-			<xsl:for-each select="/root/content/user/field">
+			<xsl:for-each select="user/field">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="concat('field_',@id,'_',position())" />
-					<xsl:with-param name="name" select="concat('fieldid_',@id,'[]')" />
+					<xsl:with-param name="id"    select="concat('field_',@id,'_',position())" />
+					<xsl:with-param name="name"  select="concat('fieldid_',@id,'[]')" />
 					<xsl:with-param name="label" select="/root/content/users/field[@id = current()/@id]" />
 				</xsl:call-template>
 			</xsl:for-each>
 
 			<!-- New custom fields -->
-			<xsl:for-each select="/root/content/users/custom_detail_field">
+			<xsl:for-each select="users/custom_detail_field">
 				<xsl:call-template name="form_line">
-					<xsl:with-param name="id" select="concat('field_',.,'_',(position() + count(/root/content/user/field)))" />
-					<xsl:with-param name="name" select="concat('fieldid_',.,'[]')" />
+					<xsl:with-param name="id"    select="concat('field_',.,'_',(position() + count(/root/content/user/field)))" />
+					<xsl:with-param name="name"  select="concat('fieldid_',.,'[]')" />
 					<xsl:with-param name="label" select="/root/content/users/field[@id = current()]" />
 				</xsl:call-template>
 			</xsl:for-each>
@@ -386,21 +299,28 @@
 			<h2>Add user detail field:</h2>
 
 			<label for="add_field">
-				Add field:
+				<xsl:text>Add field:</xsl:text>
 				<select name="add_field">
 					<option selected="selected"></option>
-					<xsl:for-each select="/root/content/users/field">
+					<xsl:for-each select="users/field">
 						<option value="{@id}"><xsl:value-of select="." /></option>
 					</xsl:for-each>
 				</select>
 			</label>
 			<input type="submit" name="do_add_field" value="Add Field" class="button add_field" />
 
-			<xsl:call-template name="form_button">
-				<xsl:with-param name="value" select="'Save'" />
-			</xsl:call-template>
-		</form>
+			<xsl:if test="../meta/action = 'edit_user'">
+				<xsl:call-template name="form_button">
+					<xsl:with-param name="value" select="'Save changes'" />
+				</xsl:call-template>
+			</xsl:if>
+			<xsl:if test="../meta/action = 'add_user'">
+				<xsl:call-template name="form_button">
+					<xsl:with-param name="value" select="'Add User'" />
+				</xsl:call-template>
+			</xsl:if>
 
+		</form>
 	</xsl:template>
 
 </xsl:stylesheet>
