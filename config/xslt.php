@@ -27,5 +27,6 @@ return array(
 		'MSIE 5.0',
 		'MSIE 6.0',           // This is to give opera the HTML version... and also I dont trust IE6 ;)
 		'acebookexternalhit', // Facebook resolving, facebook is incompetent and cannot handle XSLT
+		'Android',
 	),
 );
