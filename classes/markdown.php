@@ -989,7 +989,7 @@ class Markdown
 		// Trim leading newlines and trailing newlines
 		$codeblock = preg_replace('/\A\n+|\n+\z/', '', $codeblock);
 
-		$codeblock = '<pre><code>'.$codeblock."\n".'</code></pre>';
+		$codeblock = '<code><pre>'.$codeblock."\n".'</pre></code>';
 		return "\n\n".self::hash_block($codeblock)."\n\n";
 	}
 
