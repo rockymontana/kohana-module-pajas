@@ -113,6 +113,29 @@
 		<pre><xsl:apply-templates select="node()" mode="elements" /></pre>
 	</xsl:template>
 
+	<!-- Table stuff -->
+	<xsl:template match="table" mode="elements">
+		<table><xsl:apply-templates select="node()" mode="elements" /></table>
+	</xsl:template>
+	<xsl:template match="thead" mode="elements">
+		<thead><xsl:apply-templates select="node()" mode="elements" /></thead>
+	</xsl:template>
+	<xsl:template match="tbody" mode="elements">
+		<tbody><xsl:apply-templates select="node()" mode="elements" /></tbody>
+	</xsl:template>
+	<xsl:template match="tfooter" mode="elements">
+		<tfooter><xsl:apply-templates select="node()" mode="elements" /></tfooter>
+	</xsl:template>
+	<xsl:template match="tr" mode="elements">
+		<tr><xsl:apply-templates select="node()" mode="elements" /></tr>
+	</xsl:template>
+	<xsl:template match="th" mode="elements">
+		<th><xsl:apply-templates select="node()" mode="elements" /></th>
+	</xsl:template>
+	<xsl:template match="td" mode="elements">
+		<td><xsl:apply-templates select="node()" mode="elements" /></td>
+	</xsl:template>
+
 	<!--xsl:template match="flash" mode="elements">
 		<object type="application/x-shockwave-flash" data="{@src}" class="flash">
 			<xsl:copy-of select="@width|@height"/>
