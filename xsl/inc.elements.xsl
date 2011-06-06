@@ -27,6 +27,27 @@
 		</h3>
 	</xsl:template>
 
+	<xsl:template match="h4" mode="elements">
+		<h4>
+			<xsl:copy-of select="@class" />
+			<xsl:apply-templates select="node()" mode="elements" />
+		</h4>
+	</xsl:template>
+
+	<xsl:template match="h5" mode="elements">
+		<h5>
+			<xsl:copy-of select="@class" />
+			<xsl:apply-templates select="node()" mode="elements" />
+		</h5>
+	</xsl:template>
+
+	<xsl:template match="h6" mode="elements">
+		<h6>
+			<xsl:copy-of select="@class" />
+			<xsl:apply-templates select="node()" mode="elements" />
+		</h6>
+	</xsl:template>
+
 	<xsl:template match="p" mode="elements">
 		<p>
 			<xsl:copy-of select="@class" />
