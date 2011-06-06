@@ -44,7 +44,7 @@
 
 	<!-- List details -->
 	<xsl:template match="content[../meta/controller = 'details' and ../meta/action = 'index']">
-		<p class="error">Warning! Deleting a detail means all data related to this detail in all content, images etc.</p>
+		<p class="error">Warning! Deleting a detail means all data related to this detail in all content, images etc. will be removed.</p>
 		<table>
 			<thead>
 				<tr>
