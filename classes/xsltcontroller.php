@@ -140,6 +140,21 @@ abstract class Xsltcontroller extends Controller
 				));
 			}
 
+			// We need to update paths to included XSL elements
+			$XPath         = new DOMXPath($xslt);
+			$include_nodes = $XPath->query('//xsl:include');
+
+			foreach ($include_nodes as $include_node)
+			{
+				foreach ($include_node->attributes as $attribute_node)
+				{
+					$new_filename = Kohana::find_file(rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path), '/'), substr($attribute_node->nodeValue, 0, strlen($attribute_node->nodeValue) - 4), 'xsl');
+					$include_node->removeAttribute('href');
+					$include_node->setAttribute('href', $new_filename);
+				}
+			}
+			// Done updating paths
+
 			$proc = new xsltprocessor();
 			$proc->importStyleSheet($xslt);
 
