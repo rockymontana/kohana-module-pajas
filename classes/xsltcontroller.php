@@ -106,6 +106,15 @@ abstract class Xsltcontroller extends Controller
 	{
 		$this->dom->insertBefore($this->dom->createProcessingInstruction('xml-stylesheet', 'type="text/xsl" href="' . $this->xslt_path . $this->xslt_stylesheet . '.xsl"'), $this->xml);
 
+		// If the stylesheet name includes an additional path, we need to extract it
+		$extra_xslt_path = '';
+		$extra_path_parts = explode('/', $this->xslt_stylesheet);
+		foreach ($extra_path_parts as $nr => $extra_path_part)
+		{
+			if ($nr < (count($extra_path_parts) - 1)) $extra_xslt_path .= $extra_path_part . '/';
+		}
+
+		// See if we have a user agent that triggers the server side HTML generation
 		$user_agent_trigger = FALSE;
 		foreach (Kohana::config('xslt.user_agents') as $user_agent)
 		{
@@ -148,7 +157,7 @@ abstract class Xsltcontroller extends Controller
 			{
 				foreach ($include_node->attributes as $attribute_node)
 				{
-					$new_filename = Kohana::find_file(rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path), '/'), substr($attribute_node->nodeValue, 0, strlen($attribute_node->nodeValue) - 4), 'xsl');
+					$new_filename = Kohana::find_file(rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path.$extra_xslt_path), '/'), substr($attribute_node->nodeValue, 0, strlen($attribute_node->nodeValue) - 4), 'xsl');
 					$include_node->removeAttribute('href');
 					$include_node->setAttribute('href', $new_filename);
 				}
