@@ -38,17 +38,17 @@ class Driver_Content_Mysql extends Driver_Content
 				`name` varchar(255) NOT NULL,
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `name` (`name`)
-			) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_images` (
 				`name` varchar(255) NOT NULL,
 				PRIMARY KEY (`name`)
-			) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_images_details` (
 				`image_name` varchar(255) NOT NULL,
 				`detail_id` int(10) unsigned NOT NULL,
 				`data` text NOT NULL,
 				KEY `image_name` (`image_name`,`detail_id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			CREATE TABLE IF NOT EXISTS `content_pages` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
