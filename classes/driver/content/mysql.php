@@ -268,7 +268,7 @@ class Driver_Content_Mysql extends Driver_Content
 		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $row)
 		{
 			if ( ! isset($tags[$row['id']])) $tags[$row['id']] = array('id'=>$row['id'],'name'=>$row['name'],'values'=>array());
-			$tags[$row['id']]['values'] = $row['tag_value'];
+			$tags[$row['id']]['values'][] = $row['tag_value'];
 		}
 
 		return $tags;

@@ -82,12 +82,20 @@ class Controller_Admin_Content extends Admincontroller {
 			$this->xml_content->appendChild($this->dom->createElement('content', $content->get_content()));
 			$tags_node = $this->xml_content->appendChild($this->dom->createElement('tags'));
 
-			foreach ($content->get_tags() as $tag_name => $tag_values)
+			foreach ($content->get_tags() as $tag)
 			{
-				foreach ($tag_values as $tag_value)
+				if ( ! $tag['values'])
 				{
-					$tag_node = $tags_node->appendChild($this->dom->createElement('tag', $tag_value));
-					$tag_node->setAttribute('name', $tag_name);
+					$tag_node = $tags_node->appendChild($this->dom->createElement('tag'));
+					$tag_node->setAttribute('name', $tag['name']);
+				}
+				else
+				{
+					foreach ($tag['values'] as $tag_value)
+					{
+						$tag_node = $tags_node->appendChild($this->dom->createElement('tag', $tag_value));
+						$tag_node->setAttribute('name', $tag['name']);
+					}
 				}
 			}
 
