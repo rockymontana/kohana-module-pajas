@@ -172,7 +172,7 @@ class Driver_Content_Mysql extends Driver_Content
 		$images = array();
 		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $row)
 		{
-			if ( ! isset($images[$row['name']][$row['tag_name']])) $images[$row['image_name']][$row['tag_name']] = array();
+			if ( ! isset($images[$row['name']][$row['tag_name']])) $images[$row['name']][$row['tag_name']] = array();
 			if ($row['tag_value']) $images[$row['name']][$row['tag_name']][] = $row['tag_value'];
 		}
 
