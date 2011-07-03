@@ -361,6 +361,8 @@ class Driver_Content_Mysql extends Driver_Content
 
 					foreach ($tags as $template_field_id => $tag_ids)
 					{
+						if ( ! is_array($tag_ids)) $tag_ids = array($tag_ids);
+
 						foreach ($tag_ids as $tag_id)
 						{
 							$sql .= '('.$this->pdo->quote($page_id).','.$this->pdo->quote($tag_id).','.$this->pdo->quote($template_field_id).'),';
