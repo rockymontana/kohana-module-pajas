@@ -154,6 +154,7 @@
 			<xsl:if test="../meta/action = 'edit_page'">
 				<xsl:if test="tmp">
 					<xsl:for-each select="tmp/template_field">
+						<xsl:sort select="@id" />
 						<xsl:call-template name="template_fields_tags">
 							<xsl:with-param name="template_field" select="@id" />
 						</xsl:call-template>
@@ -161,6 +162,7 @@
 				</xsl:if>
 				<xsl:if test="not(tmp)">
 					<xsl:for-each select="page/template_fields/template_field">
+						<xsl:sort select="@id" />
 						<xsl:call-template name="template_fields_tags">
 							<xsl:with-param name="template_field" select="@id" />
 						</xsl:call-template>
