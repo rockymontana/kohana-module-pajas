@@ -48,14 +48,14 @@
 			<thead>
 				<tr>
 					<th class="medium_row">Content ID</th>
-					<th>Content Type</th>
+					<th>Tags</th>
 					<th>Content</th>
 					<th class="medium_row">Action</th>
 				</tr>
 			</thead>
 			<tbody>
 				<xsl:for-each select="contents/content">
-					<xsl:sort select="types" />
+					<xsl:sort select="tags/tag/name" />
 					<xsl:sort select="@id" />
 					<tr>
 						<xsl:if test="position() mod 2 = 1">
@@ -63,8 +63,8 @@
 						</xsl:if>
 						<td><xsl:value-of select="@id" /></td>
 						<td>
-							<xsl:for-each select="types/type">
-								<xsl:value-of select="." />
+							<xsl:for-each select="tags/tag">
+								<xsl:value-of select="name" />
 								<xsl:if test="position() != last()">
 									<xsl:text>, </xsl:text>
 								</xsl:if>
@@ -96,7 +96,50 @@
 		</table>
 	</xsl:template>
 
-	<!-- Add content -->
+	<xsl:template match="content[../meta/controller = 'content' and (../meta/action = 'add_content' or ../meta/action = 'edit_content')]">
+		<form method="post">
+			<xsl:if test="../meta/action = 'add_content'">
+				<xsl:attribute name="action">content/add_content</xsl:attribute>
+			</xsl:if>
+			<xsl:if test="../meta/action = 'edit_content'">
+				<xsl:attribute name="action">
+					<xsl:text>content/edit_content/</xsl:text>
+					<xsl:value-of select="content_id" />
+				</xsl:attribute>
+			</xsl:if>
+
+			<h2>Content</h2>
+
+			<textarea class="full_size" rows="30" id="content" name="content"><xsl:value-of select="content" /></textarea>
+
+			<h2>Tags</h2>
+			<p>Tag name: Tag value (value is optional)</p>
+			<xsl:for-each select="tags/tag">
+				<p class="custom_row">
+					<input type="text" name="tag[]" value="{@name}" />: <input type="text" name="tag_value[]" value="{.}" />
+				</p>
+			</xsl:for-each>
+
+			<!-- New tag -->
+			<p class="custom_row">
+				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
+			</p>
+
+			<xsl:if test="../meta/action = 'add_content'">
+				<xsl:call-template name="form_button">
+					<xsl:with-param name="value" select="'Add content'" />
+				</xsl:call-template>
+			</xsl:if>
+			<xsl:if test="../meta/action = 'edit_content'">
+				<xsl:call-template name="form_button">
+					<xsl:with-param name="value" select="'Save changes'" />
+				</xsl:call-template>
+			</xsl:if>
+
+		</form>
+	</xsl:template>
+
+	<!-- Add content - - >
 	<xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'add_content']">
 		<form method="post" action="content/add_content">
 
@@ -124,7 +167,7 @@
 		</form>
 	</xsl:template>
 
-	<!-- Edit content -->
+	<! - - Edit content - - >
 	<xsl:template match="content[../meta/controller = 'content' and ../meta/action = 'edit_content']">
 		<form method="post" action="content/edit_content/{content_id}">
 
@@ -150,6 +193,6 @@
 				<xsl:with-param name="value" select="'Save'" />
 			</xsl:call-template>
 		</form>
-	</xsl:template>
+	</xsl:template-->
 
 </xsl:stylesheet>

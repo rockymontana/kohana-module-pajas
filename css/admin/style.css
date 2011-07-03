@@ -269,6 +269,24 @@ div#loginbox
 						margin-bottom:      1em;
 					}
 
+						.contentwrap2 .content form textarea.full_size
+						{
+							width:              90%;
+						}
+
+					.contentwrap2 .content form p.custom_row input,
+					.contentwrap2 .content form p.custom_row select
+					{
+						float:              none;
+						display:            inline;
+					}
+
+					.contentwrap2 .content form p.custom_row select
+					{
+						width:              auto;
+					}
+
+
 	.contentwrap2 a:hover
 	{
 		background-color:  #d7e8ef;

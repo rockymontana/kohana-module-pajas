@@ -146,11 +146,11 @@ class Content_Image extends Model
 		return FALSE;
 	}
 
-	public function set_data($data = array())
+	public function set_data($tags = array())
 	{
 		if ($this->get_name())
 		{
-			self::driver()->update_image_data($this->get_name(), $data);
+			self::driver()->update_image_data($this->get_name(), $tags);
 			if (
 					isset($data['name']) &&
 					is_string($data['name']) &&

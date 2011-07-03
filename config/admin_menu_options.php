@@ -55,26 +55,19 @@ return array(
 		'href'        => 'pages',
 		'position'    => 2,
   ),
-  'types' => array(
-    'name'        => 'Content types',
-    '@category'   => 'CMS',
-    'description' => 'Handle content types',
-		'href'        => 'types',
-		'position'    => 3,
-  ),
   'images' => array(
     'name'        => 'Images',
     '@category'   => 'CMS',
     'description' => 'Handle images',
 		'href'        => 'images',
-		'position'    => 4,
+		'position'    => 3,
   ),
-  'details' => array(
-    'name'        => 'Detail fields',
+/*  'tags' => array(
+    'name'        => 'Tags',
     '@category'   => 'CMS',
-    'description' => 'Handle detail fields for all CMS types',
-		'href'        => 'details',
-		'position'    => 5,
-  ),
+    'description' => 'Handle tags',
+		'href'        => 'tags',
+		'position'    => 4,
+  ),*/
 
 );
