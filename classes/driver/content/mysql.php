@@ -146,7 +146,7 @@ class Driver_Content_Mysql extends Driver_Content
 		if (@count($names))
 		{
 			$sql .= ' AND name IN (';
-			foreach (implode('\',\'',$names) as $name) $sql .= $this->pdo->quote($name).',';
+			foreach ($names as $name) $sql .= $this->pdo->quote($name).',';
 			$sql = substr($sql, 0, strlen($sql) - 1).')';
 		}
 /*
