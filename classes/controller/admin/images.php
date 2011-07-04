@@ -33,33 +33,27 @@ class Controller_Admin_Images extends Admincontroller {
 
 	public function action_add_image()
 	{
-		if (count($_POST) && isset($_POST['name']))
+		if (count($_FILES))
 		{
-			$post = new Validation($_POST);
-			$post->filter('trim');
-			$post->rule('Valid::not_empty',                    'name');
-			$post->rule('Content_Image::image_name_available', 'name');
-			$post_values = $post->as_array();
-
-			if ($post->validate())
+			$pathinfo = pathinfo($_FILES['file']['name']);
+			if (strtolower($pathinfo['extension']) == 'jpg')
 			{
-				$type_ids = array();
-				foreach ($post_values as $key => $value)
+				$new_filename = $_FILES['file']['name'];
+				$counter      = 1;
+				while ( ! Content_Image::image_name_available($new_filename))
 				{
-					if (substr($key, 0, 5) == 'type_') {
-						$type_ids[$post_values['template_for_type_'.substr($key, 5)]] = (int) substr($key, 5);
-					}
+					$new_filename = substr($_FILES['file']['name'], 0, strlen($_FILES['file']['name']) - 4) . '_'.$counter.'.jpg';
+					$counter++;
 				}
-				Content_Image::new_image($post_values['name']);
-				$this->add_message('Image "'.$post_values['name'].'" added');
+				if (move_uploaded_file($_FILES['file']['tmp_name'], APPPATH.'/user_content/images/'.$new_filename))
+				{
+					$this->add_message('Image "'.$new_filename.'" added');
+				}
+				else $this->add_error('Unknown error uploading image');
 			}
 			else
 			{
-				// Form errors detected!
-
-				$this->add_error('Fix errors and try again');
-				$this->add_form_errors($post->errors());
-				$this->set_formdata($post_values);
+				$this->add_error('Image must be of jpeg type (file extension .jpg)');
 			}
 		}
 	}

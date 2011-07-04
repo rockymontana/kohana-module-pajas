@@ -30,7 +30,7 @@
 		<xsl:if test="/root/meta/action = 'add_image'">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Images'" />
-				<xsl:with-param name="h1" select="'Add images'" />
+				<xsl:with-param name="h1" select="'Add image'" />
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="/root/meta/action = 'edit_image'">
@@ -89,7 +89,15 @@
 
 	<!-- Add or edit an image -->
 	<xsl:template match="content[../meta/controller = 'images' and ../meta/action = 'add_image']">
-		<p>Upload images to application/user_content/images/</p>
+		<form method="post" enctype="multipart/form-data">
+			<label for="file">
+				<xsl:text>File: </xsl:text>
+				<input id="file" type="file" name="file" />
+			</label>
+			<label>
+				<input type="submit" value="Upload" />
+			</label>
+		</form>
 	</xsl:template>
 	<!--xsl:template match="content[../meta/controller = 'images' and (../meta/action = 'add_image' or ../meta/action = 'edit_image')]"-->
 	<xsl:template match="content[../meta/controller = 'images' and ../meta/action = 'edit_image']">
