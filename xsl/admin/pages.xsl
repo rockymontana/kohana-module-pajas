@@ -154,7 +154,7 @@
 			<xsl:if test="../meta/action = 'edit_page'">
 				<xsl:if test="tmp">
 					<xsl:for-each select="tmp/template_field">
-						<xsl:sort select="@id" />
+						<xsl:sort select="@id" data-type="number" />
 						<xsl:call-template name="template_fields_tags">
 							<xsl:with-param name="template_field" select="@id" />
 						</xsl:call-template>
@@ -162,7 +162,7 @@
 				</xsl:if>
 				<xsl:if test="not(tmp)">
 					<xsl:for-each select="page/template_fields/template_field">
-						<xsl:sort select="@id" />
+						<xsl:sort select="number(@id)" data-type="number" />
 						<xsl:call-template name="template_fields_tags">
 							<xsl:with-param name="template_field" select="@id" />
 						</xsl:call-template>
@@ -191,6 +191,7 @@
 
 		<xsl:if test="/root/content/tmp">
 			<xsl:for-each select="/root/content/tmp/template_field[@id = $template_field]/tag">
+				<xsl:sort select="../@id" data-type="number" />
 				<p class="custom_row">
 					<select name="template_position[]">
 						<xsl:call-template name="template_positions_nr">
@@ -208,6 +209,7 @@
 		</xsl:if>
 		<xsl:if test="not(/root/content/tmp)">
 			<xsl:for-each select="/root/content/page/template_fields/template_field[@id = $template_field]/tag">
+				<xsl:sort select="../@id" data-type="number" />
 				<p class="custom_row">
 					<select name="template_position[]">
 						<xsl:call-template name="template_positions_nr">
