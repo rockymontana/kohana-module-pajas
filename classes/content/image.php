@@ -122,6 +122,20 @@ class Content_Image extends Model
 	}
 
 	/**
+	 * New image
+	 *
+	 * @param str $name - Image name
+	 * @param arr $tags
+	 *                 - Tag name as key, value or array of values as value
+	 *                   set value as NULL if you want a simple tag
+	 * @return boolean
+	 */
+	public static function new_image($name, $tags = FALSE)
+	{
+		return self::driver()->new_image($name, $tags);
+	}
+
+	/**
 	 * Remove an image
 	 *
 	 * @return boolean

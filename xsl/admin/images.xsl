@@ -87,21 +87,41 @@
 		</table>
 	</xsl:template>
 
-	<!-- Add or edit an image -->
+	<!-- Add an image -->
 	<xsl:template match="content[../meta/controller = 'images' and ../meta/action = 'add_image']">
 		<form method="post" enctype="multipart/form-data">
 			<label for="file">
 				<xsl:text>File: </xsl:text>
 				<input id="file" type="file" name="file" />
 			</label>
+
+			<h2>Tags</h2>
+			<p>Tag name: Tag value (value is optional)</p>
+			<p class="custom_row">
+				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
+			</p>
+			<p class="custom_row">
+				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
+			</p>
+			<p class="custom_row">
+				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
+			</p>
+			<p class="custom_row">
+				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
+			</p>
+			<p class="custom_row">
+				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
+			</p>
+
 			<label>
 				<input type="submit" value="Upload" />
 			</label>
 		</form>
 	</xsl:template>
-	<!--xsl:template match="content[../meta/controller = 'images' and (../meta/action = 'add_image' or ../meta/action = 'edit_image')]"-->
+
+	<!-- Edit an image -->
 	<xsl:template match="content[../meta/controller = 'images' and ../meta/action = 'edit_image']">
-		<a href="../{image/field[@name = 'URL']}" class="column"><img src="../{image/field[@name = 'URL']}?width=300" alt="{image/name}" /></a>
+		<a href="../{image/URL}" class="column"><img src="../{image/URL}?width=300" alt="{image/name}" /></a>
 
 		<form method="post" class="column">
 

@@ -47,6 +47,15 @@ class Controller_Admin_Images extends Admincontroller {
 				}
 				if (move_uploaded_file($_FILES['file']['tmp_name'], APPPATH.'/user_content/images/'.$new_filename))
 				{
+
+					$gd_img_object = ImageCreateFromJpeg(Kohana::config('user_content.dir').'/images/'.$new_filename);
+					$details       = array(
+					                   'width'  => imagesx($gd_img_object),
+					                   'height' => imagesy($gd_img_object)
+					                 );
+					foreach ($_POST['tag'] as $nr => $tag_name) $details[$tag_name] = $_POST['tag_value'][$nr];
+					Content_Image::new_image($new_filename, $details);
+
 					$this->add_message('Image "'.$new_filename.'" added');
 				}
 				else $this->add_error('Unknown error uploading image');
@@ -60,16 +69,16 @@ class Controller_Admin_Images extends Admincontroller {
 
 	public function action_edit_image($name)
 	{
-		$short_name = substr($name, 0, strlen($name) - 4);
-
-		$this->xml_content_image = $this->xml_content->appendChild($this->dom->createElement('image'));
-		$this->xml_content_image->setAttribute('name', $name);
-
-		xml::to_XML(array('field' => array($short_name,                  '@name' => 'name')), $this->xml_content_image);
-		xml::to_XML(array('field' => array('user_content/images/'.$name, '@name' => 'URL' )), $this->xml_content_image);
-
 		if ($content_image = new Content_Image($name))
 		{
+
+			$short_name = substr($name, 0, strlen($name) - 4);
+
+			$this->xml_content_image = $this->xml_content->appendChild($this->dom->createElement('image'));
+			$this->xml_content_image->setAttribute('name', $name);
+
+			$this->xml_content_image->appendChild($this->dom->createElement('URL', 'user_content/images/'.$name));
+			$tags_node = $this->xml_content_image->appendChild($this->dom->createElement('tags'));
 
 			if (count($_POST))
 			{
@@ -107,37 +116,16 @@ class Controller_Admin_Images extends Admincontroller {
 			else
 			{
 				$image_data = $content_image->get_data();
-				if ( ! isset($image_data['description'])) $image_data['description'][0] = '';
-				if ( ! isset($image_data['date']))        $image_data['date'][0]        = date('Y-m-d', time());
-				$form_data = array(
-					'name'        => $short_name,
-					'URL'         => 'user_content/images/'.$name,
-					'description' => $image_data['description'][0],
-					'date'        => $image_data['date'][0],
-				);
 
-/*
-				$counter = 2; // name and URL are counted
-				foreach ($content_image->get_data() as $field => $values)
+				foreach ($image_data as $tag_name => $tag_values)
 				{
-					foreach ($values as $value)
+					foreach ($tag_values as $tag_value)
 					{
-						$counter++;
-						$xml_field = $this->xml_content_image->appendChild($this->dom->createElement('field', $value));
-						$xml_field->setAttribute('name', $field);
-						$form_data[$field.'_'.$counter] = $value;
+						$tag_node = $tags_node->appendChild($this->dom->createElement('tag', $tag_value));
+						$tag_node->setAttribute('name', $tag_name);
 					}
 				}
-*/
-				if (isset($_SESSION['content']['image']['message']))
-				{
-					$this->add_message($_SESSION['content']['image']['message']);
-					unset($_SESSION['content']['image']['message']);
-				}
-
 			}
-
-			$this->set_formdata($form_data);
 		}
 		else $this->redirect();
 	}
