@@ -178,6 +178,10 @@ class Content_Image extends Model
 					$this->get_name() != $tags['name']
 				)
 			{
+				// Clean out old cache images
+				$cache_images = glob(Kohana::$cache_dir.'/user_content/images/'.$this->get_name().'*');
+				foreach ($cache_images as $image_to_delete) unlink($image_to_delete);
+
 				self::driver()->update_image_name($this->get_name(), $tags['name']);
 			}
 
