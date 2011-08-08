@@ -125,7 +125,6 @@ class Driver_Content_Mysql extends Driver_Content
 		return $contents;
 	}
 
-// TAGS NOT WORKING
 	public function get_images($names = NULL, $tags = array(), $names_only = FALSE)
 	{
 		if (is_array($names) && count($names) == 0) return array();
@@ -149,26 +148,25 @@ class Driver_Content_Mysql extends Driver_Content
 			foreach ($names as $name) $sql .= $this->pdo->quote($name).',';
 			$sql = substr($sql, 0, strlen($sql) - 1).')';
 		}
-/*
+
 		if (@count($tags))
 		{
+			$sql .= ' AND (';
 			foreach ($tags as $tag => $values)
 			{
-				if ($values === TRUE) $sql .= ' AND tag_id = '.$this->pdo->quote(Tags::get_id_by_name($tag));
+				if ($values === TRUE) $sql .= 'tag_id = '.$this->pdo->quote(Tags::get_id_by_name($tag)).' OR ';
 				elseif (@count($values))
 				{
-					$sql .= ' AND (tag_id = '.$this->pdo->quote(Tags::get_id_by_name($tag).' AND (';
+					$sql .= '(tag_id = '.$this->pdo->quote(Tags::get_id_by_name($tag)).' AND (';
 
-					foreach ($values as $value)
-					{
-						$sql .= 'tag_value = '.$this->pdo->quote($value).' OR ';
-					}
+					foreach ($values as $value) $sql .= 'tag_value = '.$this->pdo->quote($value).' OR ';
 
-					$sql = substr($sql, 0, strlen($sql) - 4).'))';
+					$sql = substr($sql, 0, strlen($sql) - 4).')) OR ';
 				}
 			}
+			$sql = substr($sql, 0, strlen($sql) - 4).')';
 		}
-*/
+
 		$images = array();
 		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $row)
 		{
@@ -262,6 +260,32 @@ class Driver_Content_Mysql extends Driver_Content
 		if ($content_id)
 		{
 			$sql .= ' WHERE content_id = '.$this->pdo->quote($content_id);
+		}
+
+		$tags = array();
+		foreach ($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $row)
+		{
+			if ( ! isset($tags[$row['id']])) $tags[$row['id']] = array('id'=>$row['id'],'name'=>$row['name'],'values'=>array());
+			$tags[$row['id']]['values'][] = $row['tag_value'];
+		}
+
+		return $tags;
+	}
+
+	public function get_tags_by_image_name($image_name = FALSE)
+	{
+		$sql = '
+			SELECT
+				tag_id AS id,
+				tags.name,
+				tag_value
+			FROM
+				content_images_tags
+				JOIN tags ON tags.id = content_images_tags.tag_id';
+
+		if ($image_name)
+		{
+			$sql .= ' WHERE image_name = '.$this->pdo->quote($image_name);
 		}
 
 		$tags = array();

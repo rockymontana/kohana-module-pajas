@@ -246,6 +246,23 @@ abstract class Driver_Content extends Model
 	abstract public function get_tags_by_content_id($content_id = FALSE);
 
 	/**
+	 * Get tag ids by image name
+	 *
+	 * @param str $image_name OPTIONAL
+	 * @return arr - array(
+	 *                 1 => array(
+	 *                   'name'   => 'location',
+	 *                   'values' => array('stockholm', 'uppsala'),
+	 *                 )
+	 *                 3 => array(
+	 *                   'name'   => 'blogpost',
+	 *                   'values' => array(NULL),
+	 *                 )
+	 *               )
+	 */
+	abstract public function get_tags_by_image_name($image_name = FALSE);
+
+	/**
 	 * Checks if a image name is available
 	 *
 	 * @param str $name - Image name

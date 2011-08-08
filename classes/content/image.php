@@ -70,11 +70,35 @@ class Content_Image extends Model
 	/**
 	 * Get images
 	 *
-	 * @return array - ex array(
+	 * @param str or array  $names      - Fetch specific images based on name
+	 * @param arr           $tags       - Fetch specific images based on tags,
+	 *                                    key as tag name, value as array of
+	 *                                    tag values.
+	 *                                    If value is boolean TRUE, all images
+	 *                                    with this tag will be fetched.
+	 *
+	 *                                    example:
+	 *                                    array(
+	 *                                      'car'    => TRUE,
+	 *                                      'colors' => array('red', 'green'),
+	 *                                    )
+	 *
+	 * @param bol           $names_only - Make this method return an array of image
+	 *                                    names only
+	 * @return arr - array(
+	 *                 // Image name
+	 *                 'foobar' => array(
+	 *                               // Image tags
+	 *                               'date'        => array('2011-05-03'),
+	 *                               'description' => array('Some description'),
+	 *                               'tag'         => array('car', 'blue', 'fast'),
+	 *                               etc...
+	 *                             ),
+	 *               )
 	 */
-	public static function get_images()
+	public static function get_images($names = NULL, $tags = array(), $names_only = FALSE)
 	{
-		return self::driver()->get_images();
+		return self::driver()->get_images($names, $tags, $names_only);
 	}
 
 	/**
@@ -85,6 +109,25 @@ class Content_Image extends Model
 	public function get_name()
 	{
 		return $this->name;
+	}
+
+	/**
+	 * Get all tags associated with images
+	 *
+	 * @return arr - array(
+	 *                 1 => array(
+	 *                   'name'   => 'location',
+	 *                   'values' => array('stockholm', 'uppsala'),
+	 *                 )
+	 *                 3 => array(
+	 *                   'name'   => 'blogpost',
+	 *                   'values' => array(NULL),
+	 *                 )
+	 *               )
+	 */
+	public static function get_tags()
+	{
+		return self::driver()->get_tags_by_image_name();
 	}
 
 	/**

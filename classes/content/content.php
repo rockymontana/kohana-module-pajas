@@ -127,7 +127,7 @@ class Content_Content extends Model
 	 * Get contents by tag id
 	 *
 	 * @param int $tag_id
-	 * @return array of content ids - ex array(1, 3, 4
+	 * @return array of content ids - ex array(
 	 *                      array(
 	 *                        id      => 1,
 	 *                        content => Lots of content

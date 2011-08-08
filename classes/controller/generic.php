@@ -21,6 +21,8 @@ class Controller_Generic extends Xsltcontroller
 		$page_data = $content_page->get_page_data();
 		foreach ($page_data['tag_ids'] as $template_field_id => $tag_ids)
 		{
+
+			// Get contents
 			$contents = array();
 			foreach ($tag_ids as $tag_id)
 			{
@@ -51,9 +53,49 @@ class Controller_Generic extends Xsltcontroller
 				}
 			}
 
+			// Get images
+			$images     = array();
+			$image_tags = array();
+			foreach ($tag_ids as $tag_id) $image_tags[Tags::get_name_by_id($tag_id)] = TRUE;
+
+			foreach (Content_Image::get_images(NULL, $image_tags) as $image_name => $image_tags)
+			{
+				$image = array(
+					'@name' => $image_name,
+					'tags'  => array(),
+				);
+
+				$counter = 0;
+				foreach ($image_tags as $tag_name => $tag_values)
+				{
+					if (count($tag_values))
+					{
+						foreach ($tag_values as $tag_value)
+						{
+							$image['tags'][$counter.'tag'] = array(
+								'@name' => $tag_name,
+								'$value' => $tag_value,
+							);
+							$counter++;
+						}
+					}
+					else
+					{
+						$image['tags'][$counter.'tag'] = array(
+							'@name' => $tag_name
+						);
+						$counter++;
+					}
+				}
+
+				$images[] = $image;
+			}
+
+			// Put it all in the $page_data for transport to the XML
 			$page_data[$template_field_id.'template_field'] = array(
 				'@id'      => $template_field_id,
 				'contents' => $contents,
+				'images'   => $images,
 			);
 
 		}
