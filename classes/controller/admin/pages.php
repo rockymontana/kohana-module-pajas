@@ -97,7 +97,14 @@ class Controller_Admin_Pages extends Admincontroller {
 			$this->xml_content_tags = $this->xml_content->appendChild($this->dom->createElement('tags'));
 			$tags = array();
 			foreach (Content_Page::get_tags()  as $tag) $tags[] = $tag;
-			foreach (Content_Image::get_tags() as $tag) if ( ! in_array($tag, $tags)) $tags[] = $tag;
+			foreach (Content_Image::get_tags() as $tag)
+			{
+				foreach ($tags as $tag_to_check) if ($tag_to_check['name'] == $tag['name']) break 2;
+
+				$tags[] = $tag;
+			}
+
+
 
 			foreach ($tags as $tag)
 			{
