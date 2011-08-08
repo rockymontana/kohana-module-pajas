@@ -72,4 +72,12 @@ class Controller_Generic extends Xsltcontroller
 		}
 	}
 
+	public function action_singlecontent($id)
+	{
+		// Set the name of the template to use
+		$this->xslt_stylesheet = 'generic';
+
+
+	}
+
 }

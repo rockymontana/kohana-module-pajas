@@ -463,7 +463,10 @@ class Driver_Content_Mysql extends Driver_Content
 
 			foreach ($tags as $tag_name => $tag_values)
 			{
-				if ($tag_name != 'name') // Name is forbidden, that is to be handled by update_image_name
+				if (
+					$tag_name != 'name' && // Name is forbidden, that is to be handled by update_image_name
+					$tag_name != ''
+				)
 				{
 					if ( ! is_array($tag_values)) $tag_values = array($tag_values);
 					foreach ($tag_values as $tag_value)

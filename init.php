@@ -84,3 +84,10 @@ if (count($URIs))
 				'action'     => 'index',
 			));
 }
+
+// Single content page
+Route::set('singlecontent', 'content/<id>', array('id' => '\d+'))
+		->defaults(array(
+			'controller' => 'generic',
+			'action'     => 'singlecontent',
+		));

@@ -274,6 +274,12 @@ div#loginbox
 							width:              90%;
 						}
 
+					.contentwrap2 .content form p.custom_row
+					{
+						float:              left;
+						width:              350px;
+					}
+
 					.contentwrap2 .content form p.custom_row input,
 					.contentwrap2 .content form p.custom_row select
 					{
@@ -286,6 +292,11 @@ div#loginbox
 						width:              auto;
 					}
 
+						.contentwrap2 .content form p.custom_row input:last-child
+						{
+							float: right;
+							width: 150px;
+						}
 
 	.contentwrap2 a:hover
 	{

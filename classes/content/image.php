@@ -160,19 +160,29 @@ class Content_Image extends Model
 		return FALSE;
 	}
 
+	/**
+	 * Set image data
+	 *
+	 * @param arr $tags
+	 *                 - Tag name as key, value or array of values as value
+	 *                   set value as NULL if you want a simple tag
+	 */
 	public function set_data($tags = array())
 	{
 		if ($this->get_name())
 		{
 			self::driver()->update_image_data($this->get_name(), $tags);
 			if (
-					isset($data['name']) &&
-					is_string($data['name']) &&
-					$this->get_name() != $data['name']
+					isset($tags['name']) &&
+					is_string($tags['name']) &&
+					$this->get_name() != $tags['name']
 				)
 			{
-				self::driver()->update_image_name($this->get_name(), $data['name']);
+				self::driver()->update_image_name($this->get_name(), $tags['name']);
 			}
+
+			// Update this objects information from the database
+			$this->load_data();
 		}
 		return FALSE;
 	}

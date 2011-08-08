@@ -97,76 +97,67 @@
 
 			<h2>Tags</h2>
 			<p>Tag name: Tag value (value is optional)</p>
-			<p class="custom_row">
-				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
-			</p>
-			<p class="custom_row">
-				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
-			</p>
-			<p class="custom_row">
-				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
-			</p>
-			<p class="custom_row">
-				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
-			</p>
-			<p class="custom_row">
-				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
-			</p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
 
-			<label>
-				<input type="submit" value="Upload" />
-			</label>
+			<label><input type="submit" value="Upload" /></label>
 		</form>
 	</xsl:template>
 
 	<!-- Edit an image -->
 	<xsl:template match="content[../meta/controller = 'images' and ../meta/action = 'edit_image']">
-		<a href="../{image/URL}" class="column"><img src="../{image/URL}?width=300" alt="{image/name}" /></a>
+		<a href="../{image/URL}" class="column"><img src="../{image/URL}?width=300" alt="{image/@name}" /></a>
 
 		<form method="post" class="column">
-
-			<xsl:if test="../meta/action = 'add_image'">
-				<xsl:attribute name="action">images/add_image</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="../meta/action = 'edit_image'">
-				<xsl:attribute name="action">images/edit_image/<xsl:value-of select="image/@name" /></xsl:attribute>
-			</xsl:if>
+			<xsl:attribute name="action">images/edit_image/<xsl:value-of select="image/@name" /></xsl:attribute>
 
 			<h2>Image data</h2>
 
 			<!-- Name -->
-			<xsl:if test="errors/form_errors/name = 'Valid::not_empty'">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id"    select="'name'" />
-					<xsl:with-param name="label" select="'Name:'" />
-					<xsl:with-param name="error" select="'Image name is required'" />
-				</xsl:call-template>
-			</xsl:if>
-			<xsl:if test="errors/form_errors/name = 'Content_Page::page_name_available'">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id"    select="'name'" />
-					<xsl:with-param name="label" select="'Name:'" />
-					<xsl:with-param name="error" select="'This image name is already taken'" />
-				</xsl:call-template>
-			</xsl:if>
-			<xsl:if test="not(errors/form_errors/name)">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id"    select="'name'" />
-					<xsl:with-param name="label" select="'Image name:'" />
-				</xsl:call-template>
-			</xsl:if>
+			<xsl:choose>
+				<xsl:when test="not(errors/form_errors/name)">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id"    select="'name'" />
+						<xsl:with-param name="label" select="'Image name:'" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="errors/form_errors/name = 'Content_Image::image_name_available'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id"    select="'name'" />
+						<xsl:with-param name="label" select="'Image name:'" />
+						<xsl:with-param name="error" select="'This image name is already taken'" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="errors/form_errors/name = 'Valid::not_empty'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id"    select="'name'" />
+						<xsl:with-param name="label" select="'Image name:'" />
+						<xsl:with-param name="error" select="'Image name is required'" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id"    select="'name'" />
+						<xsl:with-param name="label" select="'Image name:'" />
+						<xsl:with-param name="error" select="concat('Unknown error: ',errors/form_errors/name)" />
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
 
-			<!-- Description -->
-			<xsl:call-template name="form_line">
-				<xsl:with-param name="id"    select="'description'" />
-				<xsl:with-param name="label" select="'Description:'" />
-			</xsl:call-template>
+			<xsl:for-each select="image/tags/tag">
+				<xsl:sort select="@name" />
+				<xsl:sort select="." />
+				<p class="custom_row"><input type="text" name="tag[]" value="{@name}" />: <input type="text" name="tag_value[]" value="{.}" /></p>
+			</xsl:for-each>
 
-			<!-- Name -->
-			<xsl:call-template name="form_line">
-				<xsl:with-param name="id"    select="'date'" />
-				<xsl:with-param name="label" select="'Date:'" />
-			</xsl:call-template>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
 
 			<!-- Already stored data - ->
 			<xsl:for-each select="image/field">
