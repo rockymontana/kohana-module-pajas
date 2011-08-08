@@ -24,9 +24,18 @@ class Controller_Admin_Pages extends Admincontroller {
 
 	public function action_add_page()
 	{
-		// Get all tags associated with pages
+		// Get all tags associated with pages and images
 		$this->xml_content_tags = $this->xml_content->appendChild($this->dom->createElement('tags'));
-		foreach (Content_Page::get_tags() as $tag)
+		$tags = array();
+		foreach (Content_Page::get_tags()  as $tag) $tags[] = $tag;
+		foreach (Content_Image::get_tags() as $tag)
+		{
+			foreach ($tags as $tag_to_check) if ($tag_to_check['name'] == $tag['name']) break 2;
+
+			$tags[] = $tag;
+		}
+
+		foreach ($tags as $tag)
 		{
 			$tag_node = $this->xml_content_tags->appendChild($this->dom->createElement('tag', $tag['name']));
 			$tag_node->setAttribute('id', $tag['id']);
@@ -103,8 +112,6 @@ class Controller_Admin_Pages extends Admincontroller {
 
 				$tags[] = $tag;
 			}
-
-
 
 			foreach ($tags as $tag)
 			{

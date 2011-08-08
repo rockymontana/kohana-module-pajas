@@ -58,6 +58,7 @@ class Controller_Generic extends Xsltcontroller
 			$image_tags = array();
 			foreach ($tag_ids as $tag_id) $image_tags[Tags::get_name_by_id($tag_id)] = TRUE;
 
+			$larger_counter = 0;
 			foreach (Content_Image::get_images(NULL, $image_tags) as $image_name => $image_tags)
 			{
 				$image = array(
@@ -88,7 +89,8 @@ class Controller_Generic extends Xsltcontroller
 					}
 				}
 
-				$images[] = $image;
+				$images[$larger_counter.'image'] = $image;
+				$larger_counter++;
 			}
 
 			// Put it all in the $page_data for transport to the XML
