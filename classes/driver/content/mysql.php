@@ -481,29 +481,31 @@ class Driver_Content_Mysql extends Driver_Content
 
 	public function update_image_data($image_name, $tags = FALSE)
 	{
-		// Clear previous data
-		$this->pdo->exec('DELETE FROM content_images_tags WHERE image_name = '.$this->pdo->quote($image_name).';');
-
-		if ($tags)
+		if ($tags !== FALSE && is_array($tags))
 		{
-			$sql = 'INSERT INTO content_images_tags (image_name, tag_id, tag_value) VALUES';
+			// Clear previous data
+			$this->pdo->exec('DELETE FROM content_images_tags WHERE image_name = '.$this->pdo->quote($image_name).';');
 
-			foreach ($tags as $tag_name => $tag_values)
+			if (count($tags))
 			{
-				if (
-					$tag_name != 'name' && // Name is forbidden, that is to be handled by update_image_name
-					$tag_name != ''
-				)
+				$sql = 'INSERT INTO content_images_tags (image_name, tag_id, tag_value) VALUES';
+
+				foreach ($tags as $tag_name => $tag_values)
 				{
-					if ( ! is_array($tag_values)) $tag_values = array($tag_values);
-					foreach ($tag_values as $tag_value)
+					if (
+						$tag_name != 'name' && // Name is forbidden, that is to be handled by update_image_name
+						$tag_name != ''
+					)
 					{
-						$sql .= '('.$this->pdo->quote($image_name).','.$this->pdo->quote(Tags::get_id_by_name($tag_name)).','.$this->pdo->quote($tag_value).'),';
+						if ( ! is_array($tag_values)) $tag_values = array($tag_values);
+						foreach ($tag_values as $tag_value)
+						{
+							$sql .= '('.$this->pdo->quote($image_name).','.$this->pdo->quote(Tags::get_id_by_name($tag_name)).','.$this->pdo->quote($tag_value).'),';
+						}
 					}
 				}
+				$this->pdo->exec(substr($sql, 0, strlen($sql) - 1));
 			}
-			$sql = substr($sql, 0, strlen($sql) - 1);
-			$this->pdo->exec($sql);
 		}
 
 		return TRUE;
