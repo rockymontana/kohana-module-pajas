@@ -42,10 +42,10 @@ class Controller_Generic extends Xsltcontroller
 							foreach ($tag_values as $tag_value)
 							{
 								$counter++;
-								$contents[$content['id'].'content']['tags'][$counter.'tag']['name'] = $tag_name;
+								$contents[$content['id'].'content']['tags'][$counter.'tag']['@name'] = $tag_name;
 								if ($tag_value)
 								{
-									$contents[$content['id'].'content']['tags'][$counter.'tag']['value'] = $tag_value;
+									$contents[$content['id'].'content']['tags'][$counter.'tag']['$value'] = $tag_value;
 								}
 							}
 						}
