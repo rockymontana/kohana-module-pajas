@@ -247,14 +247,29 @@
 		<xsl:param name="i">1</xsl:param>
 			<p class="custom_row">
 				<select name="template_position[]">
-					<xsl:if test="/root/content/tmp/template_field[position() = $i]/@id">
+					<xsl:choose>
+						<xsl:when test="/root/content/tmp/template_field[position() = $i]/@id">
+							<xsl:call-template name="template_positions_nr">
+								<xsl:with-param name="selected" select="/root/content/tmp/template_field[position() = $i]/@id" />
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:when test="not(/root/content/tmp/template_field[position() = $i]/@id) and /root/meta/action = 'add_page'">
+							<xsl:call-template name="template_positions_nr">
+								<xsl:with-param name="selected" select="$i" />
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:call-template name="template_positions_nr" />
+						</xsl:otherwise>
+					</xsl:choose>
+					<!--xsl:if test="/root/content/tmp/template_field[position() = $i]/@id">
 						<xsl:call-template name="template_positions_nr">
 							<xsl:with-param name="selected" select="/root/content/tmp/template_field[position() = $i]/@id" />
 						</xsl:call-template>
 					</xsl:if>
 					<xsl:if test="not(/root/content/tmp/template_field[position() = $i]/@id)">
 						<xsl:call-template name="template_positions_nr" />
-					</xsl:if>
+					</xsl:if-->
 				</select>:
 				<select name="tag_id[]">
 					<option value="">--- None ---</option>
