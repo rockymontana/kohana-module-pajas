@@ -453,24 +453,27 @@ class Driver_Content_Mysql extends Driver_Content
 			);
 		}
 
-		if ($tags)
+		if ($tags !== FALSE && is_array($tags))
 		{
 			$this->pdo->exec('
 				DELETE FROM content_tags
 				WHERE       content_id   = '.$this->pdo->quote($content_id).';');
 
-			$sql = 'INSERT INTO content_tags (content_id, tag_id, tag_value) VALUES';
-			foreach ($tags as $tag_name => $tag_values)
+			if (count($tags))
 			{
-				if ( ! is_array($tag_values)) $tag_values = array($tag_values);
-
-				foreach ($tag_values as $tag_value)
+				$sql = 'INSERT INTO content_tags (content_id, tag_id, tag_value) VALUES';
+				foreach ($tags as $tag_name => $tag_values)
 				{
-					if ($tag_value == NULL) $sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote(Tags::get_id_by_name($tag_name)).',NULL),';
-					else                    $sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote(Tags::get_id_by_name($tag_name)).','.$this->pdo->quote($tag_value).'),';
+					if ( ! is_array($tag_values)) $tag_values = array($tag_values);
+
+					foreach ($tag_values as $tag_value)
+					{
+						if ($tag_value == NULL) $sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote(Tags::get_id_by_name($tag_name)).',NULL),';
+						else                    $sql .= '('.$this->pdo->quote($content_id).','.$this->pdo->quote(Tags::get_id_by_name($tag_name)).','.$this->pdo->quote($tag_value).'),';
+					}
 				}
+				$this->pdo->exec(substr($sql, 0, strlen($sql) - 1).';');
 			}
-			$this->pdo->exec(substr($sql, 0, strlen($sql) - 1).';');
 		}
 
 		return (int) $content_id;
