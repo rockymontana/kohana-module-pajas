@@ -151,7 +151,9 @@ class Driver_Content_Mysql extends Driver_Content
 
 		if (@count($tags))
 		{
-			$sql .= ' AND (';
+			$sql .= ' AND (
+				name IN (
+					SELECT image_name FROM content_images_tags WHERE 1 = 1 AND (';
 			foreach ($tags as $tag => $values)
 			{
 				if ($values === TRUE) $sql .= 'tag_id = '.$this->pdo->quote(Tags::get_id_by_name($tag)).' OR ';
@@ -164,7 +166,7 @@ class Driver_Content_Mysql extends Driver_Content
 					$sql = substr($sql, 0, strlen($sql) - 4).')) OR ';
 				}
 			}
-			$sql = substr($sql, 0, strlen($sql) - 4).')';
+			$sql = substr($sql, 0, strlen($sql) - 4).')))';
 		}
 
 		$images = array();
