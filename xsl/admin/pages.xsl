@@ -262,14 +262,6 @@
 							<xsl:call-template name="template_positions_nr" />
 						</xsl:otherwise>
 					</xsl:choose>
-					<!--xsl:if test="/root/content/tmp/template_field[position() = $i]/@id">
-						<xsl:call-template name="template_positions_nr">
-							<xsl:with-param name="selected" select="/root/content/tmp/template_field[position() = $i]/@id" />
-						</xsl:call-template>
-					</xsl:if>
-					<xsl:if test="not(/root/content/tmp/template_field[position() = $i]/@id)">
-						<xsl:call-template name="template_positions_nr" />
-					</xsl:if-->
 				</select>:
 				<select name="tag_id[]">
 					<option value="">--- None ---</option>
