@@ -121,9 +121,13 @@
 			</xsl:for-each>
 
 			<!-- New tag -->
-			<p class="custom_row">
-				<input type="text" name="tag[]" />: <input type="text" name="tag_value[]" />
-			</p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row"><input type="text" name="tag[]" />: <input type="text" name="tag_value[]" /></p>
+			<p class="custom_row">To remove a tag, just leave the tag name and value blank.</p>
+			<p class="custom_row">To get more tag boxes to write in, just save and more empy ones will appear.</p>
 
 			<xsl:if test="../meta/action = 'add_content'">
 				<xsl:call-template name="form_button">
