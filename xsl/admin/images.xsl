@@ -48,6 +48,7 @@
 				<tr>
 					<th class="medium_row"></th>
 					<th>Name</th>
+					<th class="large_row">Tags</th>
 					<th class="medium_row">Dimensions</th>
 					<th class="medium_row">Action</th>
 				</tr>
@@ -61,6 +62,28 @@
 						</xsl:if>
 						<td><a href="../{URL}"><img src="../{URL}?width=99" alt="{@name}" /></a></td>
 						<td><xsl:value-of select="name" /></td>
+						<td>
+							<xsl:for-each select="*[
+																			local-name() != 'width' and
+																			local-name() != 'height' and
+																			local-name() != 'URL' and
+																			local-name() != 'name'
+																		]">
+								<xsl:sort select="local-name(current())" />
+
+								<strong><xsl:value-of select="local-name(current())" /></strong>
+
+								<xsl:if test=". != ''">
+									<strong>: </strong>
+									<xsl:value-of select="." />
+								</xsl:if>
+
+								<xsl:if test="position() != last()">
+									<xsl:text>, </xsl:text>
+								</xsl:if>
+
+							</xsl:for-each>
+						</td>
 						<td><xsl:value-of select="width" />x<xsl:value-of select="height" /></td>
 						<td>
 							<xsl:text>[</xsl:text>

@@ -23,9 +23,13 @@ class Controller_Admin_Images extends Admincontroller {
 
 			foreach ($image_details as $detail_name => $detail_values)
 			{
-				foreach ($detail_values as $detail_value)
+				if (count($detail_values))
 				{
-					$image_node->appendChild($this->dom->createElement($detail_name, $detail_value));
+					foreach ($detail_values as $detail_value) $image_node->appendChild($this->dom->createElement($detail_name, $detail_value));
+				}
+				else
+				{
+					$image_node->appendChild($this->dom->createElement($detail_name));
 				}
 			}
 		}
