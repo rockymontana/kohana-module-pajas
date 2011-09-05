@@ -138,13 +138,13 @@ class Content_Image extends Model
 	 */
 	public static function image_name_available($name)
 	{
+		$name_pi = pathinfo($name);
+
 		foreach (self::driver()->get_images() as $image_name => $image_data)
 		{
-			// First remove possible file ending from both names
-			if (substr($image_name, 0, strlen($image_name) - 4) == substr($name, 0, strlen($name) - 4)) return FALSE;
+			$image_name_pi = pathinfo($image_name);
 
-			// Then try without removing the file ending
-			if (substr($image_name, 0, strlen($image_name) - 4) == $name)                               return FALSE;
+			if ($image_name_pi['filename'] == $name_pi['filename']) return FALSE;
 		}
 
 		// No matches found, image name is available
