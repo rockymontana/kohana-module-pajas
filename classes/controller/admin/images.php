@@ -23,9 +23,13 @@ class Controller_Admin_Images extends Admincontroller {
 
 			foreach ($image_details as $detail_name => $detail_values)
 			{
-				foreach ($detail_values as $detail_value)
+				if (count($detail_values))
 				{
-					$image_node->appendChild($this->dom->createElement($detail_name, $detail_value));
+					foreach ($detail_values as $detail_value) $image_node->appendChild($this->dom->createElement($detail_name, $detail_value));
+				}
+				else
+				{
+					$image_node->appendChild($this->dom->createElement($detail_name));
 				}
 			}
 		}
@@ -38,12 +42,12 @@ class Controller_Admin_Images extends Admincontroller {
 			$pathinfo = pathinfo($_FILES['file']['name']);
 			if (strtolower($pathinfo['extension']) == 'jpg')
 			{
-				$filename     = URL::title(substr($_FILES['file']['name'], 0, strlen($_FILES['file']['name']) - 4)).'.jpg';
+				$filename     = URL::title($pathinfo['filename']).'.jpg';
 				$new_filename = $filename;
 				$counter      = 1;
 				while ( ! Content_Image::image_name_available($new_filename))
 				{
-					$new_filename = substr($filename, 0, strlen($filename) - 4) . '_'.$counter.'.jpg';
+					$new_filename = substr($filename, 0, strlen($filename) - 4).'_'.$counter.'.jpg';
 					$counter++;
 				}
 				if (move_uploaded_file($_FILES['file']['tmp_name'], APPPATH.'/user_content/images/'.$new_filename))

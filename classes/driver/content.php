@@ -23,6 +23,24 @@ abstract class Driver_Content extends Model
 		chdir($cwd);
 		foreach (array_diff($actual_images, $tracked_images) as $non_tracked_image)
 		{
+
+			$pathinfo = pathinfo($non_tracked_image);
+			if ($pathinfo['filename'] != URL::title($pathinfo['filename']))
+			{
+				// We need to rename the image so it fits the URL
+
+				$new_filename = URL::title($pathinfo['filename']);
+				while ( ! Content_Image::image_name_available($new_filename))
+				{
+					$new_filename = URL::title($pathinfo['filename']).'_'.$counter.'.jpg';
+					$counter++;
+				}
+
+				copy(Kohana::config('user_content.dir').'/images/'.$non_tracked_image, Kohana::config('user_content.dir').'/images/'.$new_filename.'.jpg');
+				@unlink(Kohana::config('user_content.dir').'/images/'.$non_tracked_image);
+				$non_tracked_image = $new_filename.'.jpg';
+			}
+
 			if (@$gd_img_object = ImageCreateFromJpeg(Kohana::config('user_content.dir').'/images/'.$non_tracked_image))
 			{
 				$gd_img_object = ImageCreateFromJpeg(Kohana::config('user_content.dir').'/images/'.$non_tracked_image);
