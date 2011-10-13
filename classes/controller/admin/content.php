@@ -2,16 +2,10 @@
 
 class Controller_Admin_Content extends Admincontroller {
 
-	public function __construct(Request $request, Response $response)
+	public function before()
 	{
-		parent::__construct($request, $response);
-		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/content';
 		xml::to_XML(array('admin_page' => 'Content'), $this->xml_meta);
-
-		// List content types
-		$this->xml_content_types = $this->xml_content->appendChild($this->dom->createElement('types'));
-		xml::to_XML(Content_Type::get_types(), $this->xml_content_types, 'type', 'id');
 	}
 
 	public function action_index()
@@ -24,82 +18,87 @@ class Controller_Admin_Content extends Admincontroller {
 			$content_node_content = $this->dom->createElement('content');
 			$content_node_content->appendChild($this->dom->createTextNode($content['content']));
 			$content_node->appendChild($content_node_content);
-			$types_node = $content_node->appendChild($this->dom->createElement('types'));
-			foreach ($content['types'] as $type)
+			$tags_node = $content_node->appendChild($this->dom->createElement('tags'));
+			foreach ($content['tags'] as $tag)
 			{
-				$type_node = $types_node->appendChild($this->dom->createElement('type', $type['type']));
-				$type_node->setAttribute('id', $type['id']);
-
+				$tag_node = $tags_node->appendChild($this->dom->createElement('tag'));
+				$tag_node->setAttribute('id', $tag['id']);
+				$tag_node->appendChild($this->dom->createElement('name', $tag['name']));
+				if ($tag['value']) $tag_node->appendChild($this->dom->createElement('value', $tag['value']));
 			}
 		}
 	}
 
 	public function action_add_content()
 	{
-		if (count($_POST) && isset($_POST['content']))
+		if (count($_POST))
 		{
 			$post = new Validation($_POST);
 			$post->filter('trim');
 			$post_values = $post->as_array();
 
-			$type_ids = array();
-			foreach ($post_values as $key => $value)
+			$tags = array();
+			foreach ($post_values['tag'] as $nr => $tag_name)
 			{
-				if (substr($key, 0, 8) == 'type_id_')
+				if ($tag_name)
 				{
-					$type_ids[] = (int) substr($key, 8);
+					if ( ! isset($tags[$tag_name])) $tags[$tag_name] = array();
+					$tags[$tag_name][] = $post_values['tag_value'][$nr];
 				}
 			}
-			$content_id = Content_Content::new_content($post_values['content'], $type_ids);
+
+			$content_id = Content_Content::new_content($post_values['content'], $tags);
 			$this->add_message('Content #'.$content_id.' added');
 		}
 	}
 
 	public function action_edit_content($id)
 	{
-		$content_content = new Content_Content($id);
+		$content = new Content_Content($id);
 
-		if ($content_content->get_content_id())
+		if ($content->get_content_id())
 		{
 			$this->xml_content->appendChild($this->dom->createElement('content_id', $id));
 
-			if (count($_POST) && isset($_POST['content']))
+			if (count($_POST))
 			{
 				$post = new Validation($_POST);
 				$post->filter('trim');
 				$post_values = $post->as_array();
 
-				$type_ids = array();
-				foreach ($post_values as $key => $value)
+				$tags = array();
+				foreach ($post_values['tag'] as $nr => $tag_name)
 				{
-					if (substr($key, 0, 8) == 'type_id_')
+					if ($tag_name)
 					{
-						$type_ids[] = (int) substr($key, 8);
+						if ( ! isset($tags[$tag_name])) $tags[$tag_name] = array();
+						$tags[$tag_name][] = $post_values['tag_value'][$nr];
 					}
 				}
 
-				$content_content->update_content($post_values['content'], $type_ids);
+				$content->update_content($post_values['content'], $tags);
 				$this->add_message('Content #'.$id.' updated');
-
-				$form_data = array('content' => $content_content->get_content());
-
-				foreach ($content_content->get_type_ids() as $type_id)
-				{
-					$form_data['type_id_'.$type_id] = 'checked';
-				}
-
-				$this->set_formdata($form_data);
 			}
-			else
+
+			$content_node = $this->xml_content->appendChild($this->dom->createElement('content'));
+			$content_node->appendChild($this->dom->createTextNode($content->get_content()));
+			$tags_node = $this->xml_content->appendChild($this->dom->createElement('tags'));
+
+			foreach ($content->get_tags() as $tag)
 			{
-				$form_data = array('content' => $content_content->get_content());
-
-				foreach ($content_content->get_type_ids() as $type_id)
+				if ( ! $tag['values'])
 				{
-					$form_data['type_id_'.$type_id] = 'checked';
+					$tag_node = $tags_node->appendChild($this->dom->createElement('tag'));
+					$tag_node->setAttribute('name', $tag['name']);
 				}
-
-				$this->set_formdata($form_data);
+				else
+				{
+					foreach ($tag['values'] as $tag_value)
+					{
+						$tag_node = $tags_node->appendChild($this->dom->createElement('tag', $tag_value));
+						$tag_node->setAttribute('name', $tag['name']);
+					}
+				}
 			}
 
 		}
@@ -108,8 +107,8 @@ class Controller_Admin_Content extends Admincontroller {
 
 	public function action_rm_content($id)
 	{
-		$content_content = new Content_Content($id);
-		$content_content->rm_content();
+		$content = new Content_Content($id);
+		$content->rm_content();
 
 		$this->redirect();
 	}

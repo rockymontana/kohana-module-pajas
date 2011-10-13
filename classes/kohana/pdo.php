@@ -24,7 +24,7 @@ class Kohana_pdo
 
 	public function __construct($instance_name = 'default')
 	{
-		if (!isset(self::$instances[$instance_name]))
+		if ( ! isset(self::$instances[$instance_name]))
 		{
 			if ($db_settings = Kohana::config('pdo.'.$instance_name))
 			{
@@ -46,7 +46,7 @@ class Kohana_pdo
 
 			  self::$instances[$instance_name] = $this;
 
-				if (Kohana::$environment == Kohana::DEVELOPMENT)
+				if (Kohana::$environment === Kohana::DEVELOPMENT)
 				{
 					$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				}
@@ -57,14 +57,10 @@ class Kohana_pdo
 
 	public static function instance($instance_name = 'default')
 	{
-	  if (!isset(self::$instances[$instance_name]))
-	  {
-	    new Kohana_pdo($instance_name);
-	  }
-	  if (isset(self::$instances[$instance_name]))
-	  {
-	    return self::$instances[$instance_name]->db;
-	  }
+	  if ( ! isset(self::$instances[$instance_name])) new Kohana_pdo($instance_name);
+
+	  if (isset(self::$instances[$instance_name]))    return self::$instances[$instance_name]->db;
+
     return false;
 	}
 

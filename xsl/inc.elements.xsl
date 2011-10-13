@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<xsl:template name="load_content">
-		<xsl:param name="field_id" />
-		<xsl:apply-templates select="/root/content/page/type[@template_field_id = $field_id]/contents/content[1]/html" mode="elements" />
-	</xsl:template>
-
 	<xsl:template match="h1" mode="elements">
 		<h1>
 			<xsl:copy-of select="@class" />
@@ -25,6 +20,27 @@
 			<xsl:copy-of select="@class" />
 			<xsl:apply-templates select="node()" mode="elements" />
 		</h3>
+	</xsl:template>
+
+	<xsl:template match="h4" mode="elements">
+		<h4>
+			<xsl:copy-of select="@class" />
+			<xsl:apply-templates select="node()" mode="elements" />
+		</h4>
+	</xsl:template>
+
+	<xsl:template match="h5" mode="elements">
+		<h5>
+			<xsl:copy-of select="@class" />
+			<xsl:apply-templates select="node()" mode="elements" />
+		</h5>
+	</xsl:template>
+
+	<xsl:template match="h6" mode="elements">
+		<h6>
+			<xsl:copy-of select="@class" />
+			<xsl:apply-templates select="node()" mode="elements" />
+		</h6>
 	</xsl:template>
 
 	<xsl:template match="p" mode="elements">
@@ -111,6 +127,29 @@
 
 	<xsl:template match="pre" mode="elements">
 		<pre><xsl:apply-templates select="node()" mode="elements" /></pre>
+	</xsl:template>
+
+	<!-- Table stuff -->
+	<xsl:template match="table" mode="elements">
+		<table><xsl:apply-templates select="node()" mode="elements" /></table>
+	</xsl:template>
+	<xsl:template match="thead" mode="elements">
+		<thead><xsl:apply-templates select="node()" mode="elements" /></thead>
+	</xsl:template>
+	<xsl:template match="tbody" mode="elements">
+		<tbody><xsl:apply-templates select="node()" mode="elements" /></tbody>
+	</xsl:template>
+	<xsl:template match="tfooter" mode="elements">
+		<tfooter><xsl:apply-templates select="node()" mode="elements" /></tfooter>
+	</xsl:template>
+	<xsl:template match="tr" mode="elements">
+		<tr><xsl:apply-templates select="node()" mode="elements" /></tr>
+	</xsl:template>
+	<xsl:template match="th" mode="elements">
+		<th><xsl:apply-templates select="node()" mode="elements" /></th>
+	</xsl:template>
+	<xsl:template match="td" mode="elements">
+		<td><xsl:apply-templates select="node()" mode="elements" /></td>
 	</xsl:template>
 
 	<!--xsl:template match="flash" mode="elements">

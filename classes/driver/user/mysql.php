@@ -3,17 +3,12 @@
 class Driver_User_Mysql extends Driver_User
 {
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
 	protected function check_db_structure()
 	{
 		$columns = $this->pdo->query('SHOW TABLES like \'user%\';')->fetchAll(PDO::FETCH_COLUMN);
 		return count($columns) == 3;
 	}
-	
+
 	protected function create_db_structure()
 	{
 		$this->pdo->query('CREATE TABLE `user_data_fields` (

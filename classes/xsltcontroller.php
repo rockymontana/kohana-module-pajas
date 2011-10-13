@@ -25,6 +25,8 @@ abstract class Xsltcontroller extends Controller
 	 *          depending on the HTTP_USER_AGENT
 	 * TRUE   = Always send HTML
 	 * FALSE  = Always send XML+XSLT
+	 * XML    = Send only XML without XSLT processing instruction
+	 * JSON   = Send JSON
 	 *
 	 */
 	public $transform;
@@ -57,6 +59,8 @@ abstract class Xsltcontroller extends Controller
 		{
 			if     ($_GET['transform'] == 'TRUE')  $this->transform = TRUE;
 			elseif ($_GET['transform'] == 'FALSE') $this->transform = FALSE;
+			elseif ($_GET['transform'] == 'XML')   $this->transform = 'XML';
+			elseif ($_GET['transform'] == 'JSON')  $this->transform = 'JSON';
 			else                                   $this->transform = 'auto';
 		}
 		else
@@ -93,6 +97,7 @@ abstract class Xsltcontroller extends Controller
 		// Create the content node
 		$this->xml_content = $this->xml->appendChild($this->dom->createElement('content'));
 
+		return TRUE;
 	}
 
 	public function before() {}
@@ -104,51 +109,88 @@ abstract class Xsltcontroller extends Controller
 	 */
 	public function render()
 	{
-		$this->dom->insertBefore($this->dom->createProcessingInstruction('xml-stylesheet', 'type="text/xsl" href="' . $this->xslt_path . $this->xslt_stylesheet . '.xsl"'), $this->xml);
-
-		$user_agent_trigger = FALSE;
-		foreach (Kohana::config('xslt.user_agents') as $user_agent)
+		if ($this->transform === TRUE || $this->transform === FALSE || $this->transform == 'auto')
 		{
-			if (strpos($_SERVER['HTTP_USER_AGENT'], $user_agent)) $user_agent_trigger = TRUE;
-		}
+			$this->dom->insertBefore($this->dom->createProcessingInstruction('xml-stylesheet', 'type="text/xsl" href="' . $this->xslt_path . $this->xslt_stylesheet . '.xsl"'), $this->xml);
 
-		if ($this->transform === TRUE || ($this->transform == 'auto' && $user_agent_trigger == TRUE))
-		{
-			$xslt = new DOMDocument;
-			if (file_exists(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl'))
+			// If the stylesheet name includes an additional path, we need to extract it
+			$extra_xslt_path = '';
+			$extra_path_parts = explode('/', $this->xslt_stylesheet);
+			foreach ($extra_path_parts as $nr => $extra_path_part)
 			{
-				// If the stylesheet exists in the specified path, load it directly
-				$xslt->load(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl');
+				if ($nr < (count($extra_path_parts) - 1)) $extra_xslt_path .= $extra_path_part . '/';
+			}
+
+			// See if we have a user agent that triggers the server side HTML generation
+			$user_agent_trigger = FALSE;
+			foreach (Kohana::config('xslt.user_agents') as $user_agent)
+			{
+				if (strpos($_SERVER['HTTP_USER_AGENT'], $user_agent)) $user_agent_trigger = TRUE;
+			}
+
+			if ($this->transform === TRUE || ($this->transform == 'auto' && $user_agent_trigger == TRUE))
+			{
+				$xslt = new DOMDocument;
+				if (file_exists(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl'))
+				{
+					// If the stylesheet exists in the specified path, load it directly
+					$xslt->load(getenv('DOCUMENT_ROOT').$this->xslt_path.$this->xslt_stylesheet.'.xsl');
+				}
+				else
+				{
+					// Else make a search for it
+
+					// We need to load all theme modules
+					foreach (scandir(MODPATH) as $modulePath)
+					{
+						if (substr($modulePath, 0, 5) == 'theme')
+						{
+							Kohana::modules(array($modulePath => MODPATH.$modulePath) + Kohana::modules());
+						}
+					}
+
+					$xslt->load(Kohana::find_file(
+						rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path), '/'),
+						$this->xslt_stylesheet,
+						'xsl'
+					));
+				}
+
+				// We need to update paths to included XSL elements
+				$XPath         = new DOMXPath($xslt);
+				$include_nodes = $XPath->query('//xsl:include');
+
+				foreach ($include_nodes as $include_node)
+				{
+					foreach ($include_node->attributes as $attribute_node)
+					{
+						$new_filename = Kohana::find_file(rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path.$extra_xslt_path), '/'), substr($attribute_node->nodeValue, 0, strlen($attribute_node->nodeValue) - 4), 'xsl');
+						$include_node->removeAttribute('href');
+						$include_node->setAttribute('href', $new_filename);
+					}
+				}
+				// Done updating paths
+
+				$proc = new xsltprocessor();
+				$proc->importStyleSheet($xslt);
+
+				echo $proc->transformToXML($this->dom);
 			}
 			else
 			{
-				// Else make a search for it
-
-				// We need to load all theme modules
-				foreach (scandir(MODPATH) as $modulePath)
-				{
-					if (substr($modulePath, 0, 5) == 'theme')
-					{
-						Kohana::modules(array($modulePath => MODPATH.$modulePath) + Kohana::modules());
-					}
-				}
-
-				$xslt->load(Kohana::find_file(
-					rtrim(preg_replace('/^'.str_replace('/', '\\/', Kohana::$base_url).'/', '', $this->xslt_path), '/'),
-					$this->xslt_stylesheet,
-					'xsl'
-				));
+				$this->response->headers('Content-Type', 'application/xml; encoding='.Kohana::$charset.';');
+				echo $this->dom->saveXML();
 			}
-
-			$proc = new xsltprocessor();
-			$proc->importStyleSheet($xslt);
-
-			echo $proc->transformToXML($this->dom);
 		}
-		else
+		elseif ($this->transform == 'XML')
 		{
 			$this->response->headers('Content-Type', 'application/xml; encoding='.Kohana::$charset.';');
 			echo $this->dom->saveXML();
+		}
+		elseif ($this->transform == 'JSON')
+		{
+			$this->response->headers('Content-type: application/json; encoding='.Kohana::$charset.';');
+			echo json_encode(new SimpleXMLElement($this->dom->saveXML(), LIBXML_NOCDATA));
 		}
 
 		return TRUE;

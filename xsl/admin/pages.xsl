@@ -142,31 +142,36 @@
 
 			<p>If you dont know what URI is, leave it blank</p>
 
-			<h2>Content types</h2>
-			<p>Use the dropdown to specify where the content is to show up on the page</p>
-			<xsl:for-each select="types/type">
-				<label class="content_types">
-					<xsl:attribute name="for"><xsl:value-of select="concat('type_',@id)" /></xsl:attribute>
-					<xsl:value-of select="concat(name,':')" />
-					<select>
-						<xsl:attribute name="id">
-							<xsl:value-of select="concat('template_for_type_', current()/@id)" />
-						</xsl:attribute>
-						<xsl:attribute name="name">
-							<xsl:value-of select="concat('template_for_type_', current()/@id)" />
-						</xsl:attribute>
-						<xsl:call-template name="template_for_type" />
-					</select>
-					<input type="checkbox">
-						<xsl:attribute name="id">  <xsl:value-of select="concat('type_',@id)" /></xsl:attribute>
-						<xsl:attribute name="name"><xsl:value-of select="concat('type_',@id)" /></xsl:attribute>
-						<xsl:if test="/root/content/formdata/field[@id = concat('type_',current()/@id)]">
-							<xsl:attribute name="checked">checked</xsl:attribute>
-						</xsl:if>
-					</input>
-				</label>
+			<h2>Content</h2>
+			<p>Use the dropdown to specify where the content is to show up on the page.<br />
+			<strong>Template position: tag</strong></p>
 
-			</xsl:for-each>
+			<xsl:if test="../meta/action = 'add_page'">
+				<!-- List several for starters -->
+				<xsl:call-template name="template_positions" />
+			</xsl:if>
+
+			<xsl:if test="../meta/action = 'edit_page'">
+				<xsl:if test="tmp">
+					<xsl:for-each select="tmp/template_field">
+						<xsl:sort select="@id" data-type="number" />
+						<xsl:call-template name="template_fields_tags">
+							<xsl:with-param name="template_field" select="@id" />
+						</xsl:call-template>
+					</xsl:for-each>
+				</xsl:if>
+				<xsl:if test="not(tmp)">
+					<xsl:for-each select="page/template_fields/template_field">
+						<xsl:sort select="number(@id)" data-type="number" />
+						<xsl:call-template name="template_fields_tags">
+							<xsl:with-param name="template_field" select="@id" />
+						</xsl:call-template>
+					</xsl:for-each>
+				</xsl:if>
+				<xsl:call-template name="template_positions">
+					<xsl:with-param name="i" select="30" />
+				</xsl:call-template>
+			</xsl:if>
 
 			<xsl:if test="../meta/action = 'add_page'">
 				<xsl:call-template name="form_button">
@@ -181,17 +186,117 @@
 		</form>
 	</xsl:template>
 
-	<xsl:template name="template_for_type">
+	<xsl:template name="template_fields_tags">
+		<xsl:param name="template_field" />
+
+		<xsl:if test="/root/content/tmp">
+			<xsl:for-each select="/root/content/tmp/template_field[@id = $template_field]/tag">
+				<xsl:sort select="../@id" data-type="number" />
+				<p class="custom_row">
+					<select name="template_position[]">
+						<xsl:call-template name="template_positions_nr">
+							<xsl:with-param name="selected" select="$template_field" />
+						</xsl:call-template>
+					</select>:
+					<select name="tag_id[]">
+						<option value="">--- None ---</option>
+						<xsl:call-template name="tags">
+							<xsl:with-param name="selected" select="@id" />
+						</xsl:call-template>
+					</select>
+				</p>
+			</xsl:for-each>
+		</xsl:if>
+		<xsl:if test="not(/root/content/tmp)">
+			<xsl:for-each select="/root/content/page/template_fields/template_field[@id = $template_field]/tag">
+				<xsl:sort select="../@id" data-type="number" />
+				<p class="custom_row">
+					<select name="template_position[]">
+						<xsl:call-template name="template_positions_nr">
+							<xsl:with-param name="selected" select="$template_field" />
+						</xsl:call-template>
+					</select>:
+					<select name="tag_id[]">
+						<option value="">--- None ---</option>
+						<xsl:call-template name="tags">
+							<xsl:with-param name="selected" select="@id" />
+						</xsl:call-template>
+					</select>
+				</p>
+			</xsl:for-each>
+		</xsl:if>
+
+	</xsl:template>
+
+	<xsl:template name="tags">
+		<xsl:param name="selected" />
+
+		<xsl:for-each select="/root/content/tags/tag">
+			<xsl:sort select="." />
+			<option value="{@id}">
+				<xsl:if test="@id = $selected">
+					<xsl:attribute name="selected">selected</xsl:attribute>
+				</xsl:if>
+				<xsl:value-of select="." />
+			</option>
+		</xsl:for-each>
+
+	</xsl:template>
+
+	<xsl:template name="template_positions">
 		<xsl:param name="i">1</xsl:param>
+			<p class="custom_row">
+				<select name="template_position[]">
+					<xsl:choose>
+						<xsl:when test="/root/content/tmp/template_field[position() = $i]/@id">
+							<xsl:call-template name="template_positions_nr">
+								<xsl:with-param name="selected" select="/root/content/tmp/template_field[position() = $i]/@id" />
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:when test="not(/root/content/tmp/template_field[position() = $i]/@id) and /root/meta/action = 'add_page'">
+							<xsl:call-template name="template_positions_nr">
+								<xsl:with-param name="selected" select="$i" />
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:call-template name="template_positions_nr" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</select>:
+				<select name="tag_id[]">
+					<option value="">--- None ---</option>
+					<xsl:for-each select="/root/content/tags/tag">
+						<xsl:sort select="." />
+						<option value="{@id}">
+							<xsl:if test="/root/content/tmp/template_field[position() = $i]/tag/@id = @id">
+								<xsl:attribute name="selected">selected</xsl:attribute>
+							</xsl:if>
+							<xsl:value-of select="." />
+						</option>
+					</xsl:for-each>
+				</select>
+			</p>
+		<xsl:if test="$i &lt; 30">
+			<xsl:call-template name="template_positions">
+				<xsl:with-param name="i" select="number($i)+1" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
+	<xsl:template name="template_positions_nr">
+		<xsl:param name="i">1</xsl:param>
+		<xsl:param name="selected">1</xsl:param>
+
 		<option value="{$i}">
-			<xsl:if test="/root/content/formdata/field[@id = concat('template_for_type_', current()/@id)] = $i">
+			<xsl:if test="number($i) = number($selected)">
 				<xsl:attribute name="selected">selected</xsl:attribute>
 			</xsl:if>
 			<xsl:value-of select="$i" />
 		</option>
-		<xsl:if test="$i &lt; 15">
-			<xsl:call-template name="template_for_type">
-				<xsl:with-param name="i" select="number($i)+1" />
+
+		<xsl:if test="$i &lt; 30">
+			<xsl:call-template name="template_positions_nr">
+				<xsl:with-param name="i"        select="number($i)+1" />
+				<xsl:with-param name="selected" select="$selected"    />
 			</xsl:call-template>
 		</xsl:if>
 	</xsl:template>

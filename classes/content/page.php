@@ -101,17 +101,50 @@ class Content_Page extends Model
 	 *                        id      => 1,
 	 *                        name    => About,
 	 *                        URI     => about,
+	 *                        'tag_ids'  => array(
+	 *                                        template_field_id => tag_ids
+	 *                                        1 => array(1),
+	 *                                        2 => array(4, 5, 8),
+	 *                                        5 => array(2),
+	 *                                      )
 	 *                      ),
 	 *                      array(
 	 *                        id      => 2,
 	 *                        name    => Contact us,
 	 *                        URI     => contact,
+	 *                        'tag_ids'  => array(
+	 *                                        template_field_id => tag_ids
+	 *                                        1 => array(1),
+	 *                                        2 => array(4, 5, 8),
+	 *                                        5 => array(2),
+	 *                                      )
 	 *                      ),
 	 *                    )
 	 */
 	public static function get_pages()
 	{
 		return self::driver()->get_pages();
+	}
+
+	/**
+	 * Get all tags associated with pages
+	 *
+	 * @return arr - array(
+	 *                 1 => array(
+	 *                   'id'     => 1,
+	 *                   'name'   => 'location',
+	 *                   'values' => array('stockholm', 'uppsala'),
+	 *                 )
+	 *                 3 => array(
+	 *                   'id'     => 3,
+	 *                   'name'   => 'blogpost',
+	 *                   'values' => array(NULL),
+	 *                 )
+	 *               )
+	 */
+	public static function get_tags()
+	{
+		return self::driver()->get_tags_by_content_id();
 	}
 
 	/**
@@ -129,14 +162,14 @@ class Content_Page extends Model
 	 *
 	 * @param str $name
 	 * @param str $URI      OPTIONAL
-	 * @param arr $type_ids OPTIONAL template position as key, type ID as value
+	 * @param arr $tags     OPTIONAL template position as key, array of tag IDs as value
 	 * @return int page id
 	 */
-	public static function new_page($name, $URI = FALSE, $type_ids = FALSE)
+	public static function new_page($name, $URI = FALSE, $tags = FALSE)
 	{
 		if ($URI == FALSE) $URI = uri::title($name, '-', TRUE);
 
-		return self::driver()->new_page($name, $URI, $type_ids);
+		return self::driver()->new_page($name, $URI, $tags);
 	}
 
 	/**
@@ -213,12 +246,12 @@ class Content_Page extends Model
 	 *
 	 * @param str $name     OPTIONAL
 	 * @param str $URI      OPTIONAL
-	 * @param arr $type_ids OPTIONAL - template position as key, type ID as value
+	 * @param arr $tags     OPTIONAL - template position as key, array of tag IDs as value
 	 * @return boolean
 	 */
-	public function update_page_data($name = FALSE, $URI = FALSE, $type_ids = FALSE)
+	public function update_page_data($name = FALSE, $URI = FALSE, $tags = FALSE)
 	{
-		if (self::driver()->update_page_data($this->get_page_id(), $name, $URI, $type_ids))
+		if (self::driver()->update_page_data($this->get_page_id(), $name, $URI, $tags))
 		{
 			// We must update the local class page data also
 			$this->load_page_data();

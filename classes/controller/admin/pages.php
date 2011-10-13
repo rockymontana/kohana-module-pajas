@@ -2,9 +2,8 @@
 
 class Controller_Admin_Pages extends Admincontroller {
 
-	public function __construct(Request $request, Response $response)
+	public function before()
 	{
-		parent::__construct($request, $response);
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'admin/pages';
 		xml::to_XML(array('admin_page' => 'Pages'), $this->xml_meta);
@@ -18,15 +17,29 @@ class Controller_Admin_Pages extends Admincontroller {
 		{
 			// Create the page node and set the page data to it
 			$page_node = $this->xml_content_pages->appendChild($this->dom->createElement('page'));
-			unset($page['type_ids']); // This only clutters the XML
+			unset($page['tag_ids']); // This only clutters the XML
 			xml::to_XML($page, $page_node, NULL, 'id');
 		}
 	}
 
 	public function action_add_page()
 	{
-		$this->xml_content_types = $this->xml_content->appendChild($this->dom->createElement('types'));
-		xml::to_XML(Content_Type::get_types(), $this->xml_content_types, 'type', 'id');
+		// Get all tags associated with pages and images
+		$this->xml_content_tags = $this->xml_content->appendChild($this->dom->createElement('tags'));
+		$tags = array();
+		foreach (Content_Page::get_tags()  as $tag) $tags[] = $tag;
+		foreach (Content_Image::get_tags() as $tag)
+		{
+			foreach ($tags as $tag_to_check) if ($tag_to_check['name'] == $tag['name']) break 2;
+
+			$tags[] = $tag;
+		}
+
+		foreach ($tags as $tag)
+		{
+			$tag_node = $this->xml_content_tags->appendChild($this->dom->createElement('tag', $tag['name']));
+			$tag_node->setAttribute('id', $tag['id']);
+		}
 
 		if (count($_POST) && isset($_POST['URI']) && isset($_POST['name']))
 		{
@@ -43,14 +56,17 @@ class Controller_Admin_Pages extends Admincontroller {
 
 			if ($post->validate())
 			{
-				$type_ids = array();
-				foreach ($post_values as $key => $value)
+				$tags = array();
+				foreach ($post_values['template_position'] as $nr => $template_position)
 				{
-					if (substr($key, 0, 5) == 'type_') {
-						$type_ids[$post_values['template_for_type_'.substr($key, 5)]] = (int) substr($key, 5);
+					if ($post_values['tag_id'][$nr] > 0)
+					{
+						if ( ! isset($tags[$template_position])) $tags[$template_position] = array();
+						$tags[$template_position][] = $post_values['tag_id'][$nr];
 					}
 				}
-				$page_id = Content_Page::new_page($post_values['name'], $post_values['URI'], $type_ids);
+
+				$page_id = Content_Page::new_page($post_values['name'], $post_values['URI'], $tags);
 				$this->add_message('Page "'.$post_values['name'].'" added');
 			}
 			else
@@ -59,6 +75,21 @@ class Controller_Admin_Pages extends Admincontroller {
 
 				$this->add_error('Fix errors and try again');
 				$this->add_form_errors($post->errors());
+
+				// Fix template position data
+				$tmp_node = $this->xml_content->appendChild($this->dom->createElement('tmp'));
+				foreach ($post_values['template_position'] as $nr => $template_position)
+				{
+					$template_field_node = $tmp_node->appendChild($this->dom->createElement('template_field'));
+					$template_field_node->setAttribute('id', $template_position);
+					if ($post_values['tag_id'][$nr] > 0)
+					{
+						$tag_node = $template_field_node->appendChild($this->dom->createElement('tag'));
+						$tag_node->setAttribute('id', $post_values['tag_id'][$nr]);
+					}
+				}
+
+				unset($post_values['template_position'], $post_values['tag_id']);
 				$this->set_formdata($post_values);
 			}
 		}
@@ -69,10 +100,25 @@ class Controller_Admin_Pages extends Admincontroller {
 		$content_page = new Content_Page($id);
 		if ($content_page->get_page_id())
 		{
-			$this->xml_content_types = $this->xml_content->appendChild($this->dom->createElement('types'));
-			xml::to_XML(Content_Type::get_types(), $this->xml_content_types, 'type', 'id');
-
 			$this->xml_content_page = $this->xml_content->appendChild($this->dom->createElement('page'));
+
+			// Get all tags associated with pages and images
+			$this->xml_content_tags = $this->xml_content->appendChild($this->dom->createElement('tags'));
+			$tags = array();
+			foreach (Content_Page::get_tags()  as $tag) $tags[] = $tag;
+			foreach (Content_Image::get_tags() as $tag)
+			{
+				foreach ($tags as $tag_to_check) if ($tag_to_check['name'] == $tag['name']) break 2;
+
+				$tags[] = $tag;
+			}
+
+			foreach ($tags as $tag)
+			{
+				$tag_node = $this->xml_content_tags->appendChild($this->dom->createElement('tag', $tag['name']));
+				$tag_node->setAttribute('id', $tag['id']);
+			}
+
 
 			if (count($_POST) && isset($_POST['URI']) && isset($_POST['name']))
 			{
@@ -103,42 +149,49 @@ class Controller_Admin_Pages extends Admincontroller {
 				// Retry
 				if ($post->validate())
 				{
-					$type_ids = array();
-					foreach ($post_values as $key => $value)
+					$tags = array();
+					foreach ($post_values['template_position'] as $nr => $template_position)
 					{
-						if (substr($key, 0, 5) == 'type_') {
-							$type_ids[$post_values['template_for_type_'.substr($key, 5)]] = (int) substr($key, 5);
+						if ($post_values['tag_id'][$nr] > 0)
+						{
+							if ( ! isset($tags[$template_position])) $tags[$template_position] = array();
+							$tags[$template_position][] = $post_values['tag_id'][$nr];
 						}
 					}
-					$content_page->update_page_data($post_values['name'], $post_values['URI'], $type_ids);
+
+					$content_page->update_page_data($post_values['name'], $post_values['URI'], $tags);
 					$this->add_message('Page "'.$post_values['name'].'" updated');
 
 					$page_data = $content_page->get_page_data();
-					foreach ($page_data['type_ids'] as $template_field_id => $type_id)
-					{
-						$page_data['type_'.$type_id]              = 'checked';
-						$page_data['template_for_type_'.$type_id] = $template_field_id;
-					}
-					unset($page_data['type_ids']);
+					unset($page_data['tag_ids']);
 					$this->set_formdata($page_data);
 				}
 				else
 				{
 					$this->add_error('Fix errors and try again');
 					$this->add_form_errors($post->errors());
-					$this->set_formdata($post);
-				}
 
+					// Fix template position data
+					$tmp_node = $this->xml_content->appendChild($this->dom->createElement('tmp'));
+					foreach ($post_values['template_position'] as $nr => $template_position)
+					{
+						$template_field_node = $tmp_node->appendChild($this->dom->createElement('template_field'));
+						$template_field_node->setAttribute('id', $template_position);
+						if ($post_values['tag_id'][$nr] > 0)
+						{
+							$tag_node = $template_field_node->appendChild($this->dom->createElement('tag'));
+							$tag_node->setAttribute('id', $post_values['tag_id'][$nr]);
+						}
+					}
+
+					unset($post_values['template_position'], $post_values['tag_id']);
+					$this->set_formdata($post_values);
+				}
 			}
 			else
 			{
 				$page_data = $content_page->get_page_data();
-				foreach ($page_data['type_ids'] as $template_field_id => $type_id)
-				{
-					$page_data['type_'.$type_id]              = 'checked';
-					$page_data['template_for_type_'.$type_id] = $template_field_id;
-				}
-				unset($page_data['type_ids']);
+				unset($page_data['tag_ids']);
 				$this->set_formdata($page_data);
 			}
 
@@ -146,23 +199,26 @@ class Controller_Admin_Pages extends Admincontroller {
 			 * Put the page data to the XML
 			 *
 			 */
-			$page_data = $content_page->get_page_data();
-			// Load the type ids to a variable of their own
-			$type_ids = $page_data['type_ids'];
+			$page_data                    = $content_page->get_page_data();
+			$page_data['template_fields'] = array();
+			foreach ($page_data['tag_ids'] as $template_field_id => $tag_ids)
+			{
+				$page_data['template_fields'][$template_field_id.'template_field'] = array(
+					'@id' => $template_field_id,
+				);
 
-			// And unset it from the page data array, or it will cludge our XML
-			unset($page_data['type_ids']);
+				foreach ($tag_ids as $tag_id)
+				{
+					$page_data['template_fields'][$template_field_id.'template_field'][$tag_id.'tag'] = array('@id' => $tag_id);
+				}
+			}
 
-			// Set the page data (name and URI) to the page node
+			// Unset this, or it will cludge our XML
+			unset($page_data['tag_ids']);
+
+			// Set the page data to the page node
 			xml::to_XML($page_data, $this->xml_content_page, NULL, 'id');
 
-			// For each type id, make a type node and set the attribute id to the type id
-			foreach ($type_ids as $template_field_id => $type_id)
-			{
-				$type_node = $this->xml_content_page->appendChild($this->dom->createElement('type'));
-				$type_node->setAttribute('id', $type_id);
-				$type_node->setAttribute('template_field_id', $template_field_id);
-			}
 		}
 		else $this->redirect();
 	}

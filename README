@@ -7,9 +7,10 @@ It is compatible with version 3.1.x
 
 INSTALLATION INSTRUCTIONS
 =========================
-* Create a folder named "pajas" in your modules directory in your kohana v3 install
+* Create a folder named "pajas" in your modules directory in your kohana v3.1 install
 * Copy all pajas files to that folder
 * Add pajas to your activated modules in application/bootstrap.php
+* Create application/user_content and make it writeable
 
 To see the example controller on a clean install, rename or remove
 application/classes/controller/welcome.php.

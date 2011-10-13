@@ -25,11 +25,16 @@ class Content_Content extends Model
 	private $content_id;
 
 	/**
-	 * Type ids connected to this content
+	 * Tag IDs connected to this content
 	 *
-	 * @var array of ints
+	 * @var array - tag name as key, tag values as array value
+	 *              example:
+	 *              array(
+	 *                'location' => array('stockholm', 'tokyo'),
+	 *                'blogpost' => array(NULL),
+	 *              )
 	 */
-	private $type_ids;
+	private $tags;
 
 	/**
 	 * Constructor
@@ -90,23 +95,23 @@ class Content_Content extends Model
 	 *                      array(
 	 *                        id      => 1,
 	 *                        content => Lots of content
-	 *                        types   => array(
+	 *                        tags    => array(
 	 *                                     array(
 	 *                                       id   => 3,
-	 *                                       type => blog post,
+	 *                                       name => blog post,
 	 *                                     )
 	 *                                   )
 	 *                      ),
 	 *                      array(
 	 *                        id      => 2,
-	 *                        types   => array(
+	 *                        tags    => array(
 	 *                                     array(
 	 *                                       id   => 4,
-	 *                                       type => News,
+	 *                                       name => News,
 	 *                                     )
 	 *                                     array(
 	 *                                       id   => 5,
-	 *                                       type => RSS post,
+	 *                                       name => RSS post,
 	 *                                     )
 	 *                                   )
 	 *                        content => Lots of content
@@ -119,40 +124,50 @@ class Content_Content extends Model
 	}
 
 	/**
-	 * Get contents by type id
+	 * Get contents by tag id
 	 *
-	 * @param int $type_id
-	 * @return array - ex array(
+	 * @param int $tag_id
+	 * @return array of content ids - ex array(
 	 *                      array(
 	 *                        id      => 1,
 	 *                        content => Lots of content
+	 *                        tags    => array(
+	 *                          date     => array('2011-05-30'),
+	 *                          blogpost => array(NULL)
+	 *                          location => array('stockholm', 'uppsala')
+	 *                        )
 	 *                      ),
 	 *                      array(
 	 *                        id      => 2,
 	 *                        content => Lots of content
+	 *                        tags    => array(
+	 *                          date     => array('2011-05-30'),
+	 *                          blogpost => array(NULL)
+	 *                          location => array('stockholm', 'uppsala')
+	 *                        )
 	 *                      ),
 	 *                    )
 	 */
-	public static function get_contents_by_type($type_id)
+	public static function get_contents_by_tag_id($tag_id)
 	{
-		return self::driver()->get_contents_by_type_id($type_id);
+		return self::driver()->get_contents_by_tag_id($tag_id);
 	}
 
-	public function get_type_ids()
+	public function get_tags()
 	{
-		return $this->type_ids;
+		return $this->tags;
 	}
 
 	public function load_content()
 	{
-		$this->type_ids = self::driver()->get_type_ids_by_content_id($this->get_content_id());
+		$this->tags     = self::driver()->get_tags_by_content_id($this->get_content_id());
 		$this->content  = self::driver()->get_content($this->get_content_id());
 		return TRUE;
 	}
 
-	public static function new_content($content, $type_ids = FALSE)
+	public static function new_content($content, $tags = FALSE)
 	{
-		return self::driver()->new_content($content, $type_ids);
+		return self::driver()->new_content($content, $tags);
 	}
 
 	public function rm_content()
@@ -177,9 +192,9 @@ class Content_Content extends Model
 		return (self::$driver = new $driver_name);
 	}
 
-	public function update_content($content, $type_ids = FALSE)
+	public function update_content($content, $tags = FALSE)
 	{
-		if (self::driver()->update_content($this->get_content_id(), $content, $type_ids))
+		if (self::driver()->update_content($this->get_content_id(), $content, $tags))
 		{
 			// We must update the local class content also
 			$this->load_content();

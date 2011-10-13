@@ -1,10 +1,19 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-Route::set('404', '404')
-	->defaults(array(
-		'controller' => 'notfound',
-		'action'     => 'index',
-	));
+// Check and set up user content directory
+if ( ! is_writable(Kohana::config('user_content.dir')))
+{
+	throw new Kohana_Exception('Directory :dir must be writable',
+		array(':dir' => Debug::path(Kohana::config('user_content.dir'))));
+}
+if (Kohana::$environment === Kohana::DEVELOPMENT && ! is_dir(Kohana::config('user_content.dir').'/images'))
+{
+	if ( ! mkdir(Kohana::config('user_content.dir').'/images'))
+	{
+		throw new Kohana_Exception('Failed to create :dir',
+			array(':dir' => Debug::path(Kohana::config('user_content.dir').'/images')));
+	}
+}
 
 Route::set('admin', 'admin/<controller>(/<action>(/<options>))',
 	array(
@@ -53,6 +62,16 @@ Route::set('xsl', 'xsl/<path>.xsl',
 		'action'     => 'xsl',
 	));
 
+// User content images
+Route::set('user_content/images', 'user_content/images/<file>',
+	array(
+    'file' => '[a-zA-Z0-9_/\.-]+',
+  ))
+	->defaults(array(
+		'controller' => 'media',
+		'action'     => 'user_content_image',
+	));
+
 // Set dynamic routes from the pages model
 $URIs = array();
 foreach (Content_Page::get_pages() as $page) $URIs[] = $page['URI'];
@@ -65,3 +84,10 @@ if (count($URIs))
 				'action'     => 'index',
 			));
 }
+
+// Single content page
+Route::set('singlecontent', 'content/<id>', array('id' => '\d+'))
+		->defaults(array(
+			'controller' => 'generic',
+			'action'     => 'singlecontent',
+		));

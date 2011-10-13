@@ -2,9 +2,8 @@
 
 class Controller_Admin_Fields extends Admincontroller {
 
-	public function __construct(Request $request, Response $response)
+	public function before()
 	{
-		parent::__construct($request, $response);
 		$this->xslt_stylesheet = 'admin/users';
 		xml::to_XML(array('admin_page' => 'Fields'), $this->xml_meta);
 	}

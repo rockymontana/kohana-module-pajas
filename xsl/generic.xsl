@@ -31,9 +31,9 @@
 				</ul>
 
 				<div id="main_content">
-					<xsl:call-template name="load_content">
-						<xsl:with-param name="field_id" select="'1'" />
-					</xsl:call-template>
+					<xsl:for-each select="/root/content/page/template_field[@id = 1]/contents/content/html">
+						<xsl:apply-templates select="." mode="elements" />
+					</xsl:for-each>
 				</div>
 
 				<h2>Some columns</h2>
@@ -41,21 +41,21 @@
 				<ul id="columns">
 
 					<li id="col1">
-						<xsl:call-template name="load_content">
-							<xsl:with-param name="field_id" select="'2'" />
-						</xsl:call-template>
+						<xsl:for-each select="/root/content/page/template_field[@id = 2]/contents/content/html">
+							<xsl:apply-templates select="." mode="elements" />
+						</xsl:for-each>
 					</li>
 
 					<li id="col2">
-						<xsl:call-template name="load_content">
-							<xsl:with-param name="field_id" select="'3'" />
-						</xsl:call-template>
+						<xsl:for-each select="/root/content/page/template_field[@id = 3]/contents/content/html">
+							<xsl:apply-templates select="." mode="elements" />
+						</xsl:for-each>
 					</li>
 
 					<li id="col3">
-						<xsl:call-template name="load_content">
-							<xsl:with-param name="field_id" select="'4'" />
-						</xsl:call-template>
+						<xsl:for-each select="/root/content/page/template_field[@id = 4]/contents/content/html">
+							<xsl:apply-templates select="." mode="elements" />
+						</xsl:for-each>
 					</li>
 
 				</ul>
