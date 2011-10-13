@@ -8,7 +8,7 @@
 				<!--LARV IT AB [<a href="#">edit</a>] <span>|</span> -->
 
 				<xsl:if test="/root/meta/user_data">
-					Logged in as: <xsl:value-of select="/root/meta/user_data/username" /> [<a href="logout">logout</a>]
+					<xsl:text>Logged in as: </xsl:text><xsl:value-of select="/root/meta/user_data/username" /> [<a href="logout">logout</a>]
 				</xsl:if>
 			</p>
 		</div>
