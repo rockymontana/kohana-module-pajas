@@ -180,7 +180,15 @@
 		</label>
 
 		<!-- Error message -->
-		<p class="error"><xsl:value-of select="$error" />&#160;</p>
+		<p class="error">
+			<xsl:if test="$error != ''">
+				<xsl:value-of select="$error" />
+			</xsl:if>
+			<xsl:if test="$error = '' and /root/content/errors/form_errors/*[local-name() = $id]/message">
+				<xsl:value-of select="/root/content/errors/form_errors/*[local-name() = $id]/message" />
+			</xsl:if>
+			<xsl:text>&#160;</xsl:text>
+		</p>
 
 	</xsl:template>
 

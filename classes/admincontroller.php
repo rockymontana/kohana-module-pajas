@@ -116,6 +116,9 @@ Array
             [0] => Valid::not_empty
         )
 
+    // To add a message:
+    [username] => 'Username is to ugly'
+
 )*/
 
 
@@ -131,9 +134,16 @@ Array
 
 		foreach ($errors as $field => $field_errors)
 		{
-			foreach ($field_errors as $field_error)
+			if (is_array($field_errors))
 			{
-				xml::to_XML(array($field => $field_error), $this->xml_content_errors_form_errors);
+				foreach ($field_errors as $field_error)
+				{
+					xml::to_XML(array($field => $field_error), $this->xml_content_errors_form_errors);
+				}
+			}
+			else
+			{
+				xml::to_XML(array($field => array('message' => $field_errors)), $this->xml_content_errors_form_errors);
 			}
 		}
 
