@@ -81,7 +81,7 @@ class Controller_Admin_Images extends Admincontroller {
 
 	public function action_edit_image()
 	{
-		$name = $this->request->param('name');
+		$name = $this->request->param('options');
 
 		if ($content_image = new Content_Image($name))
 		{
@@ -199,7 +199,7 @@ class Controller_Admin_Images extends Admincontroller {
 
 	public function action_rm_image()
 	{
-		$content_image = new Content_Image($this->request->param('name'));
+		$content_image = new Content_Image($this->request->param('options'));
 		$content_image->rm_image();
 
 		$this->redirect();

@@ -162,7 +162,7 @@ class Controller_Admin_Users extends Admincontroller {
 
 	public function action_edit_user()
 	{
-		$user_id = $this->request->param('user_id');
+		$user_id = $this->request->param('options');
 
 		$this->list_available_data_fields();
 
@@ -331,7 +331,7 @@ class Controller_Admin_Users extends Admincontroller {
 
 	public function action_rm_user()
 	{
-		$user_id = $this->request->param('user_id');
+		$user_id = $this->request->param('options');
 		$user    = new User($user_id, FALSE, FALSE, 'default', FALSE);
 
 		$user->rm_user();

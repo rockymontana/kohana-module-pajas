@@ -97,7 +97,7 @@ class Controller_Admin_Pages extends Admincontroller {
 
 	public function action_edit_page()
 	{
-		$id           = $this->request->param('id');
+		$id           = $this->request->param('options');
 		$content_page = new Content_Page($id);
 		if ($content_page->get_page_id())
 		{
@@ -226,7 +226,7 @@ class Controller_Admin_Pages extends Admincontroller {
 
 	public function action_rm_page()
 	{
-		$content_page = new Content_Page($this->request->param('id'));
+		$content_page = new Content_Page($this->request->param('options'));
 		$content_page->rm_page();
 
 		$this->redirect();

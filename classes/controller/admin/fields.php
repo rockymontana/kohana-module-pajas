@@ -47,7 +47,7 @@ class Controller_Admin_Fields extends Admincontroller {
 
 	public function action_edit_field()
 	{
-		$field_id = $this->request->param('field_id');
+		$field_id = $this->request->param('options');
 
 		xml::to_XML(
 			array(
@@ -98,7 +98,7 @@ class Controller_Admin_Fields extends Admincontroller {
 
 	public function action_rm_field()
 	{
-		User::rm_field($this->request->param('field_id'));
+		User::rm_field($this->request->param('options'));
 		$this->redirect();
 	}
 
