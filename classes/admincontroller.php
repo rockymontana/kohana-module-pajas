@@ -66,7 +66,7 @@ abstract class Admincontroller extends Xsltcontroller
 		  );
 
 			// Then we populate this container with options from the config files, and group them by 'menuoption'
-		  foreach (Kohana::config('admin_menu_options') as $menu_option)
+		  foreach (Kohana::$config->load('admin_menu_options') as $menu_option)
 		  {
 				xml::to_XML(
 					array($menu_option),                 // Array to make XML from

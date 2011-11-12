@@ -237,7 +237,7 @@ class Content_Page extends Model
 	 */
 	public static function set_driver()
 	{
-		$driver_name = 'Driver_Content_'.ucfirst(Kohana::config('content.driver'));
+		$driver_name = 'Driver_Content_'.ucfirst(Kohana::$config->load('content.driver'));
 		return (self::$driver = new $driver_name);
 	}
 

@@ -38,7 +38,7 @@ class Model_Tags
 	 */
 	public static function set_driver()
 	{
-		$driver_name = 'Driver_Tags_'.ucfirst(Kohana::config('tags.driver'));
+		$driver_name = 'Driver_Tags_'.ucfirst(Kohana::$config->load('tags.driver'));
 		return (self::$driver = new $driver_name);
 	}
 

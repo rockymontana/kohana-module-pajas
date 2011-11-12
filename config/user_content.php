@@ -8,6 +8,6 @@ And have it commented out while developing.
 
 return array(
 //	'driver' => 'mysql',
-	'driver' => Kohana::config('pdo.default.driver'),
+	'driver' => Kohana::$config->load('pdo.default.driver'),
 	'dir'    => APPPATH.'user_content',
 );

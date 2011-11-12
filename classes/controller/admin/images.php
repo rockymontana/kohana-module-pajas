@@ -53,7 +53,7 @@ class Controller_Admin_Images extends Admincontroller {
 				if (move_uploaded_file($_FILES['file']['tmp_name'], APPPATH.'/user_content/images/'.$new_filename))
 				{
 
-					$gd_img_object = ImageCreateFromJpeg(Kohana::config('user_content.dir').'/images/'.$new_filename);
+					$gd_img_object = ImageCreateFromJpeg(Kohana::$config->load('user_content.dir').'/images/'.$new_filename);
 					$details       = array(
 					                   'width'  => array(imagesx($gd_img_object)),
 					                   'height' => array(imagesy($gd_img_object))

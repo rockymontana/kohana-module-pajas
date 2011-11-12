@@ -88,7 +88,7 @@ class Model_User extends Model
 	 */
 	public static function set_driver()
 	{
-		$driver_name = 'Driver_User_'.ucfirst(Kohana::config('user.driver'));
+		$driver_name = 'Driver_User_'.ucfirst(Kohana::$config->load('user.driver'));
 		return (self::$driver = new $driver_name);
 	}
 
@@ -308,7 +308,7 @@ class Model_User extends Model
 			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = $user_id;
 			return $this->load_user_data($user_id);
 		}
-		elseif (strtolower($username) == 'root' && $password === Kohana::config('user.root_password'))
+		elseif (strtolower($username) == 'root' && $password === Kohana::$config->load('user.root_password'))
 		{
 			if ($this->instance_name) $_SESSION['modules']['pajas'][$this->instance_name] = -1;
 			return $this->load_user_data(-1);

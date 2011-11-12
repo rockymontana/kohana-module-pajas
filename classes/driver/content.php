@@ -18,7 +18,7 @@ abstract class Driver_Content extends Model
 		// Add image files that does not exist in database
 		$tracked_images = $this->get_images(NULL, array(), TRUE);
 		$cwd            = getcwd();
-		chdir(Kohana::config('user_content.dir').'/images');
+		chdir(Kohana::$config->load('user_content.dir').'/images');
 		$actual_images  = glob('*.jpg');
 		chdir($cwd);
 		foreach (array_diff($actual_images, $tracked_images) as $non_tracked_image)
@@ -36,14 +36,14 @@ abstract class Driver_Content extends Model
 					$counter++;
 				}
 
-				copy(Kohana::config('user_content.dir').'/images/'.$non_tracked_image, Kohana::config('user_content.dir').'/images/'.$new_filename.'.jpg');
-				@unlink(Kohana::config('user_content.dir').'/images/'.$non_tracked_image);
+				copy(Kohana::$config->load('user_content.dir').'/images/'.$non_tracked_image, Kohana::$config->load('user_content.dir').'/images/'.$new_filename.'.jpg');
+				@unlink(Kohana::$config->load('user_content.dir').'/images/'.$non_tracked_image);
 				$non_tracked_image = $new_filename.'.jpg';
 			}
 
-			if (@$gd_img_object = ImageCreateFromJpeg(Kohana::config('user_content.dir').'/images/'.$non_tracked_image))
+			if (@$gd_img_object = ImageCreateFromJpeg(Kohana::$config->load('user_content.dir').'/images/'.$non_tracked_image))
 			{
-				$gd_img_object = ImageCreateFromJpeg(Kohana::config('user_content.dir').'/images/'.$non_tracked_image);
+				$gd_img_object = ImageCreateFromJpeg(Kohana::$config->load('user_content.dir').'/images/'.$non_tracked_image);
 				$width         = imagesx($gd_img_object);
 				$height        = imagesy($gd_img_object);
 				$this->new_image($non_tracked_image, array('width'=>$width,'height'=>$height));
@@ -53,13 +53,13 @@ abstract class Driver_Content extends Model
 				// This jpg file is not a valid jpg image
 				$path_parts   = pathinfo($non_tracked_image);
 				$new_filename = $path_parts['filename'].'.broken_jpg';
-				while (file_exists(Kohana::config('user_content.dir').'/images/'.$new_filename))
+				while (file_exists(Kohana::$config->load('user_content.dir').'/images/'.$new_filename))
 				{
 					if ( ! isset($counter)) $counter = 1;
 					$new_filename = $path_parts['filename'].'_'.$counter.'.broken_jpg';
 					$counter++;
 				}
-				@rename(Kohana::config('user_content.dir').'/images/'.$non_tracked_image, Kohana::config('user_content.dir').'/images/'.$new_filename);
+				@rename(Kohana::$config->load('user_content.dir').'/images/'.$non_tracked_image, Kohana::$config->load('user_content.dir').'/images/'.$new_filename);
 			}
 		}
 	}
@@ -419,9 +419,9 @@ abstract class Driver_Content extends Model
 	 */
 	protected function rename_image_files($old_image_name, $new_image_name)
 	{
-		rename(Kohana::config('user_content.dir').'/images/'.$old_image_name, Kohana::config('user_content.dir').'/images/'.$new_image_name);
+		rename(Kohana::$config->load('user_content.dir').'/images/'.$old_image_name, Kohana::$config->load('user_content.dir').'/images/'.$new_image_name);
 		$cwd            = getcwd();
-		chdir(Kohana::config('user_content.dir').'/images');
+		chdir(Kohana::$config->load('user_content.dir').'/images');
 		$cached_images  = glob($old_image_name.'*');
 		chdir($cwd);
 		foreach ($cached_images as $cached_image) unlink(Kohana::$cache_dir.'/user_content/images/'.$cached_image);

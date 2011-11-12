@@ -117,7 +117,7 @@ class Controller_Media extends Controller
 			if ( ! file_exists($file))
 			{
 				// Create a new cached resized file
-				list($original_width, $original_height) = getimagesize(Kohana::config('user_content.dir').'/images/'.$filename);
+				list($original_width, $original_height) = getimagesize(Kohana::$config->load('user_content.dir').'/images/'.$filename);
 				$wh_ratio = $original_width / $original_height;
 
 				if (isset($_GET['width']))  $new_width  = $_GET['width'];
@@ -134,7 +134,7 @@ class Controller_Media extends Controller
 					$calculated_width  = $new_width;
 				}
 
-				$src = imagecreatefromjpeg(Kohana::config('user_content.dir').'/images/'.$filename);
+				$src = imagecreatefromjpeg(Kohana::$config->load('user_content.dir').'/images/'.$filename);
 				$dst = imagecreatetruecolor($calculated_width, $calculated_height);
 				imagecopyresampled($dst, $src, 0, 0, 0, 0, $calculated_width, $calculated_height, $original_width, $original_height);
 				imagejpeg($dst, $file);
@@ -142,7 +142,7 @@ class Controller_Media extends Controller
 		}
 		else
 		{
-			$file = Kohana::config('user_content.dir').'/images/'.$file;
+			$file = Kohana::$config->load('user_content.dir').'/images/'.$file;
 		}
 
 

@@ -110,7 +110,7 @@ class Controller_Generic extends Xsltcontroller
 		$XPath = new DOMXpath($this->dom);
 		foreach ($XPath->query('/root/content/page/template_field/contents/content/raw') as $raw_content_node)
 		{
-			$html_content = call_user_func(Kohana::config('content.content_transformator'), $raw_content_node->nodeValue);
+			$html_content = call_user_func(Kohana::$config->load('content.content_transformator'), $raw_content_node->nodeValue);
 			$html_node    = $raw_content_node->parentNode->appendChild($this->dom->createElement('html'));
 			xml::xml_to_DOM_node($html_content, $html_node);
 		}

@@ -190,7 +190,7 @@ class Content_Image extends Model
 			// Remove files
 			$cache_images = glob(Kohana::$cache_dir.'/user_content/images/'.$this->get_name().'*');
 			foreach ($cache_images as $image_to_delete) unlink($image_to_delete);
-			unlink(Kohana::config('user_content.dir').'/images/'.$this->get_name());
+			unlink(Kohana::$config->load('user_content.dir').'/images/'.$this->get_name());
 
 			// Remove from database
 			self::driver()->rm_image($this->get_name());
@@ -241,7 +241,7 @@ class Content_Image extends Model
 	 */
 	public static function set_driver()
 	{
-		$driver_name = 'Driver_Content_'.ucfirst(Kohana::config('content.driver'));
+		$driver_name = 'Driver_Content_'.ucfirst(Kohana::$config->load('content.driver'));
 		return (self::$driver = new $driver_name);
 	}
 

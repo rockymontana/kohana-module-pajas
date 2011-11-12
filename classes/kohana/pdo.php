@@ -26,10 +26,10 @@ class Kohana_pdo
 	{
 		if ( ! isset(self::$instances[$instance_name]))
 		{
-			if ($db_settings = Kohana::config('pdo.'.$instance_name))
+			if ($db_settings = Kohana::$config->load('pdo.'.$instance_name))
 			{
 
-				$connection_string = Kohana::config('pdo.connection_strings.'.$db_settings['driver']);
+				$connection_string = Kohana::$config->load('pdo.connection_strings.'.$db_settings['driver']);
 				foreach ($db_settings as $key => $value)
 				{
 					$connection_string = str_replace('{'.$key.'}', $value, $connection_string);
