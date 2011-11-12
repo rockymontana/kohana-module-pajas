@@ -160,8 +160,10 @@ class Controller_Admin_Users extends Admincontroller {
 		}
 	}
 
-	public function action_edit_user($user_id)
+	public function action_edit_user()
 	{
+		$user_id = $this->request->param('user_id');
+
 		$this->list_available_data_fields();
 
 		$this->xml_content_user = $this->xml_content->appendChild($this->dom->createElement('user'));
@@ -329,7 +331,8 @@ class Controller_Admin_Users extends Admincontroller {
 
 	public function action_rm_user($user_id)
 	{
-		$user = new User($user_id, FALSE, FALSE, 'default', FALSE);
+		$user_id = $this->request->param('user_id');
+		$user    = new User($user_id, FALSE, FALSE, 'default', FALSE);
 
 		$user->rm_user();
 

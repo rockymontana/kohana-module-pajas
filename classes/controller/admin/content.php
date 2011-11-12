@@ -52,8 +52,9 @@ class Controller_Admin_Content extends Admincontroller {
 		}
 	}
 
-	public function action_edit_content($id)
+	public function action_edit_content()
 	{
+		$id      = $this->request->param('id');
 		$content = new Content_Content($id);
 
 		if ($content->get_content_id())
@@ -105,9 +106,9 @@ class Controller_Admin_Content extends Admincontroller {
 		else $this->redirect();
 	}
 
-	public function action_rm_content($id)
+	public function action_rm_content()
 	{
-		$content = new Content_Content($id);
+		$content = new Content_Content($this->request->param('id'));
 		$content->rm_content();
 
 		$this->redirect();

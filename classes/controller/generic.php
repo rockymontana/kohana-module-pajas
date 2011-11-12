@@ -3,8 +3,10 @@
 class Controller_Generic extends Xsltcontroller
 {
 
-	public function action_index($URI = 'welcome')
+	public function action_index()
 	{
+		$URI = $this->request->param('URI');
+
 		// Empty string defaults to 'welcome'
 		if ($URI == '') $URI = 'welcome';
 
@@ -116,8 +118,10 @@ class Controller_Generic extends Xsltcontroller
 		}
 	}
 
-	public function action_singlecontent($id)
+	public function action_singlecontent()
 	{
+		$id = $this->request->param('id');
+
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'generic';
 

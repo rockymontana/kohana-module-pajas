@@ -79,8 +79,10 @@ class Controller_Admin_Images extends Admincontroller {
 		}
 	}
 
-	public function action_edit_image($name)
+	public function action_edit_image()
 	{
+		$name = $this->request->param('name');
+
 		if ($content_image = new Content_Image($name))
 		{
 			$short_name = substr($name, 0, strlen($name) - 4);
@@ -195,9 +197,9 @@ class Controller_Admin_Images extends Admincontroller {
 		else $this->redirect();
 	}
 
-	public function action_rm_image($name)
+	public function action_rm_image()
 	{
-		$content_image = new Content_Image($name);
+		$content_image = new Content_Image($this->request->param('name'));
 		$content_image->rm_image();
 
 		$this->redirect();

@@ -25,14 +25,16 @@ class Controller_Media extends Controller
 		}
 		else
 		{
-// This needs to be altered to function in Kohana 3.1
+// This needs to be altered to function in Kohana 3.1 and then to 3.2 :)
 			$this->response->status = 404;
 			echo Request::factory('404')->execute()->response;
 		}
 	}
 
-	public function action_img($file)
+	public function action_img()
 	{
+		$file = $this->request->param('file');
+
 		// Find the file ending
 		$file_parts  = explode('.', $file);
 		$file_ending = end($file_parts);
@@ -77,8 +79,10 @@ class Controller_Media extends Controller
 		}
 	}
 
-	public function action_js($path)
+	public function action_js()
 	{
+		$path = $this->request->param('path');
+
 		$file = Kohana::find_file('js', $path, 'js');
 		if ($file)
 		{
@@ -93,8 +97,10 @@ class Controller_Media extends Controller
 	}
 
 
-	public function action_user_content_image($file)
+	public function action_user_content_image()
 	{
+		$file = $this->request->param('file');
+
 		// Find the file ending
 		$file_parts  = explode('.', $file);
 		$file_ending = end($file_parts);
@@ -185,11 +191,10 @@ class Controller_Media extends Controller
 		}
 	}
 
-
-
-
-	public function action_xsl($path)
+	public function action_xsl()
 	{
+		$path = $this->request->param('path');
+
 		$file = Kohana::find_file('xsl', $path, 'xsl');
 		if ($file)
 		{
