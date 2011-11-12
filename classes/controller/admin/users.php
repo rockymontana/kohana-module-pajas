@@ -329,7 +329,7 @@ class Controller_Admin_Users extends Admincontroller {
 
 	}
 
-	public function action_rm_user($user_id)
+	public function action_rm_user()
 	{
 		$user_id = $this->request->param('user_id');
 		$user    = new User($user_id, FALSE, FALSE, 'default', FALSE);
