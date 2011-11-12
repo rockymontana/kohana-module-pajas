@@ -14,8 +14,9 @@ class Controller_Media extends Controller
 		}
 	}
 
-	public function action_css($path)
+	public function action_css()
 	{
+		$path = $this->request->param('path');
 		$file = Kohana::find_file('css', $path, 'css');
 		if ($file)
 		{
