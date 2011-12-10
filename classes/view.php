@@ -16,7 +16,10 @@ abstract class View
 		$template_filename = Kohana::find_file('templates', $template_name, 'mustache');
 
 		if (file_exists($template_filename)) $this->template = file_get_contents($template_filename);
-		else                                 throw new Exception('Template does not exist.');
+		else                                 $this->template = '';
+
+		// Parse in external files
+		$this->template = $this->load_template($this->template);
 
 		$this->JSON['meta'] = array(
 			'protocol'      => (isset($_SERVER['HTTPS'])) ? 'https' : 'http',
@@ -33,9 +36,7 @@ abstract class View
 	public function render()
 	{
 		if (isset($_GET['JSON']))
-		{
 			echo json_encode($this->JSON);
-		}
 		elseif (isset($_GET['JSONr']))
 		{
 			echo '<pre>';
@@ -46,6 +47,24 @@ abstract class View
 			$mustache = new Mustache;
 			echo $mustache->render($this->template, $this->JSON);
 		}
+	}
+
+	private function load_template($template_string)
+	{
+		preg_match_all('/\[\[load\s(.*)\.mustache\]\]/', $template_string, $matches);
+
+		foreach ($matches[1] as $nr => $match)
+		{
+			$template_filename = Kohana::find_file('templates', $match, 'mustache');
+
+			if (file_exists($template_filename)) $new_template = file_get_contents($template_filename);
+			else                                 $new_template = '';
+
+			$new_template    = $this->load_template($new_template);
+			$template_string = str_replace($matches[0][$nr], $new_template, $template_string);
+		}
+
+		return $template_string;
 	}
 
 }
