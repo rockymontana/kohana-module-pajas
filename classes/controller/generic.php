@@ -1,10 +1,14 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
-class Controller_Generic extends Xsltcontroller
+class Controller_Generic extends Controller
 {
 
 	public function action_index()
 	{
+		$view = new View_Generic($this);
+		$view->render();
+
+/*
 		$URI = $this->request->param('URI');
 
 		// Empty string defaults to 'welcome'
@@ -125,7 +129,7 @@ class Controller_Generic extends Xsltcontroller
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'generic';
 
-
+		*/
 	}
 
 }
