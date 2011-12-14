@@ -16,7 +16,7 @@ abstract class View
 		$template_filename = Kohana::find_file('templates', $template_name, 'mustache');
 
 		if (file_exists($template_filename)) $this->template = file_get_contents($template_filename);
-		else                                 $this->template = '';
+		else                                 $this->template = "";
 
 		// Parse in external files
 		$this->template = $this->load_template($this->template);
@@ -56,9 +56,8 @@ abstract class View
 		foreach ($matches[1] as $nr => $match)
 		{
 			$template_filename = Kohana::find_file('templates', $match, 'mustache');
-
+            if(!$template_filename) $template_filename = Kohana::find_file('templates','404','mustache');
 			if (file_exists($template_filename)) $new_template = file_get_contents($template_filename);
-			else                                 $new_template = '';
 
 			$new_template    = $this->load_template($new_template);
 			$template_string = str_replace($matches[0][$nr], $new_template, $template_string);
