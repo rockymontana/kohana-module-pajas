@@ -16,13 +16,13 @@ class Driver_User_Mysql extends Driver_User
 			`name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`id`),
 			UNIQUE KEY `name` (`name`)
-		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 		$this->pdo->query('CREATE TABLE `user_users` (
 			`id` bigint(20) NOT NULL AUTO_INCREMENT,
 			`username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 			`password` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`id`)
-		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 		$this->pdo->query('CREATE TABLE `user_users_data` (
 			`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			`user_id` bigint(20) DEFAULT NULL,
@@ -30,7 +30,7 @@ class Driver_User_Mysql extends Driver_User
 			`data` text COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`id`),
 			KEY `users_fields` (`user_id`,`field_id`)
-		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 	}
 
 	public function get_data_field_id($field_name)

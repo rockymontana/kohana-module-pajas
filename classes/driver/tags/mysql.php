@@ -16,7 +16,7 @@ class Driver_Tags_Mysql extends Driver_Tags
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 				PRIMARY KEY (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 	}
 
 	public function add($name)

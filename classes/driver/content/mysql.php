@@ -15,36 +15,36 @@ class Driver_Content_Mysql extends Driver_Content
 			`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			`content` text COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`id`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 		CREATE TABLE IF NOT EXISTS `content_images` (
 			`name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`name`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 		CREATE TABLE IF NOT EXISTS `content_images_tags` (
 			`image_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 			`tag_id` int(11) NOT NULL,
 			`tag_value` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
 			KEY `image_name` (`image_name`,`tag_id`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 		CREATE TABLE IF NOT EXISTS `content_pages` (
 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 			`URI` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`id`),
 			UNIQUE KEY `URI` (`URI`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 		CREATE TABLE IF NOT EXISTS `content_pages_tags` (
 			`page_id` int(10) unsigned NOT NULL,
 			`tag_id` int(10) unsigned NOT NULL,
 			`template_field_id` int(10) unsigned NOT NULL,
 			KEY `page_id` (`page_id`,`tag_id`,`template_field_id`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 		CREATE TABLE IF NOT EXISTS `content_tags` (
 			`content_id` int(10) unsigned NOT NULL,
 			`tag_id` int(10) unsigned NOT NULL,
 			`tag_value` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
 			KEY `content_id` (`content_id`,`tag_id`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 	}
 
 	public function get_content($content_id)
