@@ -136,7 +136,7 @@ class Driver_User_Mysql extends Driver_User
 				{
 					foreach ($this->pdo->query('SELECT user_id FROM user_users_data WHERE data LIKE \'%'.$data.'%\' AND field_id = (SELECT id FROM user_data_fields WHERE name = '.$this->pdo->quote($field).')') as $row2)
 					{
-						if (!in_array($row2['user_id'], $user_ids))
+						if ( ! in_array($row2['user_id'], $user_ids))
 						{
 							$user_ids[] = $row2['user_id'];
 						}

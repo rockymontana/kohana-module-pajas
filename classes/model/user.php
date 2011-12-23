@@ -163,6 +163,16 @@ class Model_User extends Model
 	}
 
 	/**
+	 * Get username by user i
+	 *
+	 * @return str or FALSE
+	 */
+	public static function get_username_by_id($user_id)
+	{
+		return self::driver()->get_username_by_id($user_id);
+	}
+
+	/**
 	 * Get user data
 	 *
 	 * @param str $field - if only a single data field is wanted
