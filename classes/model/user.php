@@ -217,25 +217,23 @@ class Model_User extends Model
 	/**
 	 * Get list of users
 	 *
-	 * @param str or array $q - If a string, used as a search string in
-	 *                          all data fields and username.
-	 *                          If an array, used as associative for searching
-	 *                          in specific data. For example array('fistname' => 'john')
-	 * @param int $start      - Limit the search to start from this row (0 means include
-	 *                          all, 1 will omit the first result)
-	 * @param int $limit      - Limit amount of rows to be returned. FALSE will return
-	 *                          infinite number or rows.
-	 * @param str $order_by   - Field to order by, can be either user_id, username or any data field
-	 * @return array          - array(
-	 *                            array(
-	 *                              'user_id' => 1,
-	 *                              'username' => 'johnsmith'
-	 *                            ),
-	 *                            array(
-	 *                              'user_id' => 2,
-	 *                              'username' => 'adamjohansson'
-	 *                            )
-	 *                          )
+	 * @param str $q           - Used as a search string in
+	 *                           all data fields and username.
+	 * @param int $start       - Limit the search to start from this row (0 means include
+	 *                           all, 1 will omit the first result)
+	 * @param int $limit       - Limit amount of rows to be returned. FALSE will return
+	 *                           infinite number or rows.
+	 * @param str $order_by    - Field to order by, string or array('field' => 'ASC/DESC')
+	 * @return array           - array(
+	 *                             array(
+	 *                               'id' => 1,
+	 *                               'username' => 'johnsmith'
+	 *                             ),
+	 *                             array(
+	 *                               'id' => 2,
+	 *                               'username' => 'adamjohansson'
+	 *                             )
+	 *                           )
 	 */
 	public static function get_users($q = FALSE, $start = FALSE, $limit = FALSE, $order_by = FALSE)
 	{
@@ -378,7 +376,7 @@ class Model_User extends Model
 		Session::instance(); // Make sure sessions is turned on
 		if ($load_to_instance === TRUE) $load_to_instance = 'default';
 
-		if (!self::username_available($username)) return FALSE;
+		if ( ! self::username_available($username)) return FALSE;
 
 		$user_id = self::driver()->new_user($username, self::password_encrypt($password), $user_data);
 
@@ -480,7 +478,9 @@ class Model_User extends Model
 	 */
 	public static function username_available($username)
 	{
-		if (count(self::driver()->get_users(array('username' => $username))) || strtolower($username) == 'root')
+		$user_id = self::driver()->get_user_id_by_username($username);
+
+		if ( ! empty($user_id) || strtolower($username) == 'root')
 		{
 			return FALSE;
 		}

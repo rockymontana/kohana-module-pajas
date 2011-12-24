@@ -173,6 +173,9 @@
 				<tr>
 					<th class="small_row">User ID</th>
 					<th>Username</th>
+					<th>Role(s)</th>
+					<th>Lastname</th>
+					<th>Firstname</th>
 					<th class="medium_row">Action</th>
 				</tr>
 			</thead>
@@ -182,20 +185,23 @@
 						<xsl:if test="position() mod 2 = 1">
 							<xsl:attribute name="class">odd</xsl:attribute>
 						</xsl:if>
-						<td><xsl:value-of select="user_id" /></td>
+						<td><xsl:value-of select="@id" /></td>
 						<td><xsl:value-of select="username" /></td>
+						<td><xsl:value-of select="role" /></td>
+						<td><xsl:value-of select="lastname" /></td>
+						<td><xsl:value-of select="firstname" /></td>
 						<td>
 							[<a>
 							<xsl:attribute name="href">
 								<xsl:text>users/edit_user/</xsl:text>
-								<xsl:value-of select="user_id" />
+								<xsl:value-of select="@id" />
 							</xsl:attribute>
 							<xsl:text>Edit</xsl:text>
 							</a>]
 							[<a>
 							<xsl:attribute name="href">
 								<xsl:text>users/rm_user/</xsl:text>
-								<xsl:value-of select="user_id" />
+								<xsl:value-of select="@id" />
 							</xsl:attribute>
 							<xsl:text>Delete</xsl:text>
 							</a>]
@@ -212,7 +218,7 @@
 			<xsl:if test="../meta/action = 'edit_user'">
 				<xsl:attribute name="action">
 					<xsl:text>users/edit_user/</xsl:text>
-					<xsl:value-of select="user/user_id" />
+					<xsl:value-of select="user/@id" />
 				</xsl:attribute>
 			</xsl:if>
 
@@ -223,7 +229,7 @@
 				<xsl:call-template name="form_line">
 					<xsl:with-param name="type"  select="'none'" />
 					<xsl:with-param name="label" select="'User ID:'" />
-					<xsl:with-param name="value" select="user/user_id" />
+					<xsl:with-param name="value" select="user/@id" />
 				</xsl:call-template>
 			</xsl:if>
 

@@ -79,6 +79,11 @@ class Driver_User_Mysql extends Driver_User
 		return $user_data;
 	}
 
+	public function get_user_id_by_username($username)
+	{
+		return $this->pdo->query('SELECT id FROM user_users WHERE username = '.$this->pdo->quote($username))->fetchColumn();
+	}
+
 	public function get_user_id_by_username_and_password($username, $password)
 	{
 		return $this->pdo->query('SELECT id FROM user_users WHERE username = '.$this->pdo->quote($username).' AND password = '.$this->pdo->quote($password))->fetchColumn();
@@ -89,104 +94,52 @@ class Driver_User_Mysql extends Driver_User
 		return $this->pdo->query('SELECT username FROM user_users WHERE id = '.$this->pdo->quote($user_id))->fetchColumn();
 	}
 
-	public function get_users($q, $start = FALSE, $limit = FALSE, $order_by = FALSE)
+	public function get_users($q = FALSE, $start = 0, $limit = 100, $order_by = FALSE)
 	{
-		$sql = '
-			SELECT
-				id AS user_id,
-				username
-			FROM
-				user_users';
-
-		if (is_string($q))
+		$data_fields = array();
+		$sql         = 'SELECT users.id,users.username,';
+		foreach ($this->pdo->query('SELECT id, name FROM user_data_fields ORDER BY name;') as $row)
 		{
-			$sql .= '
-			WHERE
-				user_id = '.intval($q).' OR
-				username LIKE \'%'.$q.'%\'';
-
-			$user_ids = array();
-			foreach ($this->pdo->query('SELECT id FROM user_data_fields') as $row)
-			{
-				foreach ($this->pdo->query('SELECT user_id FROM user_users_data WHERE data LIKE \'%'.$q.'%\' AND field_id = '.$row['id']) as $row2)
-				{
-					if (!in_array($row2['user_id'], $user_ids))
-					{
-						$user_ids[] = $row2['user_id'];
-					}
-				}
-			}
-
-			$sql .= ' OR
-				user_id IN ('.implode(',', $user_ids).')';
-		}
-		elseif (is_array($q))
-		{
-			$user_ids = array();
-			foreach ($q as $field => $data)
-			{
-				if ($field == 'username')
-				{
-					foreach ($this->pdo->query('SELECT id FROM user_users WHERE username LIKE \'%'.$data.'%\'') as $row2)
-					{
-						$user_ids[] = $row2['id'];
-					}
-				}
-				else
-				{
-					foreach ($this->pdo->query('SELECT user_id FROM user_users_data WHERE data LIKE \'%'.$data.'%\' AND field_id = (SELECT id FROM user_data_fields WHERE name = '.$this->pdo->quote($field).')') as $row2)
-					{
-						if ( ! in_array($row2['user_id'], $user_ids))
-						{
-							$user_ids[] = $row2['user_id'];
-						}
-					}
-				}
-			}
-
-			if (count($user_ids))
-			{
-				$sql .= '
-			WHERE
-				id IN ('.implode(',', $user_ids).')';
-			}
-			else
-			{
-				return array();
-			}
-
+			$sql .= '(SELECT GROUP_CONCAT(data SEPARATOR \', \') FROM user_users_data WHERE field_id = '.$row['id'].' AND user_id = users.id ORDER BY data) AS '.Mysql::quote_identifier($row['name']).',';
+			$data_fields[$row['id']] = $row['name'];
 		}
 
-		if ($order_by)
+		$sql  = substr($sql, 0, strlen($sql) - 1);
+
+		$sql .= ' FROM user_users AS users, user_users_data AS users_data';
+		$sql .= ' WHERE users_data.user_id = users.id';
+
+		if (is_string($q)) $sql .= ' AND (username LIKE '.$this->pdo->quote('%'.$q.'%').' OR users_data.data LIKE '.$this->pdo->quote('%'.$q.'%').')';
+
+		$sql .= ' GROUP BY users.id';
+		if ( ! empty($order_by))
 		{
-			$sql .= '
-			ORDER BY '.$this->pdo->quote($order_by);
+			if (is_string($order_by))
+			{
+				$sql .= ' ORDER BY IF(ISNULL('.Mysql::quote_identifier($order_by).'),1,0),'.Mysql::quote_identifier($order_by);
+			}
+			elseif (is_array($order_by))
+			{
+				$sql .= ' ORDER BY ';
+				foreach ($order_by as $field => $order)
+				{
+					$sql .= 'IF(ISNULL('.Mysql::quote_identifier($field).'),1,0),'.Mysql::quote_identifier($field);
+
+					if ($order == 'ASC' || $order == 'DESC') $sql .= ' '.$order;
+
+					$sql .= ',';
+				}
+				$sql = substr($sql, 0, strlen($sql) - 1);
+			}
 		}
 
 		if ($limit)
 		{
-			if ($start)
-			{
-				$sql .= '
-			LIMIT '.$start.','.$limit;
-			}
-			else
-			{
-				$sql .= '
-			LIMIT '.$limit;
-			}
+			if ($start) $sql .= ' LIMIT '.$start.','.$limit;
+			else        $sql .= ' LIMIT '.$limit;
 		}
 
-		$users = array();
-		foreach ($this->pdo->query($sql) as $row)
-		{
-			$users[] = array(
-				'user_id'  => $row['user_id'],
-				'username' => $row['username'],
-			);
-		}
-
-		return $users;
+		return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 	public function new_field($field_name)
@@ -212,7 +165,7 @@ class Driver_User_Mysql extends Driver_User
 			{
 				if ($field_id = User::get_data_field_id($field_name))
 				{
-					if (!is_array($field_data))
+					if ( ! is_array($field_data))
 					{
 						$field_data = array($field_data);
 					}
@@ -269,7 +222,7 @@ class Driver_User_Mysql extends Driver_User
 			$sql = 'INSERT INTO user_users_data (user_id, field_id, data) VALUES';
 			foreach ($user_data as $field => $content)
 			{
-				if (!is_array($content))
+				if ( ! is_array($content))
 				{
 					$content = array($content);
 				}

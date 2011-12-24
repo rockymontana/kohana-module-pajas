@@ -31,7 +31,7 @@ abstract class Admincontroller extends Xsltcontroller
 			elseif ($user->logged_in())
 			{
 				$user_data = array(
-					'user_id'  => $user->get_user_id(),
+					'@id'      => $user->get_user_id(),
 					'username' => $user->get_username(),
 					'data'     => array(),
 				);

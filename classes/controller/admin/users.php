@@ -21,7 +21,7 @@ class Controller_Admin_Users extends Admincontroller {
 
 		xml::to_XML($fields, $this->xml_content_users);
 		$this->xml_content_users = $this->xml_content->appendChild($this->dom->createElement('users'));
-		xml::to_XML(User::get_users(FALSE, FALSE, FALSE, 'user_id'), $this->xml_content_users, 'user');
+		xml::to_XML(User::get_users(FALSE, 0, 100, array('lastname'=>'DESC','firstname'=>'ASC')), $this->xml_content_users, 'user', 'id');
 	}
 
 	private function list_available_data_fields()
@@ -299,7 +299,7 @@ class Controller_Admin_Users extends Admincontroller {
 		}
 
 		// Output user data to the XML
-		xml::to_XML(array('user_id' => $user_id, 'username' => $user->get_username()), $this->xml_content_user);
+		xml::to_XML(array('id' => $user_id, 'username' => $user->get_username()), $this->xml_content_user, NULL, 'id');
 		foreach ($user->get_user_data() as $field_name => $values)
 		{
 			foreach ($values as $value)
