@@ -16,7 +16,7 @@ class Driver_User_Mysql extends Driver_User
 			`name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`id`),
 			UNIQUE KEY `name` (`name`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 		$this->pdo->query('CREATE TABLE `user_users` (
 			`id` bigint(20) NOT NULL AUTO_INCREMENT,
 			`username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -29,8 +29,12 @@ class Driver_User_Mysql extends Driver_User
 			`field_id` int(11) DEFAULT NULL,
 			`data` text COLLATE utf8_unicode_ci NOT NULL,
 			PRIMARY KEY (`id`),
-			KEY `users_fields` (`user_id`,`field_id`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+			KEY `users_fields` (`user_id`,`field_id`),
+			KEY `field_id` (`field_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+		$this->pdo->query('ALTER TABLE `user_users_data`
+			ADD CONSTRAINT `user_users_data_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `user_data_fields` (`id`),
+			ADD CONSTRAINT `user_users_data_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_users` (`id`);');
 	}
 
 	public function get_data_field_id($field_name)
