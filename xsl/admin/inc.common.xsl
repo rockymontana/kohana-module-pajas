@@ -19,10 +19,20 @@
 		<xsl:param name="href" />
 		<xsl:param name="action">index</xsl:param>
 		<xsl:param name="text"><xsl:value-of select="$href" /></xsl:param>
+		<xsl:param name="url_param">yesyeswhatever</xsl:param>
 
 		<li>
 			<a href="{$href}">
-				<xsl:if test="/root/meta/action = $action">
+				<xsl:if test="
+					/root/meta/action = $action and
+					(
+						(
+							$url_param = '' and not(/root/meta/url_params/*)
+						) or
+						/root/meta/url_params[local-name() = $url_param] or
+						$url_param = 'yesyeswhatever'
+					)
+				">
 					<xsl:attribute name="class">selected</xsl:attribute>
 				</xsl:if>
 				<xsl:value-of select="$text" />

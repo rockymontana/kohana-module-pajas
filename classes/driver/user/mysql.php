@@ -94,8 +94,43 @@ class Driver_User_Mysql extends Driver_User
 		return $this->pdo->query('SELECT username FROM user_users WHERE id = '.$this->pdo->quote($user_id))->fetchColumn();
 	}
 
-	public function get_users($q = FALSE, $start = 0, $limit = 100, $order_by = FALSE)
+	public function get_users($q = FALSE, $start = 0, $limit = 100, $order_by = FALSE, $field_search = FALSE)
 	{
+/* Same thing, but with JOIN. Have a bug when there are multiple values of the same data_field... and also isnt faster with current DB structure * /
+		$columns = 'users.id,users.username,';
+		$from    = 'user_users AS users ';
+		foreach ($this->pdo->query('SELECT id, name FROM user_data_fields ORDER BY name;') as $row)
+		{
+			$columns .= 'GROUP_CONCAT('.Mysql::quote_identifier('data_'.$row['name']).'.data SEPARATOR \', \') AS '.Mysql::quote_identifier($row['name']).',';
+			$from    .= 'LEFT JOIN user_users_data AS '.Mysql::quote_identifier('data_'.$row['name']).' ON '.Mysql::quote_identifier('data_'.$row['name']).'.user_id = users.id AND '.Mysql::quote_identifier('data_'.$row['name']).'.field_id = '.$row['id'].' ';
+		}
+		$columns = substr($columns, 0, strlen($columns) - 1);
+
+		$sql = 'SELECT '.$columns.' FROM '.$from.' GROUP BY users.id';
+
+		if ( ! empty($order_by))
+		{
+			if (is_string($order_by))
+			{
+				$sql .= ' ORDER BY IF(ISNULL(GROUP_CONCAT('.Mysql::quote_identifier('data_'.$row['name']).'.data SEPARATOR \', \')),1,0),GROUP_CONCAT('.Mysql::quote_identifier('data_'.$row['name']).'.data SEPARATOR \', \')';
+			}
+			elseif (is_array($order_by))
+			{
+				$sql .= ' ORDER BY ';
+				foreach ($order_by as $field => $order)
+				{
+					$sql .= 'IF(ISNULL(GROUP_CONCAT('.Mysql::quote_identifier('data_'.$row['name']).'.data SEPARATOR \', \')),1,0),GROUP_CONCAT('.Mysql::quote_identifier('data_'.$row['name']).'.data SEPARATOR \', \')';
+
+					if ($order == 'ASC' || $order == 'DESC') $sql .= ' '.$order;
+
+					$sql .= ',';
+				}
+				$sql = substr($sql, 0, strlen($sql) - 1);
+			}
+		}
+
+
+/**/
 		$data_fields = array();
 		$sql         = 'SELECT users.id,users.username,';
 		foreach ($this->pdo->query('SELECT id, name FROM user_data_fields ORDER BY name;') as $row)
@@ -109,9 +144,25 @@ class Driver_User_Mysql extends Driver_User
 		$sql .= ' FROM user_users AS users, user_users_data AS users_data';
 		$sql .= ' WHERE users_data.user_id = users.id';
 
-		if (is_string($q)) $sql .= ' AND (username LIKE '.$this->pdo->quote('%'.$q.'%').' OR users_data.data LIKE '.$this->pdo->quote('%'.$q.'%').')';
+		if (is_string($q) || ! empty($field_search)) $sql .= ' AND (';
+
+		if (is_string($q)) $sql .= 'username LIKE '.$this->pdo->quote('%'.$q.'%').' OR users_data.data LIKE '.$this->pdo->quote('%'.$q.'%').' OR';
+
+		if ( ! empty($field_search))
+		{
+			foreach ($field_search as $field => $search_string)
+			{
+				if ($field_id = array_search($field, $data_fields))
+				{
+					$sql .= 'users.id IN (SELECT user_id FROM user_users_data WHERE field_id = '.$field_id.' AND data LIKE '.$this->pdo->quote('%'.$search_string.'%').') OR';
+				}
+			}
+		}
+
+		if (is_string($q) || ! empty($field_search)) $sql = substr($sql, 0, strlen($sql) - 3).')';
 
 		$sql .= ' GROUP BY users.id';
+
 		if ( ! empty($order_by))
 		{
 			if (is_string($order_by))
@@ -132,7 +183,7 @@ class Driver_User_Mysql extends Driver_User
 				$sql = substr($sql, 0, strlen($sql) - 1);
 			}
 		}
-
+/**/
 		if ($limit)
 		{
 			if ($start) $sql .= ' LIMIT '.$start.','.$limit;
@@ -229,16 +280,19 @@ class Driver_User_Mysql extends Driver_User
 
 				foreach ($content as $content_piece)
 				{
-					$sql .= '
-						(
-							'.$this->pdo->quote($user_id).',
+					if ($content_piece != '')
+					{
+						$sql .= '
 							(
-								SELECT user_data_fields.id
-								FROM   user_data_fields
-								WHERE  user_data_fields.name = '.$this->pdo->quote($field).'
-							),
-							'.$this->pdo->quote($content_piece).'
-						),';
+								'.$this->pdo->quote($user_id).',
+								(
+									SELECT user_data_fields.id
+									FROM   user_data_fields
+									WHERE  user_data_fields.name = '.$this->pdo->quote($field).'
+								),
+								'.$this->pdo->quote($content_piece).'
+							),';
+					}
 				}
 			}
 			$sql = substr($sql, 0, strlen($sql) - 1);

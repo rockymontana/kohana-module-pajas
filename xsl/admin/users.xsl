@@ -8,28 +8,29 @@
 			<xsl:if test="/root/meta/controller = 'users'">
 
 				<xsl:call-template name="tab">
-					<xsl:with-param name="href"   select="'users'" />
-					<xsl:with-param name="text"   select="'List users'" />
+					<xsl:with-param name="href"      select="'users'" />
+					<xsl:with-param name="text"      select="'List users'" />
 				</xsl:call-template>
 
 				<xsl:call-template name="tab">
-					<xsl:with-param name="href"   select="'users/add_user'" />
-					<xsl:with-param name="action" select="'add_user'" />
-					<xsl:with-param name="text"   select="'Add user'" />
+					<xsl:with-param name="href"      select="'users/user'" />
+					<xsl:with-param name="text"      select="'Add user'" />
+					<xsl:with-param name="action"    select="'user'" />
+					<xsl:with-param name="url_param" select="''" />
 				</xsl:call-template>
 
 			</xsl:if>
 			<xsl:if test="/root/meta/controller = 'fields'">
 
 				<xsl:call-template name="tab">
-					<xsl:with-param name="href"   select="'fields'" />
-					<xsl:with-param name="text"   select="'List fields'" />
+					<xsl:with-param name="href"      select="'fields'" />
+					<xsl:with-param name="text"      select="'List fields'" />
 				</xsl:call-template>
 
 				<xsl:call-template name="tab">
-					<xsl:with-param name="href"   select="'fields/add_field'" />
-					<xsl:with-param name="action" select="'add_field'" />
-					<xsl:with-param name="text"   select="'Add field'" />
+					<xsl:with-param name="href"      select="'fields/add_field'" />
+					<xsl:with-param name="action"    select="'add_field'" />
+					<xsl:with-param name="text"      select="'Add field'" />
 				</xsl:call-template>
 
 			</xsl:if>
@@ -61,16 +62,16 @@
 				<xsl:with-param name="h1"    select="'Users'" />
 			</xsl:call-template>
 		</xsl:if>
-		<xsl:if test="/root/content[../meta/controller = 'users' and ../meta/action = 'add_user']">
-			<xsl:call-template name="template">
-				<xsl:with-param name="title" select="'Admin - Users'" />
-				<xsl:with-param name="h1"    select="'Add user'" />
-			</xsl:call-template>
-		</xsl:if>
-		<xsl:if test="/root/content[../meta/controller = 'users' and ../meta/action = 'edit_user']">
+		<xsl:if test="/root/content[../meta/controller = 'users' and ../meta/action = 'user' and ../meta/url_params/id]">
 			<xsl:call-template name="template">
 				<xsl:with-param name="title" select="'Admin - Users'" />
 				<xsl:with-param name="h1"    select="'Edit user'" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="/root/content[../meta/controller = 'users' and ../meta/action = 'user' and not(../meta/url_params/id)]">
+			<xsl:call-template name="template">
+				<xsl:with-param name="title" select="'Admin - Users'" />
+				<xsl:with-param name="h1"    select="'Add user'" />
 			</xsl:call-template>
 		</xsl:if>
 	</xsl:template>
@@ -193,7 +194,7 @@
 						<td>
 							[<a>
 							<xsl:attribute name="href">
-								<xsl:text>users/edit_user/</xsl:text>
+								<xsl:text>users/user?id=</xsl:text>
 								<xsl:value-of select="@id" />
 							</xsl:attribute>
 							<xsl:text>Edit</xsl:text>
@@ -213,12 +214,12 @@
 	</xsl:template>
 
 	<!-- Add or edit user -->
-	<xsl:template match="content[../meta/controller = 'users' and (../meta/action = 'add_user' or ../meta/action = 'edit_user')]">
-		<form method="post" action="users/add_user" autocomplete="off">
-			<xsl:if test="../meta/action = 'edit_user'">
+	<xsl:template match="content[../meta/controller = 'users' and ../meta/action = 'user']">
+		<form method="post" action="users/user" autocomplete="off">
+			<xsl:if test="../meta/url_params/id">
 				<xsl:attribute name="action">
-					<xsl:text>users/edit_user/</xsl:text>
-					<xsl:value-of select="user/@id" />
+					<xsl:text>users/user?id=</xsl:text>
+					<xsl:value-of select="../meta/url_params/id" />
 				</xsl:attribute>
 			</xsl:if>
 
@@ -282,22 +283,13 @@
 
 			<p>&quot;role: admin&quot; grants a user access to the admin interface</p>
 
-			<!-- Already stored data -->
-			<xsl:for-each select="user/field">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id"    select="concat('field_',@id,'_',position())" />
-					<xsl:with-param name="name"  select="concat('fieldid_',@id,'[]')" />
-					<xsl:with-param name="label" select="/root/content/users/field[@id = current()/@id]" />
-				</xsl:call-template>
-			</xsl:for-each>
-
-			<!-- New custom fields -->
-			<xsl:for-each select="users/custom_detail_field">
-				<xsl:call-template name="form_line">
-					<xsl:with-param name="id"    select="concat('field_',.,'_',(position() + count(/root/content/user/field)))" />
-					<xsl:with-param name="name"  select="concat('fieldid_',.,'[]')" />
-					<xsl:with-param name="label" select="/root/content/users/field[@id = current()]" />
-				</xsl:call-template>
+			<xsl:for-each select="formdata/field">
+				<xsl:if test="@id != 'username'">
+					<xsl:call-template name="form_line">
+						<xsl:with-param name="id"    select="@id" />
+						<xsl:with-param name="label" select="/root/content/users/field[@id = substring-before(substring-after(current()/@id, '_'), '_')]" />
+					</xsl:call-template>
+				</xsl:if>
 			</xsl:for-each>
 
 			<p>(To remove a field, just leave it blank)</p>
@@ -315,12 +307,12 @@
 			</label>
 			<input type="submit" name="do_add_field" value="Add Field" class="button add_field" />
 
-			<xsl:if test="../meta/action = 'edit_user'">
+			<xsl:if test="../meta/url_params/id">
 				<xsl:call-template name="form_button">
 					<xsl:with-param name="value" select="'Save changes'" />
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="../meta/action = 'add_user'">
+			<xsl:if test="not(../meta/url_params/id)">
 				<xsl:call-template name="form_button">
 					<xsl:with-param name="value" select="'Add User'" />
 				</xsl:call-template>

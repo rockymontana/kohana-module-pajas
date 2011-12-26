@@ -235,9 +235,9 @@ class Model_User extends Model
 	 *                             )
 	 *                           )
 	 */
-	public static function get_users($q = FALSE, $start = FALSE, $limit = FALSE, $order_by = FALSE)
+	public static function get_users($q = FALSE, $start = FALSE, $limit = FALSE, $order_by = FALSE, $field_search = FALSE)
 	{
-		return self::driver()->get_users($q, $start, $limit, $order_by);
+		return self::driver()->get_users($q, $start, $limit, $order_by, $field_search);
 	}
 
 	/**
