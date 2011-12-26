@@ -169,22 +169,31 @@ class Driver_User_Mysql extends Driver_User
 
 		if ( ! empty($order_by))
 		{
-			if (is_string($order_by))
+			if (is_string($order_by) && in_array($order_by, $data_fields))
 			{
 				$sql .= ' ORDER BY IF(ISNULL('.Mysql::quote_identifier($order_by).'),1,0),'.Mysql::quote_identifier($order_by);
 			}
 			elseif (is_array($order_by))
 			{
-				$sql .= ' ORDER BY ';
+				$order_by_set = FALSE;
+
 				foreach ($order_by as $field => $order)
 				{
-					$sql .= 'IF(ISNULL('.Mysql::quote_identifier($field).'),1,0),'.Mysql::quote_identifier($field);
+					if (in_array($field, $data_fields))
+					{
+						if ( ! $order_by_set)
+						{
+							$sql .= ' ORDER BY ';
+							$order_by_set = TRUE;
+						}
+						$sql .= 'IF(ISNULL('.Mysql::quote_identifier($field).'),1,0),'.Mysql::quote_identifier($field);
 
-					if ($order == 'ASC' || $order == 'DESC') $sql .= ' '.$order;
+						if ($order == 'ASC' || $order == 'DESC') $sql .= ' '.$order;
 
-					$sql .= ',';
+						$sql .= ',';
+					}
 				}
-				$sql = substr($sql, 0, strlen($sql) - 1);
+				if ($order_by_set) $sql = substr($sql, 0, strlen($sql) - 1);
 			}
 		}
 /**/
