@@ -286,10 +286,7 @@ class Driver_User_Mysql extends Driver_User
 			$sql = 'INSERT INTO user_users_data (user_id, field_id, data) VALUES';
 			foreach ($user_data as $field => $content)
 			{
-				if ( ! is_array($content))
-				{
-					$content = array($content);
-				}
+				if ( ! is_array($content)) $content = array($content);
 
 				foreach ($content as $content_piece)
 				{

@@ -20,7 +20,7 @@ class Controller_Admin_Users extends Admincontroller {
 		}
 
 		xml::to_XML($fields, $this->xml_content_users);
-		xml::to_XML(User::get_users(FALSE, 0, 100, array('lastname'=>'ASC','firstname'=>'ASC')), $this->xml_content_users, 'user', 'id');
+		xml::to_XML(User::get_users(FALSE, 0, 100, array('username'=>'ASC')), $this->xml_content_users, 'user', 'id');
 	}
 
 	private function list_available_data_fields()
