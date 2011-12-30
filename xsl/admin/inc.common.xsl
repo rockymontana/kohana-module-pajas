@@ -45,9 +45,17 @@
 		<xsl:param name="name" />
 		<xsl:param name="value" />
 		<xsl:param name="label" />
+
+		<!-- This -->
 		<xsl:param name="options" />
+
+		<!-- OR this, not both -->
+		<xsl:param name="option_ids" />
+		<xsl:param name="option_values" />
+
 		<xsl:param name="error" />
 		<xsl:param name="disabled" />
+		<xsl:param name="placeholder" />
 
 		<xsl:param name="type">text</xsl:param>
 
@@ -59,7 +67,7 @@
 			<xsl:value-of select="$label" />
 
 			<!-- Options is not available, that means this is either an input or a textarea -->
-			<xsl:if test="not($options) or not($options/*)">
+			<xsl:if test="(not($options) or not($options/*)) and not($option_ids) and not($option_ids)">
 
 				<!-- Textarea -->
 				<xsl:if test="$type = 'textarea'">
@@ -131,6 +139,7 @@
 						</xsl:attribute>
 
 						<xsl:if test="$type != 'password' and $type != 'checkbox'">
+
 							<xsl:attribute name="value">
 								<xsl:if test="$value = '' and /root/content/formdata/field[@id = $id]">
 									<xsl:value-of select="/root/content/formdata/field[@id = $id]" />
@@ -139,11 +148,17 @@
 									<xsl:value-of select="$value" />
 								</xsl:if>
 							</xsl:attribute>
-						</xsl:if>
-						<xsl:if test="$type = 'checkbox'">
-							<xsl:if test="/root/content/formdata/field[@id = $id]">
-								<xsl:attribute name="checked">checked</xsl:attribute>
+
+							<xsl:if test="$placeholder != ''">
+								<xsl:attribute name="placeholder">
+									<xsl:value-of select="$placeholder" />
+								</xsl:attribute>
 							</xsl:if>
+
+						</xsl:if>
+
+						<xsl:if test="$type = 'checkbox' and /root/content/formdata/field[@id = $id]">
+							<xsl:attribute name="checked">checked</xsl:attribute>
 						</xsl:if>
 
 					</input>
@@ -151,7 +166,7 @@
 			</xsl:if>
 
 			<!-- If options is present, this should be a select-input -->
-			<xsl:if test="$options">
+			<xsl:if test="$options or ($option_ids and $option_values)">
 
 				<select id="{$id}">
 
@@ -168,20 +183,36 @@
 						</xsl:if>
 					</xsl:attribute>
 
-					<xsl:for-each select="$options/option">
-						<xsl:sort select="@sorting" />
+					<xsl:if test="$options">
+						<xsl:for-each select="$options/option">
+							<xsl:sort select="@sorting" />
 
-						<option value="{@value}">
+							<option value="{@value}">
 
-							<xsl:if test="($value != '' and $value = @value) or ($value = '' and @value = /root/content/formdata/field[@id = $id])">
-								<xsl:attribute name="selected">selected</xsl:attribute>
-							</xsl:if>
+								<xsl:if test="($value != '' and $value = @value) or ($value = '' and @value = /root/content/formdata/field[@id = $id])">
+									<xsl:attribute name="selected">selected</xsl:attribute>
+								</xsl:if>
 
-							<xsl:value-of select="." />
+								<xsl:value-of select="." />
 
-						</option>
+							</option>
 
-					</xsl:for-each>
+						</xsl:for-each>
+
+					</xsl:if>
+
+					<xsl:if test="$option_ids and $option_values">
+
+						<xsl:for-each select="$option_ids">
+							<option value="{.}">
+								<xsl:call-template name="form_line_option">
+									<xsl:with-param name="position" select="position()" />
+									<xsl:with-param name="option_values" select="$option_values" />
+								</xsl:call-template>
+							</option>
+						</xsl:for-each>
+
+					</xsl:if>
 
 				</select>
 
@@ -200,6 +231,15 @@
 			<xsl:text>&#160;</xsl:text>
 		</p>
 
+	</xsl:template>
+	<xsl:template name="form_line_option">
+		<xsl:param name="position" />
+		<xsl:param name="option_values" />
+		<xsl:for-each select="$option_values">
+			<xsl:if test="position() = $position">
+				<xsl:value-of select="." />
+			</xsl:if>
+		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template name="form_button">
