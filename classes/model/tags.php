@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
-class Model_Tags
+class Model_Tags extends Model
 {
 
 	/**
