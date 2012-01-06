@@ -205,6 +205,11 @@
 
 						<xsl:for-each select="$option_ids">
 							<option value="{.}">
+
+								<xsl:if test="($value != '' and $value = .) or ($value = '' and . = /root/content/formdata/field[@id = $id])">
+									<xsl:attribute name="selected">selected</xsl:attribute>
+								</xsl:if>
+
 								<xsl:call-template name="form_line_option">
 									<xsl:with-param name="position" select="position()" />
 									<xsl:with-param name="option_values" select="$option_values" />
