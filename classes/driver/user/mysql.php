@@ -145,8 +145,8 @@ class Driver_User_Mysql extends Driver_User
 
 		$sql  = substr($sql, 0, strlen($sql) - 1);
 
-		$sql .= ' FROM user_users AS users, user_users_data AS users_data';
-		$sql .= ' WHERE users_data.user_id = users.id';
+		$sql .= ' FROM user_users AS users LEFT JOIN user_users_data AS users_data ON users_data.user_id = users.id';
+		$sql .= ' WHERE 1 = 1';
 
 		if (is_string($q) || ! empty($field_search)) $sql .= ' AND (';
 
