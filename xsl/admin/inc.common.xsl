@@ -157,7 +157,15 @@
 
 						</xsl:if>
 
-						<xsl:if test="$type = 'checkbox' and /root/content/formdata/field[@id = $id]">
+						<xsl:if test="
+							$type = 'checkbox' and
+							/root/content/formdata/field[@id = $id] and
+							/root/content/formdata/field[@id = $id] != '0'
+						">
+							<xsl:attribute name="checked">checked</xsl:attribute>
+						</xsl:if>
+
+						<xsl:if test="$type = 'radio' and /root/content/formdata/field[@id = $id] = $value">
 							<xsl:attribute name="checked">checked</xsl:attribute>
 						</xsl:if>
 
