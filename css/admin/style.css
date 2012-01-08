@@ -397,6 +397,13 @@ div#loginbox
 		margin:            0;
 	}
 
+	.contentwrap2 form p.info
+	{
+		clear:             right;
+		float:             left;
+		margin:            0;
+	}
+
 	.contentwrap2 div.message
 	{
 		background-color:  #e9ffe9;
