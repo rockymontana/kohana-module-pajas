@@ -5,7 +5,7 @@ class Controller_Generic extends Xsltcontroller
 
 	public function action_index()
 	{
-		$URI = $this->request->param('URI');
+		$URI = $this->request->uri();
 
 		// Empty string defaults to 'welcome'
 		if ($URI == '') $URI = 'welcome';
@@ -21,6 +21,7 @@ class Controller_Generic extends Xsltcontroller
 
 		// And load the page data into it
 		$page_data = $content_page->get_page_data();
+
 		foreach ($page_data['tag_ids'] as $template_field_id => $tag_ids)
 		{
 
