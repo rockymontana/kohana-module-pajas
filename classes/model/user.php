@@ -404,7 +404,10 @@ class Model_User extends Model
 	 */
 	public static function password_encrypt($password)
 	{
-		return md5($password);
+		$salt = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+		$hash = hash('sha256', $salt.$password);
+
+		return $salt.$hash;
 	}
 
 	/**
