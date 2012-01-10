@@ -255,7 +255,9 @@ class Driver_User_Mysql extends Driver_User
 
 	public function rm_user($user_id)
 	{
-		return $this->pdo->query('DELETE FROM user_users WHERE id = '.$this->pdo->quote($user_id));
+		$this->pdo->query('DELETE FROM user_users_data WHERE user_id = '.$this->pdo->quote($user_id));
+		$this->pdo->query('DELETE FROM user_users WHERE id = '.$this->pdo->quote($user_id));
+		return TRUE;
 	}
 
 	public function set_data($user_id, $user_data, $clear_previous_data = TRUE)
