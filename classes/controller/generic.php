@@ -8,7 +8,7 @@ class Controller_Generic extends Xsltcontroller
 		$URI = $this->request->uri();
 
 		// Empty string defaults to 'welcome'
-		if ($URI == '') $URI = 'welcome';
+		if ($URI == '' || $URI == '/') $URI = 'welcome';
 
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'generic';
@@ -21,7 +21,6 @@ class Controller_Generic extends Xsltcontroller
 
 		// And load the page data into it
 		$page_data = $content_page->get_page_data();
-
 		foreach ($page_data['tag_ids'] as $template_field_id => $tag_ids)
 		{
 
