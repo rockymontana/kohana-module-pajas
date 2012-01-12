@@ -51,7 +51,7 @@ class Controller_Admin_Users extends Admincontroller {
 			$post = new Validation($_POST);
 			$post->filter('trim');
 			$post->filter('strtolower', 'username');
-			$post->rule('Valid::not_empty',         'username');
+			$post->rule('Valid::not_empty', 'username');
 			if (isset($user))
 			{
 				if ($_POST['username'] != $user->get_username())

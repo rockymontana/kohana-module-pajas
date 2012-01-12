@@ -235,4 +235,30 @@ abstract class Xsltcontroller extends Controller
 		$this->request->redirect($uri);
 	}
 
+	/**
+	 * Set form data - the data that should fill out forms
+	 *
+	 * @param arr - form data
+	 * @return boolean
+	 */
+	public function set_formdata($formdata)
+	{
+		if ( ! isset($this->xml_content_formdata))
+		{
+			$this->xml_content_formdata = $this->xml_content->appendChild($this->dom->createElement('formdata'));
+		}
+
+		$formatted_formdata = array();
+		foreach ($formdata as $field => $data)
+		{
+			$formatted_formdata[] = array(
+				'@id'      => $field,
+				'$content' => $data,
+			);
+		}
+
+		xml::to_XML($formatted_formdata, $this->xml_content_formdata, 'field');
+		return TRUE;
+	}
+
 }
