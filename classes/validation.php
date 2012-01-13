@@ -62,11 +62,11 @@ class Validation
 		return FALSE;
 	}
 
-	public function rule($rule, $field = FALSE)
+	public function rule($rule, $field = FALSE, $second_param = NULL)
 	{
 		if (($field) && isset($this->array[$field]) && is_callable($rule))
 		{
-			if ( ! call_user_func($rule, $this->array[$field]))
+			if ( ! call_user_func($rule, $this->array[$field], $second_param))
 			{
 				$this->add_error($field, $rule);
 			}
@@ -75,7 +75,7 @@ class Validation
 		{
 			foreach ($this->array as $key => $value)
 			{
-				if ( ! call_user_func($rule, $value))
+				if ( ! call_user_func($rule, $value, $second_param))
 				{
 					$this->add_error($key, $rule);
 				}
