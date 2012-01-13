@@ -214,6 +214,96 @@ abstract class Xsltcontroller extends Controller
 	}
 
 	/**
+	 * Add a simple error message
+	 *
+	 * @param str $error
+	 * @return boolean
+	 */
+	public function add_error($error)
+	{
+		if ( ! isset($this->xml_content_errors))
+		{
+			$this->xml_content_errors = $this->xml_content->appendChild($this->dom->createElement('errors'));
+		}
+
+		xml::to_XML(array('error' => $error), $this->xml_content_errors);
+		return TRUE;
+	}
+
+	/**
+	 * Add form errors
+	 *
+	 * @param arr $errors - as from Validate::errors()
+	 * @return boolean
+	 */
+	public function add_form_errors($errors)
+	{
+/*
+Array
+(
+    [username] => Array
+        (
+            [0] => Valid::not_empty
+            [1] => User::username_available
+        )
+
+    [password] => Array
+        (
+            [0] => Valid::not_empty
+        )
+
+    // To add a message:
+    [username] => 'Username is to ugly'
+
+)*/
+
+
+		if ( ! isset($this->xml_content_errors))
+		{
+			$this->xml_content_errors = $this->xml_content->appendChild($this->dom->createElement('errors'));
+		}
+
+		if ( ! isset($this->xml_content_errors_form_errors))
+		{
+			$this->xml_content_errors_form_errors = $this->xml_content_errors->appendChild($this->dom->createElement('form_errors'));
+		}
+
+		foreach ($errors as $field => $field_errors)
+		{
+			if (is_array($field_errors))
+			{
+				foreach ($field_errors as $field_error)
+				{
+					xml::to_XML(array($field => $field_error), $this->xml_content_errors_form_errors);
+				}
+			}
+			else
+			{
+				xml::to_XML(array($field => array('message' => $field_errors)), $this->xml_content_errors_form_errors);
+			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Add simple message
+	 *
+	 * @param str $message
+	 * @return boolean
+	 */
+	public function add_message($message)
+	{
+		if ( ! isset($this->xml_content_messages))
+		{
+			$this->xml_content_messages = $this->xml_content->appendChild($this->dom->createElement('messages'));
+		}
+
+		xml::to_XML(array('message' => $message), $this->xml_content_messages);
+		return TRUE;
+	}
+
+	/**
 	 * Redirect to another URI. All further execution is terminated
 	 *
 	 * @param str $uri - If left out, redirects to previous uri.
