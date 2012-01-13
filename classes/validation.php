@@ -81,6 +81,10 @@ class Validation
 				}
 			}
 		}
+		elseif ( ! isset($this->array[$field]))
+		{
+			$this->add_error($field, $rule);
+		}
 		else return FALSE;
 
 		return TRUE;
