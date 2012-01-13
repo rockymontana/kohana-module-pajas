@@ -57,11 +57,11 @@ abstract class Xsltcontroller extends Controller
 		// Set transformation
 		if (isset($_GET['transform']))
 		{
-			if     ($_GET['transform'] == 'TRUE')  $this->transform = TRUE;
-			elseif ($_GET['transform'] == 'FALSE') $this->transform = FALSE;
-			elseif ($_GET['transform'] == 'XML')   $this->transform = 'XML';
-			elseif ($_GET['transform'] == 'JSON')  $this->transform = 'JSON';
-			else                                   $this->transform = 'auto';
+			if     (strtolower($_GET['transform']) == 'true')  $this->transform = TRUE;
+			elseif (strtolower($_GET['transform']) == 'false') $this->transform = FALSE;
+			elseif (strtolower($_GET['transform']) == 'xml')   $this->transform = 'XML';
+			elseif (strtolower($_GET['transform']) == 'json')  $this->transform = 'JSON';
+			else                                               $this->transform = 'auto';
 		}
 		else
 		{
@@ -310,6 +310,7 @@ Array
 	 */
 	public function redirect($uri = FALSE)
 	{
+
 		if ($uri == FALSE)
 		{
 			if (isset($_SERVER['HTTP_REFERER']))
