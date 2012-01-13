@@ -15,7 +15,7 @@ class Model_User extends Model
 	 *
 	 * @var array of objects
 	 */
-	static $instances = array();
+	public static $instances = array();
 
 	/**
 	 * User data
@@ -342,9 +342,11 @@ class Model_User extends Model
 	public function logout()
 	{
 		if (isset($_SESSION['modules']['pajas'][$this->instance_name]))
-		{
 			unset($_SESSION['modules']['pajas'][$this->instance_name]);
-		}
+
+		if (isset(self::$instances[$this->instance_name]))
+			unset(self::$instances[$this->instance_name]);
+
 		return TRUE;
 	}
 
