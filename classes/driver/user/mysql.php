@@ -123,7 +123,7 @@ class Driver_User_Mysql extends Driver_User
 			$roles_string = '\''.$role.'\',';
 		}
 		$roles = substr($roles_string, 0, -1);
-		$sql = 'SELECT uri FROM user_roles_rights WHERE role in('.$roles.') GROUP BY uri';
+		$sql = 'SELECT uri FROM user_roles_rights WHERE role in('.$roles.', \'all\') GROUP BY uri';
 //		return $sql;
 	return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
 	}

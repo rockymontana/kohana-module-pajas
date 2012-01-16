@@ -6,7 +6,7 @@ class Controller_Admin_Logout extends Admincontroller {
 	{
 		$user = User::instance();
 		$user->logout();
-		$this->redirect();
+		$this->redirect('admin/login');
 	}
 
 }
