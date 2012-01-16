@@ -19,7 +19,7 @@ if (Kohana::$environment === Kohana::DEVELOPMENT && ! is_dir(Kohana::$config->lo
 Route::set('admin', 'admin/<controller>(/<action>(/<options>))',
 	array(
 		'action' => '[a-zA-Z0-9_-]+',
-    'options' => '.*',
+		'options' => '.*',
   ))
 	->defaults(array(
 		'directory'  => 'admin',

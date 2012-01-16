@@ -25,7 +25,7 @@ return array(
 */
 
 	// Users admin pages
-	'users' => array(
+  'users' => array(
     'name'        => 'Users',
     '@category'   => 'Users',
     'description' => 'User admin',

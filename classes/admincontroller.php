@@ -24,11 +24,7 @@ abstract class Admincontroller extends Xsltcontroller
 			 * Must be a logged in user with admin role to access the admin pages
 			 */
 			$user = User::instance();
-			if (( ! $user->logged_in() || !$user->get_user_data('role') == 'admin') && $this->request->controller() != 'login')
-			{
-				$this->redirect('admin/login');
-			}
-			elseif ($user->logged_in())
+			if ($user->logged_in())
 			{
 				$user_data = array(
 					'@id'      => $user->get_user_id(),
@@ -65,15 +61,24 @@ abstract class Admincontroller extends Xsltcontroller
 		    'menuoption'
 		  );
 
-			// Then we populate this container with options from the config files, and group them by 'menuoption'
+		// Then we populate this container with options from the config files, and group them by 'menuoption'
 		  foreach (Kohana::$config->load('admin_menu_options') as $menu_option)
 		  {
-				xml::to_XML(
-					array($menu_option),                 // Array to make XML from
-					$this->menuoptions_node,             // Container node
-					'menuoption'                         // Put each group in a node with this name
-				);
+			if (in_array('admin', $user->get_role()) ||
+				in_array($menu_option['href'],$user->get_roles_uri()))
+				{
+					xml::to_XML(
+						array($menu_option),                 // Array to make XML from
+						$this->menuoptions_node,             // Container node
+						'menuoption'                         // Put each group in a node with this name
+					);
+				}
 		  }
+
+		}
+		if (!in_array($this->request->controller(), $user->get_roles_uri()))
+		{
+		throw new HTTP_Exception_403('403 Forbidden Controller: :controller', array(':controller' => $this->request->controller()));
 		}
 	}
 

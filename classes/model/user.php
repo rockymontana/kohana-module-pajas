@@ -215,6 +215,32 @@ class Model_User extends Model
 	}
 
 	/**
+	 * Get the users roles
+	 * @return str roles
+	 */
+	public static function get_roles()
+	{
+		return self::driver()->get_roles();
+	}
+
+	/**
+	 * Get the current users' roles
+	 * @return str roles
+	 */
+	public function get_roles_uri()
+	{
+		return self::driver()->get_roles_uri($this->get_role());
+	}
+
+	/**
+	 * Get the current users role.
+	 */
+	public function get_role()
+	{
+	 return $this->get_user_data('role');
+	}
+
+	/**
 	 * Get list of users
 	 *
 	 * @param str $q           - Used as a search string in

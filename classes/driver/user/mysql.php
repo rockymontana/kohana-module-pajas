@@ -6,7 +6,7 @@ class Driver_User_Mysql extends Driver_User
 	protected function check_db_structure()
 	{
 		$columns = $this->pdo->query('SHOW TABLES like \'user%\';')->fetchAll(PDO::FETCH_COLUMN);
-		return count($columns) == 3;
+		return count($columns) == 4;
 	}
 
 	protected function create_db_structure()
@@ -35,6 +35,11 @@ class Driver_User_Mysql extends Driver_User
 		$this->pdo->query('ALTER TABLE `user_users_data`
 			ADD CONSTRAINT `user_users_data_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `user_data_fields` (`id`),
 			ADD CONSTRAINT `user_users_data_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user_users` (`id`);');
+		$this->pdo->query('CREATE TABLE IF NOT EXISTS `user_roles_rights` (
+			`role` varchar(128) NOT NULL,
+			`uri` varchar(128) NOT NULL,
+			PRIMARY KEY (`role`,`uri`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;');
 	}
 
 	public function get_data_field_id($field_name)
@@ -96,6 +101,31 @@ class Driver_User_Mysql extends Driver_User
 	public function get_username_by_id($user_id)
 	{
 		return $this->pdo->query('SELECT username FROM user_users WHERE id = '.$this->pdo->quote($user_id))->fetchColumn();
+	}
+
+	/**
+	 * Get the user roles
+	 * @return str roles
+	 */
+	public function get_roles()
+	{
+		return $this->pdo->query('SELECT role FROM user_roles_rights')->fetchAll(PDO::FETCH_COLUMN);
+	}
+
+	/**
+	 * Get the current users' roles
+	 * @return arr roles
+	 */
+	public function get_roles_uri($roles)
+	{
+		foreach($roles as $role)
+		{
+			$roles_string = '\''.$role.'\',';
+		}
+		$roles = substr($roles_string, 0, -1);
+		$sql = 'SELECT uri FROM user_roles_rights WHERE role in('.$roles.') GROUP BY uri';
+//		return $sql;
+	return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
 	}
 
 	public function get_users($q = FALSE, $start = 0, $limit = 100, $order_by = FALSE, $field_search = FALSE)
