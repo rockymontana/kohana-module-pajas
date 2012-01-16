@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
-class Controller_Generic extends Xsltcontroller
+class Controller_Generic extends Controller
 {
 
 	public function action_index()
@@ -10,15 +10,16 @@ class Controller_Generic extends Xsltcontroller
 		// Empty string defaults to 'welcome'
 		if ($URI == '' || $URI == '/') $URI = 'welcome';
 
-		// Set the name of the template to use
-		$this->xslt_stylesheet = 'generic';
+		$view = new View_Generic($this);
 
 		// Initiate the page model
 		$content_page = new Content_Page(Content_Page::get_page_id_by_uri($URI));
+echo '<pre>';print_r($content_page);die();
+		$view->JSON['content']['content'] = array();
 
-		// Create the DOM node <page>
-		$this->xml_content_page = $this->xml_content->appendChild($this->dom->createElement('page'));
+		$view->render();
 
+/*
 		// And load the page data into it
 		$page_data = $content_page->get_page_data();
 		foreach ($page_data['tag_ids'] as $template_field_id => $tag_ids)
@@ -125,7 +126,7 @@ class Controller_Generic extends Xsltcontroller
 		// Set the name of the template to use
 		$this->xslt_stylesheet = 'generic';
 
-
+		*/
 	}
 
 }
