@@ -1,5 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
+// Load Mustache vendor
+require Kohana::find_file('vendor','mustache/Mustache');
+
 // Check and set up user content directory
 
 if ( ! is_writable(Kohana::$config->load('user_content.dir')))

@@ -227,6 +227,7 @@ class Model_User extends Model
 	 * Get the current users' roles
 	 * @return str roles
 	 */
+<<<<<<< HEAD
 	public function get_roles_uri($role = FALSE, $all = TRUE)
 	{
 	if($role)
@@ -250,6 +251,11 @@ class Model_User extends Model
 			$role_uri[$role] = $user->get_roles_uri($role, $all);
 		}
 		return $role_uri;
+=======
+	public function get_roles_uri()
+	{
+		return self::driver()->get_roles_uri($this->get_role());
+>>>>>>> master
 	}
 
 	/**
