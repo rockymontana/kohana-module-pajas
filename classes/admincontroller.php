@@ -61,7 +61,6 @@ abstract class Admincontroller extends Xsltcontroller
 		    'menuoption'
 		  );
 
-<<<<<<< HEAD
 			// Then we populate this container with options from the config files, and group them by 'menuoption'
 			foreach (Kohana::$config->load('admin_menu_options') as $menu_option)
 			{
@@ -81,26 +80,6 @@ abstract class Admincontroller extends Xsltcontroller
 			}
 
 			if( ! $user->get_user_id()) $this->redirect('admin/login');
-=======
-		// Then we populate this container with options from the config files, and group them by 'menuoption'
-		  foreach (Kohana::$config->load('admin_menu_options') as $menu_option)
-		  {
-			if (in_array('admin', $user->get_role()) ||
-				in_array($menu_option['href'],$user->get_roles_uri()))
-				{
-					xml::to_XML(
-						array($menu_option),                 // Array to make XML from
-						$this->menuoptions_node,             // Container node
-						'menuoption'                         // Put each group in a node with this name
-					);
-				}
-		  }
-
-		}
-		if (!in_array($this->request->controller(), $user->get_roles_uri()))
-		{
-		throw new HTTP_Exception_403('403 Forbidden Controller: :controller', array(':controller' => $this->request->controller()));
->>>>>>> master
 		}
 	}
 

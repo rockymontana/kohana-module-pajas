@@ -109,31 +109,22 @@ class Driver_User_Mysql extends Driver_User
 	 */
 	public function get_roles()
 	{
-<<<<<<< HEAD
 		return $this->pdo->query('SELECT role FROM user_roles_rights GROUP BY role')->fetchAll(PDO::FETCH_COLUMN);
-=======
-		return $this->pdo->query('SELECT role FROM user_roles_rights')->fetchAll(PDO::FETCH_COLUMN);
->>>>>>> master
 	}
 
 	/**
 	 * Get the current users' roles
 	 * @return arr roles
 	 */
-<<<<<<< HEAD
 	function get_roles_uri($roles, $all)
 	{
 	if (is_array($roles))
-=======
-	public function get_roles_uri($roles)
->>>>>>> master
 	{
 		foreach($roles as $role)
 		{
 			$roles_string = '\''.$role.'\',';
 		}
 		$roles = substr($roles_string, 0, -1);
-<<<<<<< HEAD
 	}
 	else
 	{
@@ -146,12 +137,6 @@ class Driver_User_Mysql extends Driver_User
 	return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
 //	return $sql;
 }
-=======
-		$sql = 'SELECT uri FROM user_roles_rights WHERE role in('.$roles.') GROUP BY uri';
-//		return $sql;
-	return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
-	}
->>>>>>> master
 
 	public function get_users($q = FALSE, $start = 0, $limit = 100, $order_by = FALSE, $field_search = FALSE)
 	{
