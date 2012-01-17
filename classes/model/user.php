@@ -227,9 +227,29 @@ class Model_User extends Model
 	 * Get the current users' roles
 	 * @return str roles
 	 */
-	public function get_roles_uri()
+	public function get_roles_uri($role = FALSE, $all = TRUE)
 	{
-		return self::driver()->get_roles_uri($this->get_role());
+	if($role)
+		{
+			return self::driver()->get_roles_uri($role, $all);
+		}
+	return self::driver()->get_roles_uri($this->get_role());
+	}
+
+	/**
+	 * Get the all users' roles
+	 * @return str roles
+	 */
+	public static function get_roles_uris($all = FALSE)
+	{
+		$user = self::instance();
+		$role_uri = array();
+		$roles = self::get_roles();
+		foreach ($roles as $role)
+		{
+			$role_uri[$role] = $user->get_roles_uri($role, $all);
+		}
+		return $role_uri;
 	}
 
 	/**

@@ -42,7 +42,7 @@ class Controller_Admin_Login extends Admincontroller {
 
 			$user = new User(FALSE, $post_values['username'], $post_values['password']);
 
-			if ($user->logged_in() && ($user->get_user_data('role')) && in_array('admin', $user->get_user_data('role')))
+			if ($user->logged_in() && ($user->get_user_data('role')) && array_intersect($user->get_role(), User::get_roles()))
 			{
 				// The user logged in correctly, and got the role "admin". All good
     		$this->redirect('/admin');

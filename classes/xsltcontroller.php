@@ -113,9 +113,9 @@ abstract class Xsltcontroller extends Controller
 	 * Must be a logged in user with admin role to access the admin pages
 	 */
 	$user = User::instance();
-	if (( ! $user->logged_in() || !in_array($user->get_role(), User::get_roles() ) ) && $this->request->controller() != 'login')
+	if (( ! $user->logged_in() || !array_intersect($user->get_role(), User::get_roles()) ) && $this->request->controller() != 'login')
 	{
-		//$this->redirect('admin/login');
+		$this->redirect('admin/login');
 	}
 
 	if ($this->transform === TRUE || $this->transform === FALSE || $this->transform == 'auto')
